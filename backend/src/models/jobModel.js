@@ -1,9 +1,12 @@
 const pool = require('../config/db');
 
 const getAllJobs = async () => {
-  const result = await pool.query(
-    'SELECT * FROM jobs ORDER BY created_at DESC'
-  );
+  const result = await pool.query(`
+    SELECT j.*, q.id as quiz_id, q.scheduled_end_time, q.results_published 
+    FROM jobs j
+    LEFT JOIN mcq_quizzes q ON j.id = q.job_id
+    ORDER BY j.created_at DESC
+  `);
   return result.rows;
 };
 

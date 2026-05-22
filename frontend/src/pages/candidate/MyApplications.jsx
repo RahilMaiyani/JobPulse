@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin } from 'lucide-react';
+import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyApplications() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState(null);
   const [isRevoking, setIsRevoking] = useState(false);
+  const [testInfo, setTestInfo] = useState(null);
+  const [loadingTest, setLoadingTest] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchApplications();
@@ -40,13 +44,42 @@ export default function MyApplications() {
     }
   };
 
+  useEffect(() => {
+    if (selectedApp) {
+      const s = selectedApp.status?.toLowerCase();
+      if (s === 'shortlisted' || s === 'hired' || s === 'rejected' || s === 'applied' || s === 'selected') {
+        fetchTestInfo(selectedApp.id);
+      } else {
+        setTestInfo(null);
+      }
+    } else {
+      setTestInfo(null);
+    }
+  }, [selectedApp]);
+
+  const fetchTestInfo = async (appId) => {
+    setLoadingTest(true);
+    setTestInfo(null);
+    try {
+      const response = await api.get(`/quizzes/application/${appId}/test-info`);
+      setTestInfo(response.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingTest(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-200"><Clock className="w-3 h-3"/> Applied</span>;
-      case 'Shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 font-bold text-xs rounded-full border border-amber-200"><CheckCircle2 className="w-3 h-3"/> Shortlisted</span>;
-      case 'Hired': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200"><CheckCircle2 className="w-3 h-3"/> Hired</span>;
-      case 'Rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200"><XCircle className="w-3 h-3"/> Rejected</span>;
-      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200">{status}</span>;
+    const s = (status || '').toLowerCase();
+    switch (s) {
+      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-200"><Clock className="w-3 h-3"/> Applied</span>;
+      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 font-bold text-xs rounded-full border border-amber-200"><CheckCircle2 className="w-3 h-3"/> Shortlisted</span>;
+      case 'hired': 
+      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-full border border-purple-200"><CheckCircle2 className="w-3 h-3"/> Interview</span>;
+      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200"><CheckCircle2 className="w-3 h-3"/> Selected</span>;
+      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200"><XCircle className="w-3 h-3"/> Rejected</span>;
+      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200 capitalize">{status}</span>;
     }
   };
 
@@ -96,7 +129,18 @@ export default function MyApplications() {
                           <Briefcase className="w-5 h-5 text-indigo-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-900">{app.title}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-slate-900">{app.title}</p>
+                            {app.mcq_score != null && app.results_published ? (
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
+                                Aptitude: {app.mcq_score}%
+                              </span>
+                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-indigo-50 text-indigo-600 border-indigo-200">
+                                Test Available
+                              </span>
+                            ) : null}
+                          </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-xs font-medium text-slate-500">{app.company_name || 'Company'}</span>
                             <span className="w-1 h-1 rounded-full bg-slate-300"></span>
@@ -169,7 +213,60 @@ export default function MyApplications() {
                 </div>
               </div>
 
-              {selectedApp.status === 'Applied' && (
+              {/* TEST INFO SECTION */}
+              {loadingTest ? (
+                <div className="flex justify-center py-4"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
+              ) : testInfo?.quiz ? (
+                <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-black text-slate-900 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500"/> Aptitude Test Scheduled</h4>
+                      <p className="text-sm font-bold text-slate-500 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes} Minutes</p>
+                    </div>
+                    {testInfo.result?.completed_at ? (
+                      <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200">Completed</span>
+                    ) : (
+                      <span className="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200">Pending</span>
+                    )}
+                  </div>
+                  
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Opens At</p>
+                      <p className="text-xs font-bold text-slate-700 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Closes At</p>
+                      <p className="text-xs font-bold text-slate-700 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {testInfo.result?.completed_at ? (
+                    <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest opacity-70">Result Score</p>
+                        <p className="text-lg font-black">{testInfo.result.score}%</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold">{testInfo.result.passed ? 'Passed' : 'Failed'}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/candidate/test/${selectedApp.id}`)}
+                      disabled={new Date() < new Date(testInfo.quiz.scheduled_start_time) || new Date() > new Date(testInfo.quiz.scheduled_end_time)}
+                      className="w-full h-10 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    >
+                      {new Date() < new Date(testInfo.quiz.scheduled_start_time) ? 'Test Window Not Open Yet' : 
+                       new Date() > new Date(testInfo.quiz.scheduled_end_time) ? 'Test Window Closed' : 'Start Aptitude Test'}
+                      {(new Date() >= new Date(testInfo.quiz.scheduled_start_time) && new Date() <= new Date(testInfo.quiz.scheduled_end_time)) && <ChevronRight className="w-4 h-4" />}
+                    </button>
+                  )}
+                </div>
+              ) : null}
+
+              {(selectedApp.status?.toLowerCase() === 'applied') && (
                 <div className="pt-4 border-t border-slate-100 flex justify-end">
                   <button
                     onClick={() => handleRevoke(selectedApp.id)}

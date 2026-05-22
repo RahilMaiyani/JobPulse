@@ -55,7 +55,7 @@ CREATE TABLE applications (
   resume_id INT REFERENCES resumes(id) ON DELETE SET NULL,
   cover_letter TEXT,
   status VARCHAR(50) DEFAULT 'applied',
-  ai_match_score DECIMAL(5, 2), 
+  ai_match_score INT DEFAULT 0,
   ai_match_details JSONB, 
   is_suspicious BOOLEAN DEFAULT FALSE,
   ai_screening_timestamp TIMESTAMP WITH TIME ZONE,
@@ -63,7 +63,7 @@ CREATE TABLE applications (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   rejection_reason TEXT,
   UNIQUE(user_id, job_id),
-  CONSTRAINT valid_status CHECK (status IN ('applied', 'screening_passed', 'screening_failed', 'shortlisted', 'selected', 'rejected', 'offer_sent')),
+  CONSTRAINT valid_status CHECK (status IN ('applied', 'screening_passed', 'screening_failed', 'shortlisted', 'interview', 'selected', 'rejected', 'offer_sent')),
   CONSTRAINT valid_score CHECK (ai_match_score >= 0 AND ai_match_score <= 100)
 );
 
@@ -74,9 +74,11 @@ CREATE TABLE mcq_quizzes (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     duration_minutes INT NOT NULL DEFAULT 30,
-    passing_score INT DEFAULT 50,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    passing_score INT NOT NULL DEFAULT 50,
+    scheduled_start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    scheduled_end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    results_published BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- MCQ Questions Table
@@ -96,6 +98,7 @@ CREATE TABLE mcq_results (
     application_id INT NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
     score INT NOT NULL,
     passed BOOLEAN NOT NULL,
+    started_at TIMESTAMP WITH TIME ZONE,
     completed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(quiz_id, application_id)
 );

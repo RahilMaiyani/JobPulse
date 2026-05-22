@@ -157,11 +157,35 @@ const revokeApplication = async (req, res, next) => {
   }
 };
 
+const updateApplicationStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    // Ensure only valid statuses are used, but we'll let the database check handle strict validation or we can validate here
+    const validStatuses = ['applied', 'shortlisted', 'rejected', 'selected', 'offer_sent'];
+    if (status && !validStatuses.includes(status.toLowerCase())) {
+       // Just proceeding and letting db handle or doing basic validation
+    }
+    
+    const updatedApp = await applicationModel.updateApplicationStatus(id, status);
+    
+    if (!updatedApp) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+    
+    res.json({ message: 'Application status updated successfully', application: updatedApp });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   analyzeApplication,
   submitApplication,
   getMyApplications,
   getJobApplications,
   getUserApplicationsAdmin,
-  revokeApplication
+  revokeApplication,
+  updateApplicationStatus
 };

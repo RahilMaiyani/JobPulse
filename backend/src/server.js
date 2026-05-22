@@ -7,6 +7,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const userRoutes = require('./routes/userRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const mcqRoutes = require('./routes/mcqRoutes');
 const path = require('path');
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/quizzes', mcqRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

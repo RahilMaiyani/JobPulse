@@ -15,6 +15,7 @@ import CandidateDashboard from './pages/candidate/CandidateDashboard';
 import ViewOpenings from './pages/candidate/ViewOpenings';
 import CandidateProfile from './pages/candidate/CandidateProfile';
 import MyApplications from './pages/candidate/MyApplications';
+import CandidateAptitudeTest from './pages/candidate/CandidateAptitudeTest';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import JobListings from './pages/admin/JobListings';
 import ManageUsers from './pages/admin/ManageUsers';
@@ -61,6 +62,7 @@ function App() {
                       <Route path="openings" element={<ViewOpenings />} />
                       <Route path="applications" element={<MyApplications />} />
                       <Route path="profile" element={<CandidateProfile />} />
+                      <Route path="test/:applicationId" element={<CandidateAptitudeTest />} />
                     </Routes>
                   </ProtectedRoute>
                 }
