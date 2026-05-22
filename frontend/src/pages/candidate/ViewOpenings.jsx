@@ -198,7 +198,9 @@ export default function ViewOpenings() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
+            filteredJobs.map((job) => {
+              const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
+              return (
               <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6">
                 
                 <div className="flex items-start gap-4">
@@ -206,7 +208,10 @@ export default function ViewOpenings() {
                     <Briefcase className="w-6 h-6 text-slate-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{job.title}</h3>
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      {job.title}
+                      {isExpired && <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 border border-rose-200">Expired</span>}
+                    </h3>
                     <div className="flex flex-wrap items-center gap-3 mt-2 text-sm font-medium text-slate-500">
                       <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {job.location || 'Remote'}</span>
                       <span className="w-1 h-1 rounded-full bg-slate-300"></span>
@@ -240,7 +245,7 @@ export default function ViewOpenings() {
                 </div>
 
               </div>
-            ))
+            )})
           ) : (
             <div className="text-center py-20 bg-white border border-slate-200 rounded-2xl shadow-sm">
               <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -327,6 +332,13 @@ export default function ViewOpenings() {
                     className="px-8 h-12 font-bold text-slate-400 bg-slate-100 rounded-xl flex items-center gap-2 cursor-not-allowed"
                   >
                     Already Applied <CheckCircle2 className="w-4 h-4" />
+                  </button>
+                ) : (selectedJob.application_deadline && new Date(selectedJob.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0))) ? (
+                  <button 
+                    disabled
+                    className="px-8 h-12 font-bold text-slate-400 bg-slate-100 rounded-xl flex items-center gap-2 cursor-not-allowed"
+                  >
+                    Expired
                   </button>
                 ) : (
                   <button 

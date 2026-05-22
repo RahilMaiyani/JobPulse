@@ -48,7 +48,7 @@ export default function Header({ toggleSidebar }) {
         {/* Clock Section - Modern Pill Design */}
         <div className="hidden md:flex items-center gap-2.5 bg-slate-100/80 hover:bg-slate-200/80 transition-colors px-3.5 py-1.5 rounded-full border border-slate-200 shadow-inner">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[13px] font-black text-slate-700 tracking-tight">
+          <span className="text-[13px] font-black text-slate-700 tracking-tight tabular-nums">
             {timeString}
           </span>
           <div className="w-px h-3 bg-slate-300 mx-1"></div>

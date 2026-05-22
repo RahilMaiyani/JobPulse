@@ -51,9 +51,9 @@ export default function CandidateProfile() {
       setProfileForm({
         phone: user.phone || '',
         bio: user.bio || '',
-        experience_years: user.experience_years || '',
+        experience_years: user.experience_years !== null ? user.experience_years.toString() : '',
         current_company: user.current_company || '',
-        linkedin_profile: user.linkedin_profile || '',
+        linkedin_profile: user.linkedin_profile || 'https://linkedin.com/in/',
         skills: user.skills || []
       });
     } catch (err) {
@@ -66,6 +66,10 @@ export default function CandidateProfile() {
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (resumes.length >= 3) {
+      return toast.error("You can only upload a maximum of 3 resumes.");
+    }
 
     if (file.type !== 'application/pdf') {
       return toast.error("Only PDF files are allowed.");
@@ -137,8 +141,16 @@ export default function CandidateProfile() {
   };
 
   const addSkill = () => {
-    if (skillInput.trim() && !profileForm.skills.includes(skillInput.trim())) {
-      setProfileForm({ ...profileForm, skills: [...profileForm.skills, skillInput.trim()] });
+    const newSkill = skillInput.trim();
+    if (!newSkill) return;
+    if (newSkill.length > 50) {
+      return toast.error("Skill cannot exceed 50 characters.");
+    }
+    if (profileForm.skills.length >= 15) {
+      return toast.error("You can add a maximum of 15 skills.");
+    }
+    if (!profileForm.skills.includes(newSkill)) {
+      setProfileForm({ ...profileForm, skills: [...profileForm.skills, newSkill] });
       setSkillInput('');
     }
   };
@@ -177,23 +189,25 @@ export default function CandidateProfile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-700">Phone Number</label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><Phone className="w-4 h-4" /></div>
-                    <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="+1 (555) 000-0000" />
+                  <label className="text-xs font-bold text-slate-700">Phone Number (India only)</label>
+                  <div className="relative flex">
+                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-100 text-slate-500 text-sm font-bold">
+                      +91
+                    </span>
+                    <input type="tel" maxLength="10" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value.replace(/\D/g, '') })} className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-r-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="10-digit number" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-700">Years of Experience</label>
-                  <input type="number" value={profileForm.experience_years} onChange={(e) => setProfileForm({ ...profileForm, experience_years: e.target.value })} className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="e.g. 3" />
+                  <label className="text-xs font-bold text-slate-700">Years of Experience (0 for None)</label>
+                  <input type="number" min="0" max="50" value={profileForm.experience_years} onChange={(e) => setProfileForm({ ...profileForm, experience_years: e.target.value })} className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="e.g. 3 or 0" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-700">Current Company</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><Briefcase className="w-4 h-4" /></div>
-                    <input type="text" value={profileForm.current_company} onChange={(e) => setProfileForm({ ...profileForm, current_company: e.target.value })} className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="Acme Corp" />
+                    <input type="text" value={profileForm.current_company} onChange={(e) => setProfileForm({ ...profileForm, current_company: e.target.value })} className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="Acme Corp or 'None'" />
                   </div>
                 </div>
 
@@ -201,14 +215,17 @@ export default function CandidateProfile() {
                   <label className="text-xs font-bold text-slate-700">LinkedIn Profile</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><Link className="w-4 h-4" /></div>
-                    <input type="url" value={profileForm.linkedin_profile} onChange={(e) => setProfileForm({ ...profileForm, linkedin_profile: e.target.value })} className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="https://linkedin.com/in/johndoe" />
+                    <input type="text" value={profileForm.linkedin_profile} onChange={(e) => setProfileForm({ ...profileForm, linkedin_profile: e.target.value })} className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none" placeholder="https://linkedin.com/in/johndoe" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700">Bio / About Me</label>
-                <textarea value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none min-h-[100px]" placeholder="Tell us about yourself..."></textarea>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-slate-700">Bio / About Me</label>
+                  <span className="text-[10px] font-bold text-slate-400">{profileForm.bio.length} / 1000</span>
+                </div>
+                <textarea maxLength="1000" value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 outline-none min-h-[100px]" placeholder="Tell us about yourself..."></textarea>
               </div>
 
               <div className="space-y-2">
@@ -274,18 +291,23 @@ export default function CandidateProfile() {
                 <FileText className="w-5 h-5 text-indigo-600" />
                 <h2 className="text-lg font-black text-slate-900">Resume Vault</h2>
               </div>
-              <label className="cursor-pointer">
-                <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={isUploadingResume} />
+              <label className={`cursor-pointer ${resumes.length >= 3 ? 'opacity-50 pointer-events-none' : ''}`}>
+                <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={isUploadingResume || resumes.length >= 3} />
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors border ${isUploadingResume ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100'}`}>
                   {isUploadingResume ? (
                     <div className="w-3.5 h-3.5 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div>
                   ) : (
                     <UploadCloud className="w-3.5 h-3.5" />
                   )}
-                  Upload PDF
+                  {resumes.length >= 3 ? 'Limit Reached' : 'Upload PDF'}
                 </span>
               </label>
             </div>
+            {resumes.length >= 3 && (
+              <div className="px-6 py-2 bg-amber-50 border-b border-amber-100 text-amber-700 text-xs font-bold">
+                You have reached the maximum limit of 3 resumes. Delete an old one to upload a new resume.
+              </div>
+            )}
             <div className="p-6 overflow-y-auto max-h-[300px] custom-scrollbar flex-1 bg-slate-50/50">
               {resumes.length === 0 ? (
                 <div className="text-center py-8">

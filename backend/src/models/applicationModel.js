@@ -34,7 +34,7 @@ const getUserApplications = async (userId) => {
 
 const getJobApplications = async (jobId) => {
   const query = `
-    SELECT a.*, u.full_name as candidate_name, u.email as candidate_email, r.file_path as resume_path, r.file_name as resume_name
+    SELECT a.*, u.full_name as candidate_name, u.email as candidate_email, u.is_active as candidate_is_active, r.file_path as resume_path, r.file_name as resume_name
     FROM applications a
     JOIN users u ON a.user_id = u.id
     LEFT JOIN resumes r ON a.resume_id = r.id
@@ -45,9 +45,16 @@ const getJobApplications = async (jobId) => {
   return result.rows;
 };
 
+const deleteApplication = async (id, userId) => {
+  const query = `DELETE FROM applications WHERE id = $1 AND user_id = $2 RETURNING *;`;
+  const result = await db.query(query, [id, userId]);
+  return result.rows[0];
+};
+
 module.exports = {
   createApplication,
   getApplicationByUserAndJob,
   getUserApplications,
-  getJobApplications
+  getJobApplications,
+  deleteApplication
 };

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2 } from 'lucide-react';
+import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function JobListings() {
@@ -24,6 +24,9 @@ export default function JobListings() {
   const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null);
   const [jobApplicants, setJobApplicants] = useState([]);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [expandedApplicantId, setExpandedApplicantId] = useState(null);
+  const [applicantSearchTerm, setApplicantSearchTerm] = useState("");
+  const [applicantSortBy, setApplicantSortBy] = useState("highest"); // highest, lowest, newest, oldest
 
   useEffect(() => {
     fetchJobs();
@@ -122,6 +125,9 @@ export default function JobListings() {
     setSelectedJobForApplicants(job);
     setLoadingApplicants(true);
     setOpenDropdownId(null);
+    setExpandedApplicantId(null);
+    setApplicantSearchTerm("");
+    setApplicantSortBy("highest");
     try {
       const response = await api.get(`/applications/job/${job.id}`);
       setJobApplicants(response.data.applications || []);
@@ -137,6 +143,35 @@ export default function JobListings() {
     if (score >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
     return 'text-rose-600 bg-rose-50 border-rose-200';
   };
+
+  const filteredAndSortedApplicants = useMemo(() => {
+    let result = [...jobApplicants];
+    
+    // Search
+    if (applicantSearchTerm.trim()) {
+      const lowerQuery = applicantSearchTerm.toLowerCase();
+      result = result.filter(app => 
+        (app.candidate_name && app.candidate_name.toLowerCase().includes(lowerQuery)) ||
+        (app.candidate_email && app.candidate_email.toLowerCase().includes(lowerQuery))
+      );
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (applicantSortBy === 'highest') {
+        return b.ai_match_score - a.ai_match_score;
+      } else if (applicantSortBy === 'lowest') {
+        return a.ai_match_score - b.ai_match_score;
+      } else if (applicantSortBy === 'newest') {
+        return new Date(b.applied_at) - new Date(a.applied_at);
+      } else if (applicantSortBy === 'oldest') {
+        return new Date(a.applied_at) - new Date(b.applied_at);
+      }
+      return 0;
+    });
+
+    return result;
+  }, [jobApplicants, applicantSearchTerm, applicantSortBy]);
 
   return (
     <DashboardLayout>
@@ -427,37 +462,65 @@ export default function JobListings() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedJobForApplicants(null)}></div>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-            <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
-                  <Users className="w-6 h-6 text-indigo-600" />
+            <div className="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50">
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
+                    <Users className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Applicants for {selectedJobForApplicants.title}</h2>
+                    <p className="text-sm font-bold text-slate-500 mt-0.5">{jobApplicants.length} total applicants</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Applicants for {selectedJobForApplicants.title}</h2>
-                  <p className="text-sm font-bold text-slate-500 mt-0.5">{jobApplicants.length} total applicants</p>
-                </div>
+                <button onClick={() => setSelectedJobForApplicants(null)} className="p-2 bg-white border border-slate-200 text-slate-400 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button onClick={() => setSelectedJobForApplicants(null)} className="p-2 bg-white border border-slate-200 text-slate-400 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* SEARCH AND SORT BAR */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search applicants by name or email..."
+                    value={applicantSearchTerm}
+                    onChange={(e) => setApplicantSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-4 h-10 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none transition-all shadow-sm"
+                  />
+                </div>
+                <select
+                  value={applicantSortBy}
+                  onChange={(e) => setApplicantSortBy(e.target.value)}
+                  className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 outline-none shadow-sm"
+                >
+                  <option value="highest">Highest AI Score</option>
+                  <option value="lowest">Lowest AI Score</option>
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                </select>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-white">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30">
               {loadingApplicants ? (
                 <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
-              ) : jobApplicants.length === 0 ? (
-                <div className="text-center py-12">
+              ) : filteredAndSortedApplicants.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm">
                   <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-slate-900">No applicants yet</h3>
-                  <p className="text-slate-500 text-sm mt-1">Check back later when candidates start applying.</p>
+                  <h3 className="text-lg font-bold text-slate-900">No applicants found</h3>
+                  <p className="text-slate-500 text-sm mt-1">Try adjusting your search criteria.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {jobApplicants.map((app) => (
-                    <div key={app.id} className="border border-slate-200 rounded-2xl p-5 hover:border-indigo-200 hover:shadow-md transition-all">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  {filteredAndSortedApplicants.map((app) => (
+                    <div key={app.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md transition-all">
+                      <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 cursor-pointer" onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}>
                           <div className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center shrink-0 ${getScoreColor(app.ai_match_score)}`}>
                             <span className="text-xs font-black opacity-80 uppercase leading-none mt-1">Score</span>
                             <span className="text-lg font-black leading-none mb-1">{app.ai_match_score}</span>
@@ -474,47 +537,78 @@ export default function JobListings() {
                         </div>
 
                         <div className="flex items-center gap-3">
-                          {app.resume_path && (
-                            <a 
-                              href={`http://localhost:5000${app.resume_path}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-4 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors border border-slate-200"
-                            >
-                              <Download className="w-3.5 h-3.5" /> View Resume
-                            </a>
-                          )}
-                          <select 
-                            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 outline-none"
-                            defaultValue={app.status}
+                          <button 
+                            onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}
+                            className="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                           >
-                            <option value="Applied">Applied</option>
-                            <option value="Shortlisted">Shortlisted</option>
-                            <option value="Rejected">Rejected</option>
-                            <option value="Hired">Hired</option>
-                          </select>
+                            {expandedApplicantId === app.id ? (
+                              <>Hide Details <ChevronUp className="w-3.5 h-3.5" /></>
+                            ) : (
+                              <>View Details <ChevronDown className="w-3.5 h-3.5" /></>
+                            )}
+                          </button>
+                          
+                          <div className="w-px h-6 bg-slate-200"></div>
+
+                          {!app.candidate_is_active ? (
+                            <span className="px-3 py-1.5 bg-slate-100 text-slate-500 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1.5">
+                              <Ban className="w-3.5 h-3.5" /> Deactivated
+                            </span>
+                          ) : (
+                            <>
+                              {app.resume_path && (
+                                <a 
+                                  href={`http://localhost:5000${app.resume_path}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-4 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors border border-slate-200"
+                                >
+                                  <Download className="w-3.5 h-3.5" /> Resume
+                                </a>
+                              )}
+                              <select 
+                                className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 outline-none"
+                                defaultValue={app.status}
+                              >
+                                <option value="Applied">Applied</option>
+                                <option value="Shortlisted">Shortlisted</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Hired">Hired</option>
+                              </select>
+                            </>
+                          )}
                         </div>
                       </div>
 
-                      {/* AI Details */}
-                      <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs font-black text-emerald-600 mb-1 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5"/> Strengths</p>
-                          <ul className="space-y-1">
-                            {app.ai_match_details?.strengths?.map((s, i) => (
-                              <li key={i} className="text-xs text-slate-600 font-medium">• {s}</li>
-                            ))}
-                          </ul>
+                      {/* AI Details Expandable Section */}
+                      {expandedApplicantId === app.id && (
+                        <div className="px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                              <p className="text-sm font-black text-emerald-600 mb-2 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Strengths</p>
+                              <ul className="space-y-2">
+                                {app.ai_match_details?.strengths?.map((s, i) => (
+                                  <li key={i} className="text-sm text-slate-700 font-medium leading-relaxed">• {s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-amber-600 mb-2 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Areas to Improve</p>
+                              <ul className="space-y-2">
+                                {app.ai_match_details?.weaknesses?.map((w, i) => (
+                                  <li key={i} className="text-sm text-slate-700 font-medium leading-relaxed">• {w}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                          
+                          {app.ai_match_details?.reasoning && (
+                            <div className="mt-4 p-4 bg-white border border-slate-200 rounded-xl">
+                              <p className="text-sm text-slate-600 italic font-medium">"{app.ai_match_details.reasoning}"</p>
+                            </div>
+                          )}
                         </div>
-                        <div>
-                          <p className="text-xs font-black text-amber-600 mb-1 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5"/> Weaknesses</p>
-                          <ul className="space-y-1">
-                            {app.ai_match_details?.weaknesses?.map((w, i) => (
-                              <li key={i} className="text-xs text-slate-600 font-medium">• {w}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>

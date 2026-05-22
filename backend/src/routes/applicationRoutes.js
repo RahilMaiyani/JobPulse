@@ -8,5 +8,6 @@ router.post('/submit', protect, authorize('candidate'), applicationController.su
 router.get('/my-applications', protect, authorize('candidate'), applicationController.getMyApplications);
 router.get('/job/:jobId', protect, authorize('admin', 'hr'), applicationController.getJobApplications);
 router.get('/user/:userId', protect, authorize('admin', 'hr'), applicationController.getUserApplicationsAdmin);
+router.delete('/:id/revoke', protect, authorize('candidate'), applicationController.revokeApplication);
 
 module.exports = router;

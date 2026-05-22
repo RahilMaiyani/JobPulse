@@ -412,7 +412,7 @@ export default function ManageUsers() {
               {selectedUser.bio && (
                 <div className="mt-8 pt-8 border-t border-slate-100">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Bio</p>
-                  <p className="text-sm font-medium text-slate-600 leading-relaxed">{selectedUser.bio}</p>
+                  <p className="text-sm font-medium text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedUser.bio}</p>
                 </div>
               )}
 

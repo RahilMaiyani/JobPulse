@@ -140,10 +140,28 @@ const getUserApplicationsAdmin = async (req, res, next) => {
   }
 };
 
+const revokeApplication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    
+    const deletedApp = await applicationModel.deleteApplication(id, userId);
+    
+    if (!deletedApp) {
+      return res.status(404).json({ error: 'Application not found or you do not have permission to revoke it' });
+    }
+    
+    res.json({ message: 'Application revoked successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   analyzeApplication,
   submitApplication,
   getMyApplications,
   getJobApplications,
-  getUserApplicationsAdmin
+  getUserApplicationsAdmin,
+  revokeApplication
 };
