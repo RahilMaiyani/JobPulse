@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase, MapPin, X, CheckCircle2, ChevronRight } from 'lucide-react';
 
-export default function JobDetailsModal({ job, onClose, onApply, hasApplied }) {
+export default function JobDetailsModal({ job, onClose, onApply, appliedApplication }) {
   const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
 
   return (
@@ -72,12 +72,12 @@ export default function JobDetailsModal({ job, onClose, onApply, hasApplied }) {
             >
               Close
             </button>
-            {hasApplied ? (
+            {appliedApplication ? (
               <button
                 disabled
-                className="px-8 h-12 font-bold text-slate-400 bg-slate-100 rounded-xl flex items-center gap-2 cursor-not-allowed"
+                className="px-8 h-12 font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 cursor-not-allowed"
               >
-                Already Applied <CheckCircle2 className="w-4 h-4" />
+                Applied on {new Date(appliedApplication.applied_at).toLocaleDateString()} <CheckCircle2 className="w-4 h-4" />
               </button>
             ) : isExpired ? (
               <button

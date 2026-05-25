@@ -52,15 +52,111 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
     return 'text-rose-600 bg-rose-50 border-rose-200';
   };
 
+  const getTimelineSteps = () => {
+    if (!app) return [];
+    const s = app.status?.toLowerCase() || 'applied';
+    
+    const steps = [
+      {
+        label: 'Application Submitted',
+        description: 'Your resume and AI match score have been sent to HR.',
+        date: new Date(app.applied_at).toLocaleString(),
+        isCompleted: true,
+        isCurrent: s === 'applied'
+      }
+    ];
+
+    const hasPassedApplied = ['shortlisted', 'interview', 'selected', 'hired'].includes(s) || (s === 'rejected' && testInfo);
+    if (hasPassedApplied) {
+      steps.push({
+        label: 'Shortlisted for Aptitude Test',
+        description: 'Your profile stood out! You were selected for the aptitude round.',
+        date: testInfo?.quiz ? `Scheduled for ${new Date(testInfo.quiz.scheduled_start_time).toLocaleDateString()}` : '',
+        isCompleted: true,
+        isCurrent: s === 'shortlisted'
+      });
+    } else if (s === 'rejected' && !testInfo) {
+      steps.push({
+        label: 'Application Not Selected',
+        description: 'Unfortunately, we are moving forward with other candidates.',
+        date: app.updated_at ? new Date(app.updated_at).toLocaleString() : '',
+        isCompleted: true,
+        isRejected: true,
+        isCurrent: true
+      });
+      return steps;
+    }
+
+    const hasPassedShortlisted = ['interview', 'selected', 'hired'].includes(s) || (s === 'rejected' && testInfo?.result?.completed_at);
+    if (hasPassedShortlisted) {
+      if (testInfo?.result?.passed === false) {
+          steps.push({
+            label: 'Aptitude Test Failed',
+            description: 'Unfortunately, you did not meet the required score for the interview round.',
+            date: new Date(testInfo.result.completed_at).toLocaleString(),
+            isCompleted: true,
+            isRejected: true,
+            isCurrent: true
+          });
+          return steps;
+      }
+
+      if (s === 'rejected') {
+          steps.push({
+            label: 'Interview Round',
+            description: 'You completed the aptitude test, but were not selected after the interview.',
+            date: app.updated_at ? new Date(app.updated_at).toLocaleString() : '',
+            isCompleted: true,
+            isRejected: true,
+            isCurrent: true
+          });
+          return steps;
+      }
+
+      steps.push({
+        label: 'Interview Round',
+        description: 'You passed the aptitude test! HR will contact you for an interview.',
+        date: '',
+        isCompleted: ['selected', 'hired'].includes(s),
+        isCurrent: s === 'interview'
+      });
+    }
+
+    if (['selected', 'hired'].includes(s)) {
+      steps.push({
+        label: 'Hired',
+        description: 'Congratulations! You have been selected for this role.',
+        date: app.updated_at ? new Date(app.updated_at).toLocaleString() : '',
+        isCompleted: true,
+        isCurrent: true
+      });
+    }
+
+    if (s !== 'rejected' && !['selected', 'hired'].includes(s)) {
+      if (s === 'applied') {
+        steps.push({ label: 'Application Review', isFuture: true });
+        steps.push({ label: 'Aptitude Test', isFuture: true });
+        steps.push({ label: 'Interview Round', isFuture: true });
+      } else if (s === 'shortlisted') {
+        steps.push({ label: 'Aptitude Test Evaluation', isFuture: true });
+        steps.push({ label: 'Interview Round', isFuture: true });
+      } else if (s === 'interview') {
+        steps.push({ label: 'Final Decision', isFuture: true });
+      }
+    }
+
+    return steps;
+  };
+
   if (!app) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+        <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50 shrink-0">
           <div>
-            <h2 className="text-xl font-black text-slate-900">{app.title}</h2>
+            <h2 className="text-2xl font-black text-slate-900">{app.title}</h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm font-bold text-slate-600">{app.company_name || 'Company'}</span>
               <span className="w-1 h-1 rounded-full bg-slate-300"></span>
@@ -72,17 +168,61 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            
+            {/* LEFT COLUMN: TIMELINE UI */}
             <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</p>
-              <div className="mt-1">{getStatusBadge(app.status)}</div>
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Applied On</p>
-              <p className="text-sm font-bold text-slate-700 mt-1">{new Date(app.applied_at).toLocaleDateString()}</p>
-            </div>
+              <h3 className="text-lg font-black text-slate-900 mb-6">Application Tracking</h3>
+              <div className="relative pl-4 space-y-6">
+            {getTimelineSteps().map((step, idx) => {
+              const allSteps = getTimelineSteps();
+              const hasNextCompleted = allSteps[idx + 1] && (allSteps[idx + 1].isCompleted || allSteps[idx + 1].isCurrent);
+              const hasNextFuture = allSteps[idx + 1] && allSteps[idx + 1].isFuture;
+              const drawLine = idx !== allSteps.length - 1;
+              const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200';
+              
+              return (
+                <div key={idx} className="relative flex items-start gap-5 min-h-[48px]">
+                  {drawLine && (
+                    <div className={`absolute left-[11px] top-7 bottom-[-24px] w-0.5 ${lineColor}`}></div>
+                  )}
+                  
+                  <div className="relative shrink-0 mt-1 z-10">
+                    {step.isRejected ? (
+                      <div className="w-6 h-6 rounded-full bg-rose-500 border-[3px] border-white flex items-center justify-center shadow-sm">
+                        <X className="w-3 h-3 text-white" strokeWidth={3} />
+                      </div>
+                    ) : step.isCurrent ? (
+                      <div className="w-6 h-6 rounded-full bg-indigo-500 border-[3px] border-indigo-100 flex items-center justify-center shadow-sm relative">
+                         <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                         <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-20"></div>
+                      </div>
+                    ) : step.isCompleted ? (
+                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-white flex items-center justify-center shadow-sm">
+                        <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-slate-100 border-[3px] border-white shadow-sm flex items-center justify-center">
+                        <div className="w-2 h-2 bg-slate-200 rounded-full"></div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
+                    <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600' : step.isCurrent ? 'text-indigo-600' : 'text-slate-900'}`}>{step.label}</h4>
+                    {step.date && <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest">{step.date}</p>}
+                    {step.description && <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">{step.description}</p>}
+                  </div>
+                </div>
+              );
+            })}
           </div>
+        </div>
+
+        {/* RIGHT COLUMN: DETAILS */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-black text-slate-900 mb-6">Details & Actions</h3>
 
           <div
             className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}
@@ -166,26 +306,32 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
               )}
             </div>
           ) : null}
-
-          {/* BOTTOM ACTIONS */}
-          <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
-            <button
-              onClick={() => onRevoke(app.id)}
-              disabled={isRevoking}
-              className="px-4 py-2 text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              {isRevoking ? 'Revoking...' : 'Revoke Application'}
-            </button>
-            <button
-              onClick={onClose}
-              className="px-6 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
+    </div>
+
+    {/* BOTTOM ACTIONS */}
+    <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+      <div>
+        {app.status?.toLowerCase() === 'applied' && (
+          <button
+            onClick={() => onRevoke(app.id)}
+            disabled={isRevoking}
+            className="px-4 py-2 text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            {isRevoking ? 'Revoking...' : 'Revoke Application'}
+          </button>
+        )}
+      </div>
+      <button
+        onClick={onClose}
+        className="px-6 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+      >
+        Close
+      </button>
+    </div>
+  </div>
     </div>
   );
 }

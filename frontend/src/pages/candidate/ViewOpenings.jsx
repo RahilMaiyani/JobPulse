@@ -135,8 +135,13 @@ export default function ViewOpenings() {
             {currentJobs.length > 0 ? (
               currentJobs.map((job) => {
                 const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
+                const appliedApp = myApplications.find(a => a.job_id === job.id);
               return (
-                <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div 
+                  key={job.id} 
+                  onClick={() => setSelectedJob(job)}
+                  className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer"
+                >
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
@@ -162,22 +167,26 @@ export default function ViewOpenings() {
                       </p>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Salary Range</p>
                     </div>
-                    {myApplications.find(a => a.job_id === job.id) ? (
+                    {appliedApp ? (
                       <button
                         disabled
-                        className="h-10 px-6 bg-slate-100 text-slate-400 text-sm font-bold rounded-xl whitespace-nowrap cursor-not-allowed"
+                        className="h-10 px-6 bg-slate-100 text-slate-400 text-sm font-bold rounded-xl whitespace-nowrap"
                       >
                         Applied
                       </button>
                     ) : (
                       <button
-                        onClick={() => setSelectedJob(job)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents double firing when clicking button directly
+                          setSelectedJob(job);
+                        }}
                         className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl shadow-md shadow-slate-200 transition-all active:scale-95 whitespace-nowrap"
                       >
                         View Details
                       </button>
                     )}
                   </div>
+
 
                 </div>
               )
@@ -222,7 +231,7 @@ export default function ViewOpenings() {
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
           onApply={openApplyModal}
-          hasApplied={!!myApplications.find(a => a.job_id === selectedJob.id)}
+          appliedApplication={myApplications.find(a => a.job_id === selectedJob.id)}
         />
       )}
 
