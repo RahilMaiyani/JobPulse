@@ -106,3 +106,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+html,
+body {
+  overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
+
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
+}
