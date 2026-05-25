@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight } from 'lucide-react';
+import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,12 @@ export default function MyApplications() {
   const [isRevoking, setIsRevoking] = useState(false);
   const [testInfo, setTestInfo] = useState(null);
   const [loadingTest, setLoadingTest] = useState(false);
+  const [isAiMatchExpanded, setIsAiMatchExpanded] = useState(false);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,7 +103,36 @@ export default function MyApplications() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Role & Company</th>
+                <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Applied On</th>
+                <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">AI Score</th>
+                <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <tr key={n} className="animate-pulse">
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-200 shrink-0"></div>
+                      <div className="space-y-1">
+                        <div className="h-5 w-32 bg-slate-200 rounded"></div>
+                        <div className="h-4 w-24 bg-slate-200 rounded"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-4"><div className="h-4 w-24 bg-slate-200 rounded"></div></td>
+                  <td className="p-4"><div className="w-10 h-10 bg-slate-200 rounded-xl"></div></td>
+                  <td className="p-4 text-right"><div className="h-6 w-20 bg-slate-200 rounded-full ml-auto"></div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : applications.length === 0 ? (
         <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl shadow-sm">
           <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -117,11 +152,11 @@ export default function MyApplications() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {applications.map((app) => (
+                {applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((app) => (
                   <tr
                     key={app.id}
                     className="hover:bg-slate-50/50 transition-colors cursor-pointer"
-                    onClick={() => setSelectedApp(app)}
+                    onClick={() => { setSelectedApp(app); setIsAiMatchExpanded(false); }}
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -168,6 +203,29 @@ export default function MyApplications() {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination Controls */}
+          {Math.ceil(applications.length / itemsPerPage) > 1 && (
+            <div className="flex justify-center items-center gap-2 p-4 border-t border-slate-100 bg-slate-50/50">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <div className="text-sm font-bold text-slate-600">
+                Page {currentPage} of {Math.ceil(applications.length / itemsPerPage)}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(applications.length / itemsPerPage)))}
+                disabled={currentPage === Math.ceil(applications.length / itemsPerPage)}
+                className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -202,20 +260,44 @@ export default function MyApplications() {
                 </div>
               </div>
 
-              <div className={`p-4 rounded-2xl border flex items-center gap-4 ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}>
+              <div 
+                className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}
+                onClick={() => setIsAiMatchExpanded(!isAiMatchExpanded)}
+              >
                 <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(selectedApp.ai_match_score)}`}>
                   <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
                   <span className="text-xl font-black leading-none mb-1">{selectedApp.ai_match_score}</span>
                 </div>
-                <div>
+                <div className="flex-1 pr-6">
                   <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
-                  <p className="text-xs font-medium text-slate-600 mt-0.5 line-clamp-2">{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                  <p className={`text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                </div>
+                <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400">
+                  {isAiMatchExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                 </div>
               </div>
 
               {/* TEST INFO SECTION */}
               {loadingTest ? (
-                <div className="flex justify-center py-4"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
+                <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 animate-pulse">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="w-48 h-5 bg-slate-200 rounded"></div>
+                      <div className="w-32 h-4 bg-slate-200 rounded"></div>
+                    </div>
+                    <div className="w-16 h-6 bg-slate-200 rounded"></div>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="w-16 h-3 bg-slate-200 rounded"></div>
+                      <div className="w-24 h-4 bg-slate-200 rounded"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="w-16 h-3 bg-slate-200 rounded"></div>
+                      <div className="w-24 h-4 bg-slate-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
               ) : testInfo?.quiz ? (
                 <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>

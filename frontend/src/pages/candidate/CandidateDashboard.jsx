@@ -43,8 +43,33 @@ export default function CandidateDashboard() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+        <div className="space-y-8 animate-pulse">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(n => (
+              <div key={n} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="w-24 h-4 bg-slate-200 rounded"></div>
+                  <div className="w-16 h-8 bg-slate-200 rounded"></div>
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-slate-200"></div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="w-48 h-7 bg-slate-200 rounded mb-6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(n => (
+                <div key={n} className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-slate-200 mb-4"></div>
+                  <div className="w-3/4 h-7 bg-slate-200 rounded mb-1"></div>
+                  <div className="w-1/2 h-4 bg-slate-200 rounded mb-4"></div>
+                  <div className="pt-4 border-t border-slate-100">
+                    <div className="w-24 h-5 bg-slate-200 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       ) : (
         <div className="space-y-8">

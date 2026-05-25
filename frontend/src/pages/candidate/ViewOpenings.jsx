@@ -10,6 +10,10 @@ export default function ViewOpenings() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("All");
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Modals State
   const [selectedJob, setSelectedJob] = useState(null);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -64,9 +68,17 @@ export default function ViewOpenings() {
       const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesType = filterType === "All" || job.job_type === filterType;
-      return matchesSearch && matchesType;
+    return matchesSearch && matchesType;
     });
   }, [jobs, searchTerm, filterType]);
+
+  // Reset to page 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType]);
+
+  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
+  const currentJobs = filteredJobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const openApplyModal = () => {
     setApplyModalOpen(true);
@@ -194,14 +206,32 @@ export default function ViewOpenings() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+        <div className="grid grid-cols-1 gap-4">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-pulse">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-200 shrink-0"></div>
+                <div className="space-y-2 pt-0.5">
+                  <div className="h-7 w-48 bg-slate-200 rounded"></div>
+                  <div className="h-5 w-32 bg-slate-200 rounded"></div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:block text-right space-y-2">
+                  <div className="h-5 w-20 bg-slate-200 rounded ml-auto"></div>
+                  <div className="h-3 w-16 bg-slate-200 rounded ml-auto"></div>
+                </div>
+                <div className="h-10 w-32 bg-slate-200 rounded-xl"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => {
-              const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
+            {currentJobs.length > 0 ? (
+              currentJobs.map((job) => {
+                const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
               return (
                 <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6">
 
@@ -254,6 +284,30 @@ export default function ViewOpenings() {
               <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-slate-900">No open roles found</h3>
               <p className="text-slate-500 text-sm mt-1">Check back later or try adjusting your filters.</p>
+            </div>
+          )}
+          </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 pt-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <div className="text-sm font-bold text-slate-600">
+                Page {currentPage} of {totalPages}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>

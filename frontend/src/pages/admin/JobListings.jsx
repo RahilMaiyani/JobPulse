@@ -13,6 +13,10 @@ export default function JobListings() {
   const [jobSearchTerm, setJobSearchTerm] = useState("");
   const [jobFilterStatus, setJobFilterStatus] = useState("all"); // all, active, closed
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -35,6 +39,7 @@ export default function JobListings() {
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);
   const [applicantSearchTerm, setApplicantSearchTerm] = useState("");
   const [applicantSortBy, setApplicantSortBy] = useState("highest"); // highest, lowest, newest, oldest
+  const [applicantPage, setApplicantPage] = useState(1);
 
   useEffect(() => {
     fetchJobs();
@@ -148,6 +153,7 @@ export default function JobListings() {
     setExpandedApplicantId(null);
     setApplicantSearchTerm("");
     setApplicantSortBy("highest");
+    setApplicantPage(1);
     try {
       const response = await api.get(`/applications/job/${job.id}`);
       setJobApplicants(response.data.applications || []);
@@ -209,6 +215,13 @@ export default function JobListings() {
     return result;
   }, [jobApplicants, applicantSearchTerm, applicantSortBy]);
 
+  useEffect(() => {
+    setApplicantPage(1);
+  }, [applicantSearchTerm, applicantSortBy]);
+
+  const totalApplicantPages = Math.ceil(filteredAndSortedApplicants.length / itemsPerPage);
+  const paginatedApplicants = filteredAndSortedApplicants.slice((applicantPage - 1) * itemsPerPage, applicantPage * itemsPerPage);
+
   const filteredAndSortedJobs = useMemo(() => {
     let result = [...jobs];
 
@@ -236,7 +249,16 @@ export default function JobListings() {
   const resetJobFilters = () => {
     setJobSearchTerm("");
     setJobFilterStatus("all");
+    setCurrentPage(1);
   };
+
+  // Reset to page 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [jobSearchTerm, jobFilterStatus]);
+
+  const totalPages = Math.ceil(filteredAndSortedJobs.length / itemsPerPage);
+  const currentJobs = filteredAndSortedJobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <DashboardLayout>
@@ -285,8 +307,37 @@ export default function JobListings() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">Role</th>
+                <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest hidden md:table-cell">Type</th>
+                <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest hidden sm:table-cell">Deadline</th>
+                <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <tr key={n} className="animate-pulse">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-slate-200 shrink-0"></div>
+                      <div className="space-y-1">
+                        <div className="h-6 w-32 bg-slate-200 rounded"></div>
+                        <div className="h-4 w-24 bg-slate-200 rounded"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 hidden md:table-cell"><div className="h-4 w-20 bg-slate-200 rounded"></div></td>
+                  <td className="px-6 py-4"><div className="h-6 w-16 bg-slate-200 rounded-md"></div></td>
+                  <td className="px-6 py-4 hidden sm:table-cell"><div className="h-4 w-24 bg-slate-200 rounded"></div></td>
+                  <td className="px-6 py-4 text-right"><div className="h-9 w-9 bg-slate-200 rounded-lg ml-auto"></div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm pb-32" ref={dropdownRef}>
@@ -302,8 +353,8 @@ export default function JobListings() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredAndSortedJobs.length > 0 ? (
-                  filteredAndSortedJobs.map((job, index) => {
+                {currentJobs.length > 0 ? (
+                  currentJobs.map((job, index) => {
                     const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
                     return (
                       <tr key={job.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -632,7 +683,11 @@ export default function JobListings() {
 
             <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30">
               {loadingApplicants ? (
-                <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-24 bg-white rounded-2xl border border-slate-200 animate-pulse"></div>
+                  ))}
+                </div>
               ) : filteredAndSortedApplicants.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm">
                   <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -641,7 +696,7 @@ export default function JobListings() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredAndSortedApplicants.map((app) => (
+                  {paginatedApplicants.map((app) => (
                     <div key={app.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md transition-all">
                       <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
 
@@ -751,6 +806,29 @@ export default function JobListings() {
                 </div>
               )}
             </div>
+
+            {/* Applicant Pagination */}
+            {totalApplicantPages > 1 && (
+              <div className="p-4 border-t border-slate-100 flex justify-center items-center gap-2 bg-slate-50/50 rounded-b-3xl">
+                <button
+                  onClick={() => setApplicantPage(prev => Math.max(prev - 1, 1))}
+                  disabled={applicantPage === 1}
+                  className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <div className="text-sm font-bold text-slate-600">
+                  Page {applicantPage} of {totalApplicantPages}
+                </div>
+                <button
+                  onClick={() => setApplicantPage(prev => Math.min(prev + 1, totalApplicantPages))}
+                  disabled={applicantPage === totalApplicantPages}
+                  className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
