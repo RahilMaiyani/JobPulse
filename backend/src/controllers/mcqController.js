@@ -58,12 +58,12 @@ const createOrUpdateQuiz = async (req, res, next) => {
       }
     }
 
-    // Send Test Available Email to Shortlisted Candidates
+    // Send Test Available Email to Non-Rejected Candidates
     try {
       const job = await jobModel.getJobById(jobId);
       const apps = await applicationModel.getJobApplications(jobId);
-      const shortlisted = apps.filter(app => app.status === 'shortlisted');
-      for (const app of shortlisted) {
+      const validCandidates = apps.filter(app => app.status !== 'rejected');
+      for (const app of validCandidates) {
         await emailService.sendTestAvailableEmail(
           app.candidate_email,
           app.candidate_name,

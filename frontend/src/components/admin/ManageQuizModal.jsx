@@ -127,11 +127,11 @@ export default function ManageQuizModal({ job, onClose }) {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-slate-50/30">
           {loading ? (
             <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-10">
               {/* Quiz Configuration */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2">Test Configuration</h3>
@@ -196,23 +196,26 @@ export default function ManageQuizModal({ job, onClose }) {
                 </div>
               </div>
 
-              {/* Questions Builder */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-black text-slate-900">Questions ({questions.length})</h3>
-                  <button onClick={handleAddQuestion} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
-                    <Plus className="w-4 h-4" /> Add Question
+              {/* Questions Section */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2 flex items-center justify-between">
+                  Questions ({questions.length})
+                  <button 
+                    onClick={handleAddQuestion}
+                    className="text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Question
                   </button>
-                </div>
+                </h3>
 
                 {questions.length === 0 ? (
                   <div className="text-center py-10 bg-white border border-dashed border-slate-300 rounded-2xl">
                     <p className="text-slate-500 font-medium text-sm">No questions added yet. Click "Add Question" to start building your test.</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {questions.map((q, qIndex) => (
-                      <div key={qIndex} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative">
+                      <div key={qIndex} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative">
                         <button onClick={() => handleRemoveQuestion(qIndex)} className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </button>

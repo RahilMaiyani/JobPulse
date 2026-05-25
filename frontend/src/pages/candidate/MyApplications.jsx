@@ -12,6 +12,7 @@ export default function MyApplications() {
   const [isRevoking, setIsRevoking] = useState(false);
   const [testInfo, setTestInfo] = useState(null);
   const [loadingTest, setLoadingTest] = useState(false);
+  const [isAiExpanded, setIsAiExpanded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,7 +136,7 @@ export default function MyApplications() {
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
                                 Aptitude: {app.mcq_score}%
                               </span>
-                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
+                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) ? (
                               <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-indigo-50 text-indigo-600 border-indigo-200">
                                 Test Available
                               </span>
@@ -175,8 +176,8 @@ export default function MyApplications() {
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelectedApp(null)}></div>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
               <div>
                 <h2 className="text-xl font-black text-slate-900">{selectedApp.title}</h2>
                 <div className="flex items-center gap-2 mt-1">
@@ -190,7 +191,7 @@ export default function MyApplications() {
               </button>
             </div>
             
-            <div className="p-6 space-y-6">
+            <div className="p-8 space-y-8">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</p>
@@ -202,15 +203,41 @@ export default function MyApplications() {
                 </div>
               </div>
 
-              <div className={`p-4 rounded-2xl border flex items-center gap-4 ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}>
-                <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(selectedApp.ai_match_score)}`}>
-                  <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
-                  <span className="text-xl font-black leading-none mb-1">{selectedApp.ai_match_score}</span>
+              <div 
+                onClick={() => setIsAiExpanded(!isAiExpanded)}
+                className={`p-5 rounded-2xl border cursor-pointer transition-all hover:shadow-md ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')} ${isAiExpanded ? 'ring-2 ring-indigo-500/20' : ''}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(selectedApp.ai_match_score)}`}>
+                    <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
+                    <span className="text-xl font-black leading-none mb-1">{selectedApp.ai_match_score}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
+                    <p className={`text-xs font-medium text-slate-600 mt-0.5 ${!isAiExpanded && 'line-clamp-2'}`}>{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
-                  <p className="text-xs font-medium text-slate-600 mt-0.5 line-clamp-2">{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
-                </div>
+
+                {isAiExpanded && selectedApp.ai_match_details && (
+                  <div className="mt-6 pt-6 border-t border-slate-200/50 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div>
+                      <p className="text-xs font-black text-emerald-600 mb-3 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Strengths</p>
+                      <ul className="space-y-2">
+                        {selectedApp.ai_match_details.strengths?.map((s, i) => (
+                          <li key={i} className="text-xs text-slate-700 font-medium leading-relaxed">• {s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-amber-600 mb-3 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Areas to Improve</p>
+                      <ul className="space-y-2">
+                        {selectedApp.ai_match_details.weaknesses?.map((w, i) => (
+                          <li key={i} className="text-xs text-slate-700 font-medium leading-relaxed">• {w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* TEST INFO SECTION */}
