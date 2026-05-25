@@ -17,7 +17,7 @@ export default function Home() {
 
         <div className="space-y-4">
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-zinc-100">
-            Job Drive System
+            JobPulse
           </h1>
           <p className="text-lg text-slate-500 dark:text-zinc-400 max-w-lg mx-auto font-medium">
             Internal recruitment platform. Discover open roles, track applications, and manage interviews.

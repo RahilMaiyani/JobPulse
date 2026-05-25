@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   Briefcase,
   Users,
   FileText,
@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   return (
     <div className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col border-r border-slate-200 dark:border-zinc-800 shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-      
+
       {/* BRANDING */}
       <div className="p-8 mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -36,12 +36,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <Briefcase className="w-5 h-5 text-white dark:text-zinc-900" strokeWidth={2.5} />
           </div>
           <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-zinc-100">
-            JobDrive<span className="text-slate-400 dark:text-zinc-600">.</span>
+            JobPulse<span className="text-slate-400 dark:text-zinc-600">.</span>
           </h1>
         </div>
-        
+
         {/* Mobile Close Button */}
-        <button 
+        <button
           onClick={() => setIsOpen(false)}
           className="md:hidden p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
         >
@@ -51,7 +51,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
       {/* NAVIGATION */}
       <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar relative z-10 py-4">
-        
+
         <p className="text-[11px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-3 ml-7">
           Menu
         </p>
