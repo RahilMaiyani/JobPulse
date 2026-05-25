@@ -39,18 +39,18 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50 via-white to-slate-50 relative overflow-hidden">
       
       {/* Subtle grid background for professional feel */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
 
       <div className="w-full max-w-[26rem] px-6 relative z-10 animate-in fade-in zoom-in-95 duration-500">
         
         {/* Stark, clean card */}
-        <div className="bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-200/50 p-10">
+        <div className="bg-white/80 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl shadow-indigo-100/50 p-10">
           
           <div className="flex flex-col items-center gap-4 mb-10 justify-center">
-            <div className="p-3 bg-slate-900 rounded-2xl shadow-md">
+            <div className="p-3 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-600/20">
               <Briefcase className="text-white w-7 h-7" />
             </div>
             <div className="text-center">
@@ -71,7 +71,7 @@ export default function Login() {
                 <input
                   type="email"
                   {...register("email")}
-                  className="w-full pl-11 pr-4 h-12 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all placeholder:text-slate-400"
+                  className="w-full pl-11 pr-4 h-12 bg-white/50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400"
                   placeholder="name@company.com"
                 />
               </div>
@@ -90,7 +90,7 @@ export default function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
-                  className="w-full pl-11 pr-11 h-12 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all placeholder:text-slate-400"
+                  className="w-full pl-11 pr-11 h-12 bg-white/50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-400"
                   placeholder="••••••••"
                 />
                 <button
@@ -116,7 +116,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-slate-300 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
               >
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-slate-400 border-t-white rounded-full animate-spin" />
@@ -131,7 +131,7 @@ export default function Login() {
             
             <div className="pt-6 text-center text-sm font-medium text-slate-500">
               Don't have an account?{" "}
-              <Link to="/register" className="text-slate-900 font-bold hover:underline">
+              <Link to="/register" className="text-indigo-600 font-bold hover:underline">
                 Register here
               </Link>
             </div>

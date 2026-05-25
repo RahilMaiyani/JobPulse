@@ -54,13 +54,31 @@ Format:
 }
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
+    const fallbackModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    let response = null;
+    let lastErr = null;
+
+    for (const model of fallbackModels) {
+      try {
+        console.log(`Trying Gemini model: ${model}...`);
+        response = await ai.models.generateContent({
+          model: model,
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          }
+        });
+        break; // Success! Break out of the loop
+      } catch (err) {
+        lastErr = err;
+        console.warn(`Model ${model} failed: ${err.message}`);
       }
-    });
+    }
+
+    if (!response) {
+      console.error("All Gemini models failed. Last error:", lastErr);
+      throw new Error(`Failed to generate content with all fallback models. Last error: ${lastErr?.message}`);
+    }
 
     let aiResult;
     try {

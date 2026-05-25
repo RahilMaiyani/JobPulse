@@ -14,12 +14,9 @@ export default function Header({ toggleSidebar }) {
     return () => clearInterval(timer); 
   }, []);
 
-  const timeString = time.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
+  const hours = time.getHours().toString().padStart(2, '0');
+  const minutes = time.getMinutes().toString().padStart(2, '0');
+  const seconds = time.getSeconds().toString().padStart(2, '0');
 
   const dateString = time.toLocaleDateString("en-US", {
     weekday: "short",
@@ -34,7 +31,7 @@ export default function Header({ toggleSidebar }) {
   };
 
   return (
-    <div className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-10 shrink-0 shadow-sm z-10">
+    <div className="h-16 md:h-[72px] bg-white/80 backdrop-blur-2xl border-b md:border border-slate-200 flex items-center justify-between px-4 md:px-8 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] z-10 md:mt-4 md:mr-4 md:rounded-3xl transition-all duration-300 relative">
       
       <div className="flex items-center gap-4">
         {/* Mobile Toggle */}
@@ -45,14 +42,17 @@ export default function Header({ toggleSidebar }) {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Clock Section - Modern Pill Design */}
-        <div className="hidden md:flex items-center gap-2.5 bg-slate-100/80 hover:bg-slate-200/80 transition-colors px-3.5 py-1.5 rounded-full border border-slate-200 shadow-inner">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[13px] font-black text-slate-700 tracking-tight tabular-nums">
-            {timeString}
-          </span>
-          <div className="w-px h-3 bg-slate-300 mx-1"></div>
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+        {/* Clock Section - Elegant Glass Design */}
+        <div className="hidden md:flex items-center gap-2.5 bg-slate-50/50 hover:bg-slate-100/80 transition-colors px-4 py-2 rounded-2xl border border-slate-200/50 shadow-sm">
+          <div className="flex items-baseline gap-0.5 text-slate-700">
+            <span className="text-[13px] font-black tabular-nums">{hours}</span>
+            <span className="text-[13px] font-black animate-pulse text-indigo-400 mx-0.5">:</span>
+            <span className="text-[13px] font-black tabular-nums">{minutes}</span>
+            <span className="text-[13px] font-black animate-pulse text-indigo-400 mx-0.5">:</span>
+            <span className="text-[13px] font-black tabular-nums">{seconds}</span>
+          </div>
+          <div className="w-px h-4 bg-slate-300 mx-1"></div>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
             {dateString}
           </span>
         </div>
