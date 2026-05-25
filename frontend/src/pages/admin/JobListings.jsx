@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
-import api from '../../services/api';
+import { useJobs, useDeleteJob, useToggleJobStatus, usePublishJobResults } from '../../hooks/useJobs';
+import { useQueryClient } from '@tanstack/react-query';
 import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ManageQuizModal from '../../components/admin/ManageQuizModal';
@@ -9,8 +10,7 @@ import JobFormModal from '../../components/modals/JobFormModal';
 import JobApplicantsModal from '../../components/modals/JobApplicantsModal';
 
 export default function JobListings() {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // Job Search & Filter State
   const [jobSearchTerm, setJobSearchTerm] = useState("");
@@ -30,9 +30,9 @@ export default function JobListings() {
   const [jobToEdit, setJobToEdit] = useState(null);
   const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null);
 
-  useEffect(() => {
-    fetchJobs();
+  const { data: jobs = [], isLoading: loading } = useJobs();
 
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpenDropdownId(null);
@@ -41,18 +41,6 @@ export default function JobListings() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const fetchJobs = async () => {
-    try {
-      const response = await api.get('/jobs');
-      setJobs(response.data.jobs || []);
-    } catch (err) {
-      toast.error("Failed to fetch jobs");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const openCreateModal = () => {
     setJobToEdit(null);
@@ -65,39 +53,27 @@ export default function JobListings() {
     setOpenDropdownId(null);
   };
 
-  const handleDeleteJob = async (id) => {
+  const deleteJobMutation = useDeleteJob();
+
+  const handleDeleteJob = (id) => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
-    try {
-      await api.delete(`/jobs/${id}`);
-      toast.success("Job deleted successfully");
-      fetchJobs();
-    } catch (err) {
-      toast.error("Failed to delete job");
-    }
+    deleteJobMutation.mutate(id);
     setOpenDropdownId(null);
   };
 
-  const handleToggleStatus = async (job) => {
+  const toggleStatusMutation = useToggleJobStatus();
+
+  const handleToggleStatus = (job) => {
     const newStatus = job.status === 'active' ? 'closed' : 'active';
-    try {
-      await api.put(`/jobs/${job.id}`, { status: newStatus });
-      toast.success(`Job marked as ${newStatus}`);
-      fetchJobs();
-    } catch (err) {
-      toast.error("Failed to update status");
-    }
+    toggleStatusMutation.mutate({ id: job.id, newStatus });
     setOpenDropdownId(null);
   };
 
-  const handlePublishResults = async (job) => {
+  const publishResultsMutation = usePublishJobResults();
+
+  const handlePublishResults = (job) => {
     if (!window.confirm("Are you sure you want to publish results? All unattempted tests will be marked as 0 and candidates rejected.")) return;
-    try {
-      const response = await api.post(`/quizzes/job/${job.id}/publish`);
-      toast.success(response.data.message || "Results published successfully");
-      fetchJobs(); // refresh to get updated results_published status
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to publish results");
-    }
+    publishResultsMutation.mutate(job.id);
     setOpenDropdownId(null);
   };
 
@@ -168,13 +144,13 @@ export default function JobListings() {
             placeholder="Search jobs by title or location..."
             value={jobSearchTerm}
             onChange={(e) => setJobSearchTerm(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-zinc-700 dark:focus:border-zinc-700 outline-none"
+            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 dark:focus:ring-zinc-700 dark:focus:border-zinc-700 outline-none"
           />
         </div>
         <select
           value={jobFilterStatus}
           onChange={(e) => setJobFilterStatus(e.target.value)}
-          className="h-10 px-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-slate-700 dark:text-zinc-300 outline-none cursor-pointer focus:ring-2 focus:ring-indigo-500 dark:focus:ring-zinc-700"
+          className="h-10 px-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-slate-700 dark:text-zinc-300 outline-none cursor-pointer focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700"
         >
           <option value="all">All Statuses</option>
           <option value="active">Active Jobs</option>
@@ -328,7 +304,7 @@ export default function JobListings() {
           onClose={() => setIsJobFormOpen(false)}
           onSuccess={() => {
             setIsJobFormOpen(false);
-            fetchJobs();
+            queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
           }}
         />
       )}
@@ -348,7 +324,7 @@ export default function JobListings() {
           onClose={(shouldRefresh) => {
             setSelectedJobForQuiz(null);
             if (shouldRefresh === true) {
-              fetchJobs();
+              queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
             }
           }}
         />

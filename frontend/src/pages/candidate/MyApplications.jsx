@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
-import api from '../../services/api';
+import { useMyApplications, useRevokeApplication } from '../../hooks/useApplications';
 import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +8,7 @@ import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSke
 import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsModal';
 
 export default function MyApplications() {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState(null);
-  const [isRevoking, setIsRevoking] = useState(false);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,34 +16,15 @@ export default function MyApplications() {
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
+  const { data: applications = [], isLoading: loading } = useMyApplications();
 
-  const fetchApplications = async () => {
-    try {
-      const response = await api.get('/applications/my-applications');
-      setApplications(response.data.applications);
-    } catch (err) {
-      toast.error("Failed to fetch applications");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const revokeMutation = useRevokeApplication();
 
-  const handleRevoke = async (appId) => {
-    if (!window.confirm("Are you sure you want to revoke this application? This action cannot be undone.")) return;
-    setIsRevoking(true);
-    try {
-      await api.delete(`/applications/${appId}/revoke`);
-      toast.success("Application revoked successfully");
-      setSelectedApp(null);
-      fetchApplications();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to revoke application");
-    } finally {
-      setIsRevoking(false);
-    }
+  const handleRevoke = (appId) => {
+    if (!window.confirm("Are you sure you want to revoke this application?")) return;
+    revokeMutation.mutate(appId, {
+      onSuccess: () => setSelectedApp(null)
+    });
   };
 
 
@@ -105,8 +83,8 @@ export default function MyApplications() {
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-indigo-100 dark:border-zinc-700">
-                          <Briefcase className="w-5 h-5 text-indigo-600 dark:text-zinc-400" />
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-blue-100 dark:border-zinc-700">
+                          <Briefcase className="w-5 h-5 text-blue-600 dark:text-zinc-400" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
@@ -116,7 +94,7 @@ export default function MyApplications() {
                                 Aptitude: {app.mcq_score}%
                               </span>
                             ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
                                 Test Available
                               </span>
                             ) : null}
@@ -180,7 +158,7 @@ export default function MyApplications() {
           app={selectedApp}
           onClose={() => setSelectedApp(null)}
           onRevoke={handleRevoke}
-          isRevoking={isRevoking}
+          isRevoking={revokeMutation.isPending}
         />
       )}
     </DashboardLayout>

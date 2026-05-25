@@ -1,37 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
+import { useAdminDashboard } from '../../hooks/useDashboard';
 import { Users, Briefcase, FileText, ArrowUpRight, Plus, UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
-import toast from 'react-hot-toast';
 import DashboardStatsSkeleton from '../../components/skeletons/DashboardStatsSkeleton';
 import AdminRecentActivitySkeleton from '../../components/skeletons/AdminRecentActivitySkeleton';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({
+
+  const { data: stats = {
     activeJobsCount: 0,
     totalCandidatesCount: 0,
     totalApplicationsCount: 0,
     recentJobs: []
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
-      const res = await api.get('/dashboard/admin');
-      setStats(res.data);
-    } catch (err) {
-      toast.error('Failed to load dashboard statistics');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, isLoading: loading } = useAdminDashboard();
 
   const statCards = [
     { label: "Active Jobs", value: stats.activeJobsCount, icon: Briefcase, color: "text-blue-600", bg: "bg-blue-50" },
@@ -93,7 +77,7 @@ export default function AdminDashboard() {
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 tracking-tight">Recent Job Postings</h3>
-              <Link to="/admin/jobs" className="text-sm font-bold text-indigo-600 dark:text-zinc-300 flex items-center gap-1 hover:text-indigo-700 dark:hover:text-zinc-100">
+              <Link to="/admin/jobs" className="text-sm font-bold text-slate-900 dark:text-zinc-300 flex items-center gap-1 hover:text-slate-700 dark:hover:text-zinc-100">
                 View all <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>

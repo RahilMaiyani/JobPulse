@@ -55,7 +55,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
   const getTimelineSteps = () => {
     if (!app) return [];
     const s = app.status?.toLowerCase() || 'applied';
-    
+
     const steps = [
       {
         label: 'Application Submitted',
@@ -90,27 +90,27 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
     const hasPassedShortlisted = ['interview', 'selected', 'hired'].includes(s) || (s === 'rejected' && testInfo?.result?.completed_at);
     if (hasPassedShortlisted) {
       if (testInfo?.result?.passed === false) {
-          steps.push({
-            label: 'Aptitude Test Failed',
-            description: 'Unfortunately, you did not meet the required score for the interview round.',
-            date: new Date(testInfo.result.completed_at).toLocaleString(),
-            isCompleted: true,
-            isRejected: true,
-            isCurrent: true
-          });
-          return steps;
+        steps.push({
+          label: 'Aptitude Test Failed',
+          description: 'Unfortunately, you did not meet the required score for the interview round.',
+          date: new Date(testInfo.result.completed_at).toLocaleString(),
+          isCompleted: true,
+          isRejected: true,
+          isCurrent: true
+        });
+        return steps;
       }
 
       if (s === 'rejected') {
-          steps.push({
-            label: 'Interview Round',
-            description: 'You completed the aptitude test, but were not selected after the interview.',
-            date: app.updated_at ? new Date(app.updated_at).toLocaleString() : '',
-            isCompleted: true,
-            isRejected: true,
-            isCurrent: true
-          });
-          return steps;
+        steps.push({
+          label: 'Interview Round',
+          description: 'You completed the aptitude test, but were not selected after the interview.',
+          date: app.updated_at ? new Date(app.updated_at).toLocaleString() : '',
+          isCompleted: true,
+          isRejected: true,
+          isCurrent: true
+        });
+        return steps;
       }
 
       steps.push({
@@ -170,168 +170,168 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
         <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            
+
             {/* LEFT COLUMN: TIMELINE UI */}
             <div>
               <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Application Tracking</h3>
               <div className="relative pl-4 space-y-6">
-            {getTimelineSteps().map((step, idx) => {
-              const allSteps = getTimelineSteps();
-              const hasNextCompleted = allSteps[idx + 1] && (allSteps[idx + 1].isCompleted || allSteps[idx + 1].isCurrent);
-              const hasNextFuture = allSteps[idx + 1] && allSteps[idx + 1].isFuture;
-              const drawLine = idx !== allSteps.length - 1;
-              const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700';
-              
-              return (
-                <div key={idx} className="relative flex items-start gap-5 min-h-[48px]">
-                  {drawLine && (
-                    <div className={`absolute left-[11px] top-7 bottom-[-24px] w-0.5 ${lineColor}`}></div>
-                  )}
-                  
-                  <div className="relative shrink-0 mt-1 z-10">
-                    {step.isRejected ? (
-                      <div className="w-6 h-6 rounded-full bg-rose-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
-                        <X className="w-3 h-3 text-white" strokeWidth={3} />
+                {getTimelineSteps().map((step, idx) => {
+                  const allSteps = getTimelineSteps();
+                  const hasNextCompleted = allSteps[idx + 1] && (allSteps[idx + 1].isCompleted || allSteps[idx + 1].isCurrent);
+                  const hasNextFuture = allSteps[idx + 1] && allSteps[idx + 1].isFuture;
+                  const drawLine = idx !== allSteps.length - 1;
+                  const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700';
+
+                  return (
+                    <div key={idx} className="relative flex items-start gap-5 min-h-[48px]">
+                      {drawLine && (
+                        <div className={`absolute left-[11px] top-7 bottom-[-24px] w-0.5 ${lineColor}`}></div>
+                      )}
+
+                      <div className="relative shrink-0 mt-1 z-10">
+                        {step.isRejected ? (
+                          <div className="w-6 h-6 rounded-full bg-rose-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
+                            <X className="w-3 h-3 text-white" strokeWidth={3} />
+                          </div>
+                        ) : step.isCurrent ? (
+                          <div className="w-6 h-6 rounded-full bg-indigo-500 border-[3px] border-indigo-100 dark:border-indigo-900/50 flex items-center justify-center shadow-sm relative">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                            <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-20"></div>
+                          </div>
+                        ) : step.isCompleted ? (
+                          <div className="w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
+                            <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
+                          </div>
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 border-[3px] border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
+                            <div className="w-2 h-2 bg-slate-200 dark:bg-zinc-600 rounded-full"></div>
+                          </div>
+                        )}
                       </div>
-                    ) : step.isCurrent ? (
-                      <div className="w-6 h-6 rounded-full bg-indigo-500 border-[3px] border-indigo-100 dark:border-indigo-900/50 flex items-center justify-center shadow-sm relative">
-                         <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                         <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-20"></div>
+
+                      <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
+                        <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-zinc-100'}`}>{step.label}</h4>
+                        {step.date && <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
+                        {step.description && <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
                       </div>
-                    ) : step.isCompleted ? (
-                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
-                        <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
-                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: DETAILS */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
+
+              <div
+                className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50').replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20 dark:bg-rose-500/10')}`}
+                onClick={() => setIsAiMatchExpanded(!isAiMatchExpanded)}
+              >
+                <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white dark:bg-zinc-900 ${getScoreColor(app.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20')}`}>
+                  <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
+                  <span className="text-xl font-black leading-none mb-1">{app.ai_match_score}</span>
+                </div>
+                <div className="flex-1 pr-6">
+                  <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">AI Compatibility Match</p>
+                  <p className={`text-xs font-medium text-slate-600 dark:text-zinc-400 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                </div>
+                <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500">
+                  {isAiMatchExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </div>
+              </div>
+
+              {/* TEST INFO SECTION */}
+              {loadingTest ? (
+                <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="w-48 h-5 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                      <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                    </div>
+                    <div className="w-16 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-700 grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ) : testInfo?.quiz ? (
+                <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
+                      <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes}m</p>
+                    </div>
+                    {testInfo.result?.completed_at ? (
+                      <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200 dark:border-zinc-700">Completed</span>
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 border-[3px] border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
-                        <div className="w-2 h-2 bg-slate-200 dark:bg-zinc-600 rounded-full"></div>
-                      </div>
+                      <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200 dark:border-amber-500/20">Pending</span>
                     )}
                   </div>
-                  
-                  <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
-                    <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-zinc-100'}`}>{step.label}</h4>
-                    {step.date && <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
-                    {step.description && <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
+
+                  <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
+                      <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
+                      <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
+                    </div>
                   </div>
+
+                  {testInfo.result?.completed_at ? (
+                    <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Test Result</p>
+                        <p className="text-sm font-bold mt-0.5">{testInfo.result.passed ? 'Passed' : 'Failed'} • Score: {testInfo.result.score}/{testInfo.quiz.total_marks}</p>
+                      </div>
+                      {testInfo.result.passed ? <CheckCircle2 className="w-6 h-6 opacity-50" /> : <XCircle className="w-6 h-6 opacity-50" />}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/candidate/applications/${app.id}/test`)}
+                      className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+                    >
+                      Start Aptitude Test <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
-              );
-            })}
+              ) : null}
+            </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: DETAILS */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
-
-          <div
-            className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50').replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20 dark:bg-rose-500/10')}`}
-            onClick={() => setIsAiMatchExpanded(!isAiMatchExpanded)}
-          >
-            <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white dark:bg-zinc-900 ${getScoreColor(app.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20')}`}>
-              <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
-              <span className="text-xl font-black leading-none mb-1">{app.ai_match_score}</span>
-            </div>
-            <div className="flex-1 pr-6">
-              <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">AI Compatibility Match</p>
-              <p className={`text-xs font-medium text-slate-600 dark:text-zinc-400 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
-            </div>
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500">
-              {isAiMatchExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </div>
+        {/* BOTTOM ACTIONS */}
+        <div className="p-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
+          <div>
+            {app.status?.toLowerCase() === 'applied' && (
+              <button
+                onClick={() => onRevoke(app.id)}
+                disabled={isRevoking}
+                className="px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                {isRevoking ? 'Revoking...' : 'Revoke Application'}
+              </button>
+            )}
           </div>
-
-          {/* TEST INFO SECTION */}
-          {loadingTest ? (
-            <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="w-48 h-5 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-                  <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-                </div>
-                <div className="w-16 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-              </div>
-              <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-700 grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                  <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                  <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                </div>
-              </div>
-            </div>
-          ) : testInfo?.quiz ? (
-            <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
-                  <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes} Minutes</p>
-                </div>
-                {testInfo.result?.completed_at ? (
-                  <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200 dark:border-zinc-700">Completed</span>
-                ) : (
-                  <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200 dark:border-amber-500/20">Pending</span>
-                )}
-              </div>
-
-              <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
-                  <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
-                  <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
-                </div>
-              </div>
-
-              {testInfo.result?.completed_at ? (
-                <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Test Result</p>
-                    <p className="text-sm font-bold mt-0.5">{testInfo.result.passed ? 'Passed' : 'Failed'} • Score: {testInfo.result.score}/{testInfo.quiz.total_marks}</p>
-                  </div>
-                  {testInfo.result.passed ? <CheckCircle2 className="w-6 h-6 opacity-50" /> : <XCircle className="w-6 h-6 opacity-50" />}
-                </div>
-              ) : (
-                <button
-                  onClick={() => navigate(`/candidate/applications/${app.id}/test`)}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
-                >
-                  Start Aptitude Test <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </div>
-
-    {/* BOTTOM ACTIONS */}
-    <div className="p-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
-      <div>
-        {app.status?.toLowerCase() === 'applied' && (
           <button
-            onClick={() => onRevoke(app.id)}
-            disabled={isRevoking}
-            className="px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
+            onClick={onClose}
+            className="px-6 py-2 text-sm font-bold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
-            {isRevoking ? 'Revoking...' : 'Revoke Application'}
+            Close
           </button>
-        )}
+        </div>
       </div>
-      <button
-        onClick={onClose}
-        className="px-6 py-2 text-sm font-bold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
-      >
-        Close
-      </button>
-    </div>
-  </div>
     </div>
   );
 }

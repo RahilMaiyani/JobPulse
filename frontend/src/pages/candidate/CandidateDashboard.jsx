@@ -1,39 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
+import { useCandidateDashboard } from '../../hooks/useDashboard';
 import { Briefcase, FileText, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
-import toast from 'react-hot-toast';
 import DashboardStatsSkeleton from '../../components/skeletons/DashboardStatsSkeleton';
 import JobCardSkeleton from '../../components/skeletons/JobCardSkeleton';
 
 export default function CandidateDashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({
-    openRolesCount: 0,
-    myApplicationsCount: 0,
-    recentOpenings: []
-  });
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
-      const res = await api.get('/dashboard/candidate');
-      setStats(res.data);
-    } catch (err) {
-      toast.error('Failed to load dashboard statistics');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: stats = { openRolesCount: 0, myApplicationsCount: 0, recentOpenings: [] }, isLoading: loading } = useCandidateDashboard();
 
   const statCards = [
-    { label: "Open Roles", value: stats.openRolesCount, icon: Briefcase, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { label: "Open Roles", value: stats.openRolesCount, icon: Briefcase, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "My Applications", value: stats.myApplicationsCount, icon: FileText, color: "text-emerald-600", bg: "bg-emerald-50" },
   ];
 
@@ -80,7 +60,7 @@ export default function CandidateDashboard() {
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 tracking-tight">Newest Openings</h3>
-              <Link to="/candidate/openings" className="text-sm font-bold text-indigo-600 dark:text-zinc-300 flex items-center gap-1 hover:text-indigo-700 dark:hover:text-zinc-100">
+              <Link to="/candidate/openings" className="text-sm font-bold text-slate-900 dark:text-zinc-300 flex items-center gap-1 hover:text-slate-700 dark:hover:text-zinc-100">
                 Browse all
               </Link>
             </div>
@@ -93,7 +73,7 @@ export default function CandidateDashboard() {
                       <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
                         <Briefcase className="w-5 h-5 text-slate-600 dark:text-zinc-400" />
                       </div>
-                      <h4 className="font-bold text-slate-900 dark:text-zinc-100 text-lg group-hover:text-indigo-600 dark:group-hover:text-zinc-300 transition-colors">{job.title}</h4>
+                      <h4 className="font-bold text-slate-900 dark:text-zinc-100 text-lg group-hover:text-blue-600 dark:group-hover:text-zinc-300 transition-colors">{job.title}</h4>
                       <p className="text-xs font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-widest">{job.location || 'Remote'} • {job.job_type}</p>
                       <div className="mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800/50 flex items-center justify-between">
                         <span className="text-sm font-bold text-slate-600 dark:text-zinc-400">{job.salary_min ? `₹${(job.salary_min / 1000).toFixed(0)}k+` : 'Competitive'}</span>

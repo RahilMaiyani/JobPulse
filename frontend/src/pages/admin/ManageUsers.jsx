@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
+import { useUsers, useCreateUser, useToggleUserStatus } from '../../hooks/useUsers';
 import { Users, Search, Plus, Shield, UserCircle, Briefcase, Mail, Phone, Calendar, X, Ban, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import ManageUsersSkeleton from '../../components/skeletons/ManageUsersSkeleton';
 import toast from 'react-hot-toast';
@@ -8,8 +9,6 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function ManageUsers() {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   
   // Filters and Pagination
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +22,6 @@ export default function ManageUsers() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userApplications, setUserApplications] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [userForm, setUserForm] = useState({
     fullName: '',
@@ -32,43 +30,21 @@ export default function ManageUsers() {
     role: 'candidate'
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const { data: users = [], isLoading: loading } = useUsers(currentUser.id);
 
   // Reset to page 1 if filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, roleFilter, statusFilter]);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await api.get('/users');
-      // Exclude the currently logged-in admin from the list
-      const filteredUsers = (response.data.users || []).filter(u => u.id !== currentUser.id);
-      setUsers(filteredUsers);
-    } catch (err) {
-      toast.error("Failed to fetch users");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const createUserMutation = useCreateUser(() => {
+    setIsNewUserModalOpen(false);
+    setUserForm({ fullName: '', email: '', password: '', role: 'candidate' });
+  });
 
-  const handleCreateUser = async (e) => {
+  const handleCreateUser = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await api.post('/users', userForm);
-      toast.success("User created successfully!");
-      setIsNewUserModalOpen(false);
-      setUserForm({ fullName: '', email: '', password: '', role: 'candidate' });
-      fetchUsers();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to create user");
-    } finally {
-      setIsSubmitting(false);
-    }
+    createUserMutation.mutate(userForm);
   };
 
   const openProfile = async (user) => {
@@ -99,17 +75,12 @@ export default function ManageUsers() {
     return 'text-rose-600 bg-rose-50 border-rose-200';
   };
 
-  const handleToggleUserStatus = async (user) => {
+  const toggleStatusMutation = useToggleUserStatus();
+
+  const handleToggleUserStatus = (user) => {
     const action = user.is_active ? "deactivate" : "reactivate";
     if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
-    
-    try {
-      await api.patch(`/users/${user.id}/toggle-status`);
-      toast.success(`User ${action}d successfully`);
-      fetchUsers();
-    } catch (err) {
-      toast.error(err.response?.data?.error || `Failed to ${action} user`);
-    }
+    toggleStatusMutation.mutate({ userId: user.id, action });
   };
 
   const filteredUsers = users.filter(user => {
@@ -213,7 +184,7 @@ export default function ManageUsers() {
                       </td>
                       <td className="px-6 py-4">
                         {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
-                        {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
+                        {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
                         {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
                       </td>
                       <td className="px-6 py-4">
@@ -336,8 +307,8 @@ export default function ManageUsers() {
                 </select>
               </div>
               <div className="pt-4">
-                <button disabled={isSubmitting} type="submit" className="w-full h-12 font-bold text-white dark:text-zinc-900 bg-slate-900 dark:bg-zinc-100 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                  {isSubmitting ? <div className="w-4 h-4 border-2 border-slate-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Create User'}
+                <button disabled={createUserMutation.isPending} type="submit" className="w-full h-12 font-bold text-white dark:text-zinc-900 bg-slate-900 dark:bg-zinc-100 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                  {createUserMutation.isPending ? <div className="w-4 h-4 border-2 border-slate-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Create User'}
                 </button>
               </div>
             </form>

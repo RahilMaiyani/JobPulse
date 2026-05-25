@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -21,9 +22,19 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import JobListings from './pages/admin/JobListings';
 import ManageUsers from './pages/admin/ManageUsers';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
 function App() {
   return (
-    <ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -37,7 +48,7 @@ function App() {
             padding: "12px 20px",
             border: "1px solid rgba(255,255,255,0.1)"
           },
-          success: { iconTheme: { primary: "#6366f1", secondary: "#fff" } },
+          success: { iconTheme: { primary: "#10b981", secondary: "#fff" } },
           error: { iconTheme: { primary: "#ef4444", secondary: "#fff" } }
         }}
       />
@@ -87,6 +98,7 @@ function App() {
         </Router>
       </AuthProvider>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
