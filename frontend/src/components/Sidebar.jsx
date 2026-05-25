@@ -22,42 +22,38 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     return location.pathname.startsWith(path);
   };
 
-  const baseClass = "group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm relative z-10 overflow-hidden";
-  const activeClass = "bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100";
-  const inactiveClass = "text-slate-500 hover:bg-slate-100/50 hover:text-slate-900 border border-transparent";
+  const baseClass = "group flex items-center gap-3 px-4 py-3.5 mx-3 rounded-xl transition-all duration-300 font-bold text-sm relative z-10 overflow-hidden";
+  const activeClass = "bg-slate-900 dark:bg-white text-white dark:text-zinc-900 shadow-md shadow-slate-900/10 dark:shadow-white/10";
+  const inactiveClass = "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/80 hover:text-slate-900 dark:hover:text-zinc-100";
 
   return (
-    <div className={`fixed md:sticky top-0 md:top-4 md:m-4 left-0 h-screen md:h-[calc(100vh-2rem)] w-64 bg-white/80 backdrop-blur-2xl text-slate-900 flex flex-col border border-slate-200 shadow-2xl shadow-slate-200/50 md:rounded-3xl shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-      {/* Decorative background element */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none md:rounded-3xl">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl"></div>
-      </div>
+    <div className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col border-r border-slate-200 dark:border-zinc-800 shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
       
       {/* BRANDING */}
-      <div className="p-6 md:p-8 mb-2 flex items-center justify-between">
+      <div className="p-8 mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-indigo-600 p-2 rounded-xl shadow-md shadow-indigo-600/20">
-            <Briefcase className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center shrink-0">
+            <Briefcase className="w-5 h-5 text-white dark:text-zinc-900" strokeWidth={2.5} />
           </div>
-          <h1 className="text-xl font-black tracking-tighter uppercase text-slate-900">
-            JobDrive
+          <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-zinc-100">
+            JobDrive<span className="text-slate-400 dark:text-zinc-600">.</span>
           </h1>
         </div>
         
         {/* Mobile Close Button */}
         <button 
           onClick={() => setIsOpen(false)}
-          className="md:hidden p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
+          className="md:hidden p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       {/* NAVIGATION */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar relative z-10">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar relative z-10 py-4">
         
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-4 mt-2">
-          Main Menu
+        <p className="text-[11px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-3 ml-7">
+          Menu
         </p>
 
         {/* ADMIN / HR ROUTES */}
@@ -135,17 +131,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       </nav>
 
       {/* USER CONTEXT FOOTER */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/50 mt-auto md:rounded-b-3xl relative z-10">
-        <div className="flex items-center gap-3 px-2">
+      <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 relative z-10">
+        <div className="flex items-center gap-3">
           <img
-            src={user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name)}&background=4f46e5&color=fff`}
-            className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
+            src={user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name)}&background=0f172a&color=fff`}
+            className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
             alt={user?.full_name}
             draggable="false"
           />
           <div className="flex flex-col truncate">
-            <span className="text-sm font-bold text-slate-900 truncate">{user?.full_name}</span>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{user?.role}</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-zinc-100 truncate">{user?.full_name}</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest">{user?.role}</span>
           </div>
         </div>
       </div>

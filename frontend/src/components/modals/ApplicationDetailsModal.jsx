@@ -36,13 +36,13 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
   const getStatusBadge = (status) => {
     const s = (status || '').toLowerCase();
     switch (s) {
-      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-200"><Clock className="w-3 h-3" /> Applied</span>;
-      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 font-bold text-xs rounded-full border border-amber-200"><CheckCircle2 className="w-3 h-3" /> Shortlisted</span>;
+      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold text-xs rounded-full border border-blue-200 dark:border-blue-500/20"><Clock className="w-3 h-3" /> Applied</span>;
+      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold text-xs rounded-full border border-amber-200 dark:border-amber-500/20"><CheckCircle2 className="w-3 h-3" /> Shortlisted</span>;
       case 'hired':
-      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-full border border-purple-200"><CheckCircle2 className="w-3 h-3" /> Interview</span>;
-      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200"><CheckCircle2 className="w-3 h-3" /> Selected</span>;
-      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200"><XCircle className="w-3 h-3" /> Rejected</span>;
-      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200 capitalize">{status}</span>;
+      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-xs rounded-full border border-purple-200 dark:border-purple-500/20"><CheckCircle2 className="w-3 h-3" /> Interview</span>;
+      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold text-xs rounded-full border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Selected</span>;
+      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-bold text-xs rounded-full border border-rose-200 dark:border-rose-500/20"><XCircle className="w-3 h-3" /> Rejected</span>;
+      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold text-xs rounded-full border border-slate-200 dark:border-zinc-700 capitalize">{status}</span>;
     }
   };
 
@@ -152,35 +152,35 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50 shrink-0">
+      <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+        <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-slate-900">{app.title}</h2>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-zinc-100">{app.title}</h2>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm font-bold text-slate-600">{app.company_name || 'Company'}</span>
-              <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-              <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {app.location || 'Remote'}</span>
+              <span className="text-sm font-bold text-slate-600 dark:text-zinc-400">{app.company_name || 'Company'}</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-zinc-700"></span>
+              <span className="text-xs font-bold text-slate-400 dark:text-zinc-500 flex items-center gap-1"><MapPin className="w-3 h-3" /> {app.location || 'Remote'}</span>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white">
+        <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             
             {/* LEFT COLUMN: TIMELINE UI */}
             <div>
-              <h3 className="text-lg font-black text-slate-900 mb-6">Application Tracking</h3>
+              <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Application Tracking</h3>
               <div className="relative pl-4 space-y-6">
             {getTimelineSteps().map((step, idx) => {
               const allSteps = getTimelineSteps();
               const hasNextCompleted = allSteps[idx + 1] && (allSteps[idx + 1].isCompleted || allSteps[idx + 1].isCurrent);
               const hasNextFuture = allSteps[idx + 1] && allSteps[idx + 1].isFuture;
               const drawLine = idx !== allSteps.length - 1;
-              const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200';
+              const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700';
               
               return (
                 <div key={idx} className="relative flex items-start gap-5 min-h-[48px]">
@@ -190,29 +190,29 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                   
                   <div className="relative shrink-0 mt-1 z-10">
                     {step.isRejected ? (
-                      <div className="w-6 h-6 rounded-full bg-rose-500 border-[3px] border-white flex items-center justify-center shadow-sm">
+                      <div className="w-6 h-6 rounded-full bg-rose-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
                         <X className="w-3 h-3 text-white" strokeWidth={3} />
                       </div>
                     ) : step.isCurrent ? (
-                      <div className="w-6 h-6 rounded-full bg-indigo-500 border-[3px] border-indigo-100 flex items-center justify-center shadow-sm relative">
+                      <div className="w-6 h-6 rounded-full bg-indigo-500 border-[3px] border-indigo-100 dark:border-indigo-900/50 flex items-center justify-center shadow-sm relative">
                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                          <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-20"></div>
                       </div>
                     ) : step.isCompleted ? (
-                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-white flex items-center justify-center shadow-sm">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-white dark:border-zinc-900 flex items-center justify-center shadow-sm">
                         <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
                       </div>
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-slate-100 border-[3px] border-white shadow-sm flex items-center justify-center">
-                        <div className="w-2 h-2 bg-slate-200 rounded-full"></div>
+                      <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 border-[3px] border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
+                        <div className="w-2 h-2 bg-slate-200 dark:bg-zinc-600 rounded-full"></div>
                       </div>
                     )}
                   </div>
                   
                   <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
-                    <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600' : step.isCurrent ? 'text-indigo-600' : 'text-slate-900'}`}>{step.label}</h4>
-                    {step.date && <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest">{step.date}</p>}
-                    {step.description && <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">{step.description}</p>}
+                    <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-zinc-100'}`}>{step.label}</h4>
+                    {step.date && <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
+                    {step.description && <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
                   </div>
                 </div>
               );
@@ -222,74 +222,74 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
         {/* RIGHT COLUMN: DETAILS */}
         <div className="space-y-6">
-          <h3 className="text-lg font-black text-slate-900 mb-6">Details & Actions</h3>
+          <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
 
           <div
-            className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}
+            className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50').replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20 dark:bg-rose-500/10')}`}
             onClick={() => setIsAiMatchExpanded(!isAiMatchExpanded)}
           >
-            <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(app.ai_match_score)}`}>
+            <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white dark:bg-zinc-900 ${getScoreColor(app.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20')}`}>
               <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
               <span className="text-xl font-black leading-none mb-1">{app.ai_match_score}</span>
             </div>
             <div className="flex-1 pr-6">
-              <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
-              <p className={`text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">AI Compatibility Match</p>
+              <p className={`text-xs font-medium text-slate-600 dark:text-zinc-400 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
             </div>
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400">
+            <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500">
               {isAiMatchExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </div>
           </div>
 
           {/* TEST INFO SECTION */}
           {loadingTest ? (
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 animate-pulse">
+            <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
-                  <div className="w-48 h-5 bg-slate-200 rounded"></div>
-                  <div className="w-32 h-4 bg-slate-200 rounded"></div>
+                  <div className="w-48 h-5 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                  <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
                 </div>
-                <div className="w-16 h-6 bg-slate-200 rounded"></div>
+                <div className="w-16 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
               </div>
-              <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-4">
+              <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-700 grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <div className="w-16 h-3 bg-slate-200 rounded"></div>
-                  <div className="w-24 h-4 bg-slate-200 rounded"></div>
+                  <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                  <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
                 </div>
                 <div className="space-y-2">
-                  <div className="w-16 h-3 bg-slate-200 rounded"></div>
-                  <div className="w-24 h-4 bg-slate-200 rounded"></div>
+                  <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                  <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
                 </div>
               </div>
             </div>
           ) : testInfo?.quiz ? (
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 relative overflow-hidden">
+            <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
               <div className="flex items-start justify-between">
                 <div>
-                  <h4 className="font-black text-slate-900 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
-                  <p className="text-sm font-bold text-slate-500 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes} Minutes</p>
+                  <h4 className="font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
+                  <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes} Minutes</p>
                 </div>
                 {testInfo.result?.completed_at ? (
-                  <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200">Completed</span>
+                  <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200 dark:border-zinc-700">Completed</span>
                 ) : (
-                  <span className="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200">Pending</span>
+                  <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200 dark:border-amber-500/20">Pending</span>
                 )}
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-4">
+              <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Opens At</p>
-                  <p className="text-xs font-bold text-slate-700 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Closes At</p>
-                  <p className="text-xs font-bold text-slate-700 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
                 </div>
               </div>
 
               {testInfo.result?.completed_at ? (
-                <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
+                <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Test Result</p>
                     <p className="text-sm font-bold mt-0.5">{testInfo.result.passed ? 'Passed' : 'Failed'} • Score: {testInfo.result.score}/{testInfo.quiz.total_marks}</p>
@@ -311,13 +311,13 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
     </div>
 
     {/* BOTTOM ACTIONS */}
-    <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+    <div className="p-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
       <div>
         {app.status?.toLowerCase() === 'applied' && (
           <button
             onClick={() => onRevoke(app.id)}
             disabled={isRevoking}
-            className="px-4 py-2 text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
           >
             <Trash2 className="w-4 h-4" />
             {isRevoking ? 'Revoking...' : 'Revoke Application'}
@@ -326,7 +326,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
       </div>
       <button
         onClick={onClose}
-        className="px-6 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+        className="px-6 py-2 text-sm font-bold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
       >
         Close
       </button>

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import OfflineBanner from './components/OfflineBanner';
 import PageLoader from './components/PageLoader';
@@ -22,7 +23,7 @@ import ManageUsers from './pages/admin/ManageUsers';
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -85,7 +86,7 @@ function App() {
           </Suspense>
         </Router>
       </AuthProvider>
-    </>
+    </ThemeProvider>
   );
 }
 

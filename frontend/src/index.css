@@ -33,6 +33,8 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+@custom-variant dark (&:is(.dark *));
+
 @layer base {
   :root {
     --background: 0 0% 100%;

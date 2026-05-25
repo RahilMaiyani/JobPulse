@@ -116,81 +116,81 @@ export default function ManageQuizModal({ job, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+      <div className="absolute inset-0 bg-slate-900/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-800/50 flex justify-between items-center shrink-0">
           <div>
-            <h2 className="text-xl font-black text-slate-900">Manage Aptitude Test</h2>
-            <p className="text-sm font-bold text-slate-500 mt-0.5">For {job.title}</p>
+            <h2 className="text-xl font-black text-slate-900 dark:text-zinc-100">Manage Aptitude Test</h2>
+            <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 mt-0.5">For {job.title}</p>
           </div>
-          <button onClick={onClose} className="p-2 bg-white border border-slate-200 text-slate-400 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors">
+          <button onClick={onClose} className="p-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30 dark:bg-zinc-900">
           {loading ? (
             <ManageQuizSkeleton />
           ) : (
             <div className="space-y-8">
               {/* Quiz Configuration */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2">Test Configuration</h3>
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-4">
+                <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2">Test Configuration</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Test Title *</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Test Title *</label>
                     <input
                       type="text"
                       value={quizForm.title}
                       onChange={(e) => setQuizForm({ ...quizForm, title: e.target.value })}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none"
+                      className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none"
                       placeholder="e.g., General Aptitude & Reasoning"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Passing Score (%)</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Passing Score (%)</label>
                     <input
                       type="number"
                       value={quizForm.passing_score}
                       onChange={(e) => setQuizForm({ ...quizForm, passing_score: parseInt(e.target.value) })}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none"
+                      className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Scheduled Start Time *</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Scheduled Start Time *</label>
                     <input
                       type="datetime-local"
                       value={quizForm.scheduled_start_time}
                       onChange={(e) => setQuizForm({ ...quizForm, scheduled_start_time: e.target.value })}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none"
+                      className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Scheduled End Time (Deadline) *</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Scheduled End Time (Deadline) *</label>
                     <input
                       type="datetime-local"
                       value={quizForm.scheduled_end_time}
                       onChange={(e) => setQuizForm({ ...quizForm, scheduled_end_time: e.target.value })}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none"
+                      className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none"
                     />
                   </div>
                   <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Duration (Minutes)</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Duration (Minutes)</label>
                     <input
                       type="number"
                       value={quizForm.duration_minutes}
                       onChange={(e) => setQuizForm({ ...quizForm, duration_minutes: parseInt(e.target.value) })}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none"
+                      className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none"
                       placeholder="e.g., 30"
                     />
                   </div>
                   <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Description / Instructions</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Description / Instructions</label>
                     <textarea
                       value={quizForm.description}
                       onChange={(e) => setQuizForm({ ...quizForm, description: e.target.value })}
-                      className="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none min-h-[80px]"
+                      className="w-full p-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none min-h-[80px]"
                       placeholder="Instructions for the candidates..."
                     />
                   </div>
@@ -200,39 +200,39 @@ export default function ManageQuizModal({ job, onClose }) {
               {/* Questions Builder */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-black text-slate-900">Questions ({questions.length})</h3>
-                  <button onClick={handleAddQuestion} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+                  <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100">Questions ({questions.length})</h3>
+                  <button onClick={handleAddQuestion} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 rounded-lg transition-colors border border-transparent dark:border-zinc-700">
                     <Plus className="w-4 h-4" /> Add Question
                   </button>
                 </div>
 
                 {questions.length === 0 ? (
-                  <div className="text-center py-10 bg-white border border-dashed border-slate-300 rounded-2xl">
-                    <p className="text-slate-500 font-medium text-sm">No questions added yet. Click "Add Question" to start building your test.</p>
+                  <div className="text-center py-10 bg-white dark:bg-zinc-900 border border-dashed border-slate-300 dark:border-zinc-700 rounded-2xl">
+                    <p className="text-slate-500 dark:text-zinc-500 font-medium text-sm">No questions added yet. Click "Add Question" to start building your test.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {questions.map((q, qIndex) => (
-                      <div key={qIndex} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative">
-                        <button onClick={() => handleRemoveQuestion(qIndex)} className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                      <div key={qIndex} className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm relative">
+                        <button onClick={() => handleRemoveQuestion(qIndex)} className="absolute top-4 right-4 p-1.5 text-slate-400 dark:text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </button>
                         <div className="pr-10 space-y-4">
                           <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-700">Question {qIndex + 1}</label>
+                            <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Question {qIndex + 1}</label>
                             <textarea
                               value={q.question_text}
                               onChange={(e) => handleUpdateQuestion(qIndex, 'question_text', e.target.value)}
-                              className="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 outline-none min-h-[80px]"
+                              className="w-full p-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none min-h-[80px]"
                               placeholder="Enter the question..."
                             />
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {q.options.map((opt, oIndex) => (
-                              <div key={oIndex} className={`flex items-center gap-2 p-2 rounded-xl border ${q.correct_option_index === oIndex ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200 bg-slate-50'}`}>
+                              <div key={oIndex} className={`flex items-center gap-2 p-2 rounded-xl border ${q.correct_option_index === oIndex ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10 dark:border-emerald-500/20' : 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900'}`}>
                                 <button
                                   onClick={() => handleUpdateQuestion(qIndex, 'correct_option_index', oIndex)}
-                                  className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${q.correct_option_index === oIndex ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 hover:border-emerald-400'}`}
+                                  className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${q.correct_option_index === oIndex ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-zinc-700 hover:border-emerald-400'}`}
                                 >
                                   {q.correct_option_index === oIndex && <CheckCircle2 className="w-4 h-4" />}
                                 </button>
@@ -240,13 +240,13 @@ export default function ManageQuizModal({ job, onClose }) {
                                   type="text"
                                   value={opt}
                                   onChange={(e) => handleUpdateOption(qIndex, oIndex, e.target.value)}
-                                  className="w-full bg-transparent text-sm font-medium outline-none"
+                                  className="w-full bg-transparent text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 outline-none"
                                   placeholder={`Option ${oIndex + 1}`}
                                 />
                               </div>
                             ))}
                           </div>
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-right">Select the circle to mark the correct answer</p>
+                          <p className="text-[10px] text-slate-500 dark:text-zinc-500 font-bold uppercase tracking-widest text-right">Select the circle to mark the correct answer</p>
                         </div>
                       </div>
                     ))}
@@ -257,12 +257,12 @@ export default function ManageQuizModal({ job, onClose }) {
           )}
         </div>
 
-        <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 shrink-0">
-          <button onClick={onClose} className="px-6 h-10 font-bold text-slate-600 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">
+        <div className="p-6 border-t border-slate-100 dark:border-zinc-800 flex justify-end gap-3 bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
+          <button onClick={onClose} className="px-6 h-10 font-bold text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 bg-slate-100 dark:bg-zinc-800 rounded-xl transition-colors">
             Cancel
           </button>
-          <button onClick={handleSave} disabled={isSubmitting || loading} className="px-6 h-10 font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2">
-            {isSubmitting ? <div className="w-4 h-4 border-2 border-slate-400 border-t-white rounded-full animate-spin"></div> : null}
+          <button onClick={handleSave} disabled={isSubmitting || loading} className="px-6 h-10 font-bold text-white dark:text-zinc-900 bg-slate-900 dark:bg-zinc-100 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2">
+            {isSubmitting ? <div className="w-4 h-4 border-2 border-slate-400 dark:border-zinc-500 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : null}
             Save Test
           </button>
         </div>
