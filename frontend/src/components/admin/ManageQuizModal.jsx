@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { X, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { X, Plus, Trash2, Calendar, FileText, CheckCircle2, Clock, Users } from 'lucide-react';
+import ManageQuizSkeleton from '../skeletons/ManageQuizSkeleton';
 
 export default function ManageQuizModal({ job, onClose }) {
   const [loading, setLoading] = useState(true);
@@ -129,39 +130,7 @@ export default function ManageQuizModal({ job, onClose }) {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/30">
           {loading ? (
-            <div className="space-y-8 animate-pulse">
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <div className="w-48 h-6 bg-slate-200 rounded"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[1, 2, 3, 4].map(n => (
-                    <div key={n} className="space-y-2">
-                      <div className="w-24 h-3 bg-slate-200 rounded"></div>
-                      <div className="w-full h-10 bg-slate-200 rounded-xl"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="w-32 h-6 bg-slate-200 rounded"></div>
-                {[1, 2].map(n => (
-                  <div key={n} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="w-24 h-5 bg-slate-200 rounded"></div>
-                      <div className="w-8 h-8 bg-slate-200 rounded-lg"></div>
-                    </div>
-                    <div className="w-full h-20 bg-slate-200 rounded-xl mb-4"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-slate-200 rounded-full"></div>
-                          <div className="w-full h-10 bg-slate-200 rounded-xl"></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ManageQuizSkeleton />
           ) : (
             <div className="space-y-8">
               {/* Quiz Configuration */}
