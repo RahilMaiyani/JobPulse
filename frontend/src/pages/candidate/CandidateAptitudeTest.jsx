@@ -234,7 +234,7 @@ export default function CandidateAptitudeTest() {
                 <span className="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-black uppercase tracking-widest mb-4">
                   Question {currentQuestionIndex + 1} of {totalQ}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-snug">
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-snug whitespace-pre-wrap">
                   {currentQ.question_text}
                 </h2>
               </div>

@@ -12,7 +12,6 @@ export default function MyApplications() {
   const [isRevoking, setIsRevoking] = useState(false);
   const [testInfo, setTestInfo] = useState(null);
   const [loadingTest, setLoadingTest] = useState(false);
-  const [isAiExpanded, setIsAiExpanded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,12 +73,12 @@ export default function MyApplications() {
   const getStatusBadge = (status) => {
     const s = (status || '').toLowerCase();
     switch (s) {
-      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-200"><Clock className="w-3 h-3"/> Applied</span>;
-      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 font-bold text-xs rounded-full border border-amber-200"><CheckCircle2 className="w-3 h-3"/> Shortlisted</span>;
-      case 'hired': 
-      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-full border border-purple-200"><CheckCircle2 className="w-3 h-3"/> Interview</span>;
-      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200"><CheckCircle2 className="w-3 h-3"/> Selected</span>;
-      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200"><XCircle className="w-3 h-3"/> Rejected</span>;
+      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-200"><Clock className="w-3 h-3" /> Applied</span>;
+      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 font-bold text-xs rounded-full border border-amber-200"><CheckCircle2 className="w-3 h-3" /> Shortlisted</span>;
+      case 'hired':
+      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-full border border-purple-200"><CheckCircle2 className="w-3 h-3" /> Interview</span>;
+      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200"><CheckCircle2 className="w-3 h-3" /> Selected</span>;
+      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200"><XCircle className="w-3 h-3" /> Rejected</span>;
       default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200 capitalize">{status}</span>;
     }
   };
@@ -119,8 +118,8 @@ export default function MyApplications() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {applications.map((app) => (
-                  <tr 
-                    key={app.id} 
+                  <tr
+                    key={app.id}
                     className="hover:bg-slate-50/50 transition-colors cursor-pointer"
                     onClick={() => setSelectedApp(app)}
                   >
@@ -136,7 +135,7 @@ export default function MyApplications() {
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
                                 Aptitude: {app.mcq_score}%
                               </span>
-                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) ? (
+                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
                               <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-indigo-50 text-indigo-600 border-indigo-200">
                                 Test Available
                               </span>
@@ -176,22 +175,22 @@ export default function MyApplications() {
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelectedApp(null)}></div>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
               <div>
                 <h2 className="text-xl font-black text-slate-900">{selectedApp.title}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm font-bold text-slate-600">{selectedApp.company_name || 'Company'}</span>
                   <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                  <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3"/> {selectedApp.location || 'Remote'}</span>
+                  <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {selectedApp.location || 'Remote'}</span>
                 </div>
               </div>
               <button onClick={() => setSelectedApp(null)} className="p-2 text-slate-400 hover:text-slate-900 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
-            <div className="p-8 space-y-8">
+
+            <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</p>
@@ -203,41 +202,15 @@ export default function MyApplications() {
                 </div>
               </div>
 
-              <div 
-                onClick={() => setIsAiExpanded(!isAiExpanded)}
-                className={`p-5 rounded-2xl border cursor-pointer transition-all hover:shadow-md ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')} ${isAiExpanded ? 'ring-2 ring-indigo-500/20' : ''}`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(selectedApp.ai_match_score)}`}>
-                    <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
-                    <span className="text-xl font-black leading-none mb-1">{selectedApp.ai_match_score}</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
-                    <p className={`text-xs font-medium text-slate-600 mt-0.5 ${!isAiExpanded && 'line-clamp-2'}`}>{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
-                  </div>
+              <div className={`p-4 rounded-2xl border flex items-center gap-4 ${getScoreColor(selectedApp.ai_match_score).replace('text-', 'bg-').replace('50', '50/50')}`}>
+                <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white ${getScoreColor(selectedApp.ai_match_score)}`}>
+                  <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
+                  <span className="text-xl font-black leading-none mb-1">{selectedApp.ai_match_score}</span>
                 </div>
-
-                {isAiExpanded && selectedApp.ai_match_details && (
-                  <div className="mt-6 pt-6 border-t border-slate-200/50 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div>
-                      <p className="text-xs font-black text-emerald-600 mb-3 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Strengths</p>
-                      <ul className="space-y-2">
-                        {selectedApp.ai_match_details.strengths?.map((s, i) => (
-                          <li key={i} className="text-xs text-slate-700 font-medium leading-relaxed">• {s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-amber-600 mb-3 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Areas to Improve</p>
-                      <ul className="space-y-2">
-                        {selectedApp.ai_match_details.weaknesses?.map((w, i) => (
-                          <li key={i} className="text-xs text-slate-700 font-medium leading-relaxed">• {w}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm font-bold text-slate-900">AI Compatibility Match</p>
+                  <p className="text-xs font-medium text-slate-600 mt-0.5 line-clamp-2">{selectedApp.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                </div>
               </div>
 
               {/* TEST INFO SECTION */}
@@ -248,7 +221,7 @@ export default function MyApplications() {
                   <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-black text-slate-900 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500"/> Aptitude Test Scheduled</h4>
+                      <h4 className="font-black text-slate-900 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
                       <p className="text-sm font-bold text-slate-500 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes} Minutes</p>
                     </div>
                     {testInfo.result?.completed_at ? (
@@ -257,7 +230,7 @@ export default function MyApplications() {
                       <span className="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200">Pending</span>
                     )}
                   </div>
-                  
+
                   <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Opens At</p>
@@ -285,8 +258,8 @@ export default function MyApplications() {
                       disabled={new Date() < new Date(testInfo.quiz.scheduled_start_time) || new Date() > new Date(testInfo.quiz.scheduled_end_time)}
                       className="w-full h-10 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                     >
-                      {new Date() < new Date(testInfo.quiz.scheduled_start_time) ? 'Test Window Not Open Yet' : 
-                       new Date() > new Date(testInfo.quiz.scheduled_end_time) ? 'Test Window Closed' : 'Start Aptitude Test'}
+                      {new Date() < new Date(testInfo.quiz.scheduled_start_time) ? 'Test Window Not Open Yet' :
+                        new Date() > new Date(testInfo.quiz.scheduled_end_time) ? 'Test Window Closed' : 'Start Aptitude Test'}
                       {(new Date() >= new Date(testInfo.quiz.scheduled_start_time) && new Date() <= new Date(testInfo.quiz.scheduled_end_time)) && <ChevronRight className="w-4 h-4" />}
                     </button>
                   )}

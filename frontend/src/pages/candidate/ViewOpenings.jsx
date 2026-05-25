@@ -9,7 +9,7 @@ export default function ViewOpenings() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("All");
-  
+
   // Modals State
   const [selectedJob, setSelectedJob] = useState(null);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function ViewOpenings() {
   const [myApplications, setMyApplications] = useState([]);
   const [selectedResumeId, setSelectedResumeId] = useState("");
   const [isUploadingResume, setIsUploadingResume] = useState(false);
-  
+
   const [analysisState, setAnalysisState] = useState('idle'); // idle | analyzing | done | error
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,8 +61,8 @@ export default function ViewOpenings() {
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
-      const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesType = filterType === "All" || job.job_type === filterType;
       return matchesSearch && matchesType;
     });
@@ -103,13 +103,13 @@ export default function ViewOpenings() {
       toast.error(err.response?.data?.error || "Failed to upload resume");
     } finally {
       setIsUploadingResume(false);
-      e.target.value = ''; 
+      e.target.value = '';
     }
   };
 
   const handleAnalyzeFit = async () => {
     if (!selectedResumeId) return toast.error("Please select a resume first");
-    
+
     setAnalysisState('analyzing');
     try {
       const res = await api.post('/applications/analyze', {
@@ -174,7 +174,7 @@ export default function ViewOpenings() {
             className="w-full pl-12 pr-4 h-12 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all shadow-sm"
           />
         </div>
-        
+
         <div className="relative shrink-0">
           <select
             value={filterType}
@@ -203,51 +203,52 @@ export default function ViewOpenings() {
             filteredJobs.map((job) => {
               const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
               return (
-              <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6">
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                    <Briefcase className="w-6 h-6 text-slate-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                      {job.title}
-                      {isExpired && <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 border border-rose-200">Expired</span>}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-3 mt-2 text-sm font-medium text-slate-500">
-                      <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {job.location || 'Remote'}</span>
-                      <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                      <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {job.job_type || 'Full-time'}</span>
+                <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                      <Briefcase className="w-6 h-6 text-slate-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                        {job.title}
+                        {isExpired && <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 border border-rose-200">Expired</span>}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-3 mt-2 text-sm font-medium text-slate-500">
+                        <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {job.location || 'Remote'}</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {job.job_type || 'Full-time'}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="text-right hidden sm:block">
-                    <p className="text-sm font-bold text-slate-900">
-                      {job.salary_min ? `₹${(job.salary_min/1000).toFixed(0)}k+` : 'Competitive'}
-                    </p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Salary Range</p>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-sm font-bold text-slate-900">
+                        {job.salary_min ? `₹${(job.salary_min / 1000).toFixed(0)}k+` : 'Competitive'}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Salary Range</p>
+                    </div>
+                    {myApplications.find(a => a.job_id === job.id) ? (
+                      <button
+                        disabled
+                        className="h-10 px-6 bg-slate-100 text-slate-400 text-sm font-bold rounded-xl whitespace-nowrap cursor-not-allowed"
+                      >
+                        Applied
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setSelectedJob(job)}
+                        className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl shadow-md shadow-slate-200 transition-all active:scale-95 whitespace-nowrap"
+                      >
+                        View Details
+                      </button>
+                    )}
                   </div>
-                  {myApplications.find(a => a.job_id === job.id) ? (
-                    <button 
-                      disabled
-                      className="h-10 px-6 bg-slate-100 text-slate-400 text-sm font-bold rounded-xl whitespace-nowrap cursor-not-allowed"
-                    >
-                      Applied
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => setSelectedJob(job)}
-                      className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl shadow-md shadow-slate-200 transition-all active:scale-95 whitespace-nowrap"
-                    >
-                      View Details
-                    </button>
-                  )}
-                </div>
 
-              </div>
-            )})
+                </div>
+              )
+            })
           ) : (
             <div className="text-center py-20 bg-white border border-slate-200 rounded-2xl shadow-sm">
               <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -263,7 +264,7 @@ export default function ViewOpenings() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={() => setSelectedJob(null)}></div>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-            
+
             <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
@@ -277,7 +278,7 @@ export default function ViewOpenings() {
                     <span className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{selectedJob.job_type}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                     <span className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                      {selectedJob.salary_min ? `₹${(selectedJob.salary_min/1000).toFixed(0)}k - ₹${(selectedJob.salary_max/1000).toFixed(0)}k` : 'Competitive Salary'}
+                      {selectedJob.salary_min ? `₹${(selectedJob.salary_min / 1000).toFixed(0)}k - ₹${(selectedJob.salary_max / 1000).toFixed(0)}k` : 'Competitive Salary'}
                     </span>
                   </div>
                 </div>
@@ -286,28 +287,28 @@ export default function ViewOpenings() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white">
               <div className="prose prose-slate max-w-none">
                 <h3 className="text-lg font-black text-slate-900 mb-4">Role Overview</h3>
                 <p className="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">{selectedJob.description}</p>
-                
+
                 {selectedJob.requirements && (
                   <>
                     <div className="w-full h-px bg-slate-100 my-8"></div>
                     <h3 className="text-lg font-black text-slate-900 mb-4">Requirements & Skills</h3>
                     <ul className="space-y-3">
-                      {typeof selectedJob.requirements === 'object' && Array.isArray(selectedJob.requirements) 
+                      {typeof selectedJob.requirements === 'object' && Array.isArray(selectedJob.requirements)
                         ? selectedJob.requirements.map((req, i) => (
-                            <li key={i} className="flex items-start gap-3 text-slate-600 font-medium">
-                              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                              <span>{req}</span>
-                            </li>
-                          ))
-                        : <li className="flex items-start gap-3 text-slate-600 font-medium">
+                          <li key={i} className="flex items-start gap-3 text-slate-600 font-medium">
                             <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                            <span>{selectedJob.requirements}</span>
+                            <span>{req}</span>
                           </li>
+                        ))
+                        : <li className="flex items-start gap-3 text-slate-600 font-medium">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{selectedJob.requirements}</span>
+                        </li>
                       }
                     </ul>
                   </>
@@ -317,33 +318,33 @@ export default function ViewOpenings() {
 
             <div className="p-6 border-t border-slate-100 bg-white flex justify-between items-center">
               <div className="text-sm font-bold text-slate-500">
-                {selectedJob.application_deadline 
+                {selectedJob.application_deadline
                   ? `Apply before ${new Date(selectedJob.application_deadline).toLocaleDateString()}`
                   : 'Open until filled'}
               </div>
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => setSelectedJob(null)}
                   className="px-6 h-12 font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
                 >
                   Close
                 </button>
                 {myApplications.find(a => a.job_id === selectedJob.id) ? (
-                  <button 
+                  <button
                     disabled
                     className="px-8 h-12 font-bold text-slate-400 bg-slate-100 rounded-xl flex items-center gap-2 cursor-not-allowed"
                   >
                     Already Applied <CheckCircle2 className="w-4 h-4" />
                   </button>
                 ) : (selectedJob.application_deadline && new Date(selectedJob.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0))) ? (
-                  <button 
+                  <button
                     disabled
                     className="px-8 h-12 font-bold text-slate-400 bg-slate-100 rounded-xl flex items-center gap-2 cursor-not-allowed"
                   >
                     Expired
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={openApplyModal}
                     className="px-8 h-12 font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2"
                   >
@@ -361,15 +362,15 @@ export default function ViewOpenings() {
       {applyModalOpen && selectedJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={closeApplyModal}></div>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-            
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <h2 className="text-xl font-black text-slate-900">Application: {selectedJob.title}</h2>
               <button onClick={closeApplyModal} className="text-slate-400 hover:text-slate-900"><X className="w-5 h-5" /></button>
             </div>
 
             <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar bg-white">
-              
+
               {/* STEP 1: Select Resume */}
               {analysisState === 'idle' && (
                 <div className="space-y-6">
@@ -380,23 +381,21 @@ export default function ViewOpenings() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {resumes.map(r => (
-                      <div 
-                        key={r.id} 
+                      <div
+                        key={r.id}
                         onClick={() => setSelectedResumeId(r.id)}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                          selectedResumeId === r.id ? 'border-indigo-600 bg-indigo-50 shadow-md shadow-indigo-100' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                        }`}
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedResumeId === r.id ? 'border-indigo-600 bg-indigo-50 shadow-md shadow-indigo-100' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                          }`}
                       >
                         <FileText className={`w-6 h-6 mb-2 ${selectedResumeId === r.id ? 'text-indigo-600' : 'text-slate-400'}`} />
                         <p className="text-sm font-bold text-slate-900 truncate" title={r.file_name}>{r.file_name}</p>
                         <p className="text-xs font-medium text-slate-500 mt-1">Uploaded {new Date(r.uploaded_at).toLocaleDateString()}</p>
                       </div>
                     ))}
-                    
+
                     {/* Upload New Card */}
-                    <label className={`p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col justify-center items-center text-center ${
-                      isUploadingResume ? 'border-slate-200 bg-slate-50' : 'border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/50'
-                    }`}>
+                    <label className={`p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col justify-center items-center text-center ${isUploadingResume ? 'border-slate-200 bg-slate-50' : 'border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/50'
+                      }`}>
                       <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={isUploadingResume} />
                       {isUploadingResume ? (
                         <div className="w-6 h-6 border-2 border-indigo-400 border-t-indigo-600 rounded-full animate-spin mb-2"></div>
@@ -409,7 +408,7 @@ export default function ViewOpenings() {
                   </div>
 
                   <div className="pt-6 border-t border-slate-100 flex justify-end">
-                    <button 
+                    <button
                       onClick={handleAnalyzeFit}
                       disabled={!selectedResumeId}
                       className="h-12 px-8 font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2"
@@ -438,7 +437,7 @@ export default function ViewOpenings() {
               {/* STEP 3: Results */}
               {analysisState === 'done' && analysisResult && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  
+
                   {/* Suspicion Alert */}
                   {analysisResult.is_suspicious && (
                     <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex gap-3 items-start">
@@ -470,7 +469,7 @@ export default function ViewOpenings() {
                           ))}
                         </ul>
                       </div>
-                      
+
                       {analysisResult.ai_match_details.weaknesses.length > 0 && (
                         <div>
                           <h4 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2">
@@ -495,7 +494,7 @@ export default function ViewOpenings() {
                       {analysisResult.ai_match_score < 60 ? "Score is a bit low, but you can still shoot your shot!" : "Great match! Submit your application."}
                     </p>
                     <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <button 
+                      <button
                         onClick={() => {
                           setAnalysisState('idle');
                           setAnalysisResult(null);
@@ -504,7 +503,7 @@ export default function ViewOpenings() {
                       >
                         Try Another Resume
                       </button>
-                      <button 
+                      <button
                         onClick={handleSubmitApplication}
                         disabled={isSubmitting}
                         className="w-full sm:w-auto h-12 px-8 font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"

@@ -1,7 +1,6 @@
 const mcqModel = require('../models/mcqModel');
 const jobModel = require('../models/jobModel');
 const applicationModel = require('../models/applicationModel');
-const userModel = require('../models/userModel');
 const emailService = require('../services/emailService');
 
 // QUIZ ENDPOINTS
@@ -9,7 +8,7 @@ const getQuizByJobId = async (req, res, next) => {
   try {
     const { jobId } = req.params;
     const quiz = await mcqModel.getQuizByJobId(jobId);
-    
+
     if (!quiz) {
       return res.status(404).json({ message: 'No quiz found for this job' });
     }
@@ -25,9 +24,9 @@ const createOrUpdateQuiz = async (req, res, next) => {
   try {
     const { jobId } = req.params;
     const { title, description, duration_minutes, passing_score, scheduled_start_time, scheduled_end_time, questions } = req.body;
-    
+
     let quiz = await mcqModel.getQuizByJobId(jobId);
-    
+
     if (quiz) {
       quiz = await mcqModel.updateQuiz(quiz.id, {
         title, description, duration_minutes, passing_score, scheduled_start_time, scheduled_end_time
@@ -58,12 +57,12 @@ const createOrUpdateQuiz = async (req, res, next) => {
       }
     }
 
-    // Send Test Available Email to Non-Rejected Candidates
+    // Send Test Available Email to Shortlisted Candidates
     try {
       const job = await jobModel.getJobById(jobId);
       const apps = await applicationModel.getJobApplications(jobId);
-      const validCandidates = apps.filter(app => app.status !== 'rejected');
-      for (const app of validCandidates) {
+      const shortlisted = apps.filter(app => app.status === 'shortlisted');
+      for (const app of shortlisted) {
         await emailService.sendTestAvailableEmail(
           app.candidate_email,
           app.candidate_name,
@@ -96,10 +95,10 @@ const publishResults = async (req, res, next) => {
     const { jobId } = req.params;
     const quiz = await mcqModel.getQuizByJobId(jobId);
     if (!quiz) return res.status(404).json({ error: 'Quiz not found for this job' });
-    
+
     const now = new Date();
     const end = new Date(quiz.scheduled_end_time);
-    
+
     if (now < end) {
       return res.status(400).json({ error: 'Cannot publish results before the test deadline' });
     }
@@ -109,7 +108,7 @@ const publishResults = async (req, res, next) => {
     }
 
     const autoRejectedCount = await mcqModel.publishQuizResults(jobId, quiz.id);
-    
+
     // Send Test Result Emails
     try {
       const job = await jobModel.getJobById(jobId);
@@ -139,7 +138,7 @@ const publishResults = async (req, res, next) => {
 const getCandidateTestInfo = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
-    
+
     // We should verify the user owns this application, but let's assume middleware or candidate role handles it
     const quiz = await mcqModel.getQuizByApplicationId(applicationId);
     if (!quiz) {
@@ -157,9 +156,9 @@ const startCandidateTest = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
     const quiz = await mcqModel.getQuizByApplicationId(applicationId);
-    
+
     if (!quiz) return res.status(404).json({ error: 'No quiz found' });
-    
+
     const now = new Date();
     const start = new Date(quiz.scheduled_start_time);
     const end = new Date(quiz.scheduled_end_time);
@@ -206,9 +205,9 @@ const submitCandidateTest = async (req, res, next) => {
     // const startedAt = new Date(result.started_at);
     // const timeElapsedMs = new Date() - startedAt;
     // const maxAllowedMs = (quiz.duration_minutes * 60000) + 60000; // 1 min grace
-    
+
     const questions = await mcqModel.getQuestionsByQuizId(quiz.id);
-    
+
     let correctCount = 0;
     for (const q of questions) {
       if (answers[q.id] === q.correct_option_index) {
@@ -222,26 +221,6 @@ const submitCandidateTest = async (req, res, next) => {
     const passed = finalScore >= quiz.passing_score;
 
     const updatedResult = await mcqModel.submitTest(result.id, finalScore, passed);
-
-    // Send instant test result email
-    try {
-      const app = await applicationModel.getApplicationById(applicationId); // Need user/job details
-      if (app) {
-        const user = await userModel.getUserById(app.user_id);
-        const job = await jobModel.getJobById(app.job_id);
-        if (user && job) {
-          await emailService.sendTestResultEmail(
-            user.email,
-            user.full_name,
-            job.title,
-            finalScore,
-            passed
-          );
-        }
-      }
-    } catch (emailErr) {
-      console.error("Failed to send instant Test Result email:", emailErr);
-    }
 
     res.json({ message: 'Test submitted', result: updatedResult });
   } catch (err) {

@@ -8,7 +8,7 @@ import ManageQuizModal from '../../components/admin/ManageQuizModal';
 export default function JobListings() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Job Search & Filter State
   const [jobSearchTerm, setJobSearchTerm] = useState("");
   const [jobFilterStatus, setJobFilterStatus] = useState("all"); // all, active, closed
@@ -214,8 +214,8 @@ export default function JobListings() {
 
     if (jobSearchTerm.trim()) {
       const q = jobSearchTerm.toLowerCase();
-      result = result.filter(j => 
-        (j.title && j.title.toLowerCase().includes(q)) || 
+      result = result.filter(j =>
+        (j.title && j.title.toLowerCase().includes(q)) ||
         (j.location && j.location.toLowerCase().includes(q))
       );
     }
@@ -257,9 +257,9 @@ export default function JobListings() {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search jobs by title or location..." 
+          <input
+            type="text"
+            placeholder="Search jobs by title or location..."
             value={jobSearchTerm}
             onChange={(e) => setJobSearchTerm(e.target.value)}
             className="w-full h-10 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -275,7 +275,7 @@ export default function JobListings() {
           <option value="closed">Closed Jobs</option>
         </select>
         {(jobSearchTerm || jobFilterStatus !== 'all') && (
-          <button 
+          <button
             onClick={resetJobFilters}
             className="h-10 px-4 text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors shrink-0"
           >
@@ -304,7 +304,7 @@ export default function JobListings() {
               <tbody className="divide-y divide-slate-100">
                 {filteredAndSortedJobs.length > 0 ? (
                   filteredAndSortedJobs.map((job, index) => {
-                    const isQuizFinished = new Date() > new Date(job.scheduled_end_time);
+                    const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
                     return (
                       <tr key={job.id} className="hover:bg-slate-50/50 transition-colors group">
                         <td className="px-6 py-4">
@@ -421,13 +421,12 @@ export default function JobListings() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100">
               <h2 className="text-xl font-black text-slate-900">{isEditMode ? 'Edit Job' : 'Post New Job'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-900"><X className="w-5 h-5" /></button>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="p-8 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+            <form onSubmit={handleFormSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-700">Job Title *</label>
                 <input
