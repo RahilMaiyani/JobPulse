@@ -131,7 +131,7 @@ export default function MyApplications() {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-bold text-slate-900">{app.title}</p>
-                            {app.mcq_score != null && app.results_published ? (
+                            {app.mcq_score != null ? (
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
                                 Aptitude: {app.mcq_score}%
                               </span>

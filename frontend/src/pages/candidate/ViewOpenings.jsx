@@ -136,6 +136,8 @@ export default function ViewOpenings() {
         analysis: analysisResult
       });
       toast.success("Application submitted successfully!");
+      setMyApplications(prev => [...prev, { job_id: selectedJob.id }]);
+      setJobs(jobs.map(j => j.id === selectedJob.id ? { ...j, has_applied: true } : j));
       closeApplyModal();
       setSelectedJob(null);
     } catch (err) {

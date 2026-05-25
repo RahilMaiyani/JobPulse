@@ -3,6 +3,7 @@ const resumeModel = require('../models/resumeModel');
 const jobModel = require('../models/jobModel');
 const userModel = require('../models/userModel');
 const { GoogleGenAI } = require('@google/genai');
+const emailService = require('../services/emailService');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -103,6 +104,18 @@ const submitApplication = async (req, res, next) => {
     };
 
     const newApp = await applicationModel.createApplication(applicationData);
+
+    // Send Email Notification
+    try {
+      const user = await userModel.getUserById(userId);
+      const job = await jobModel.getJobById(jobId);
+      if (user && job) {
+        await emailService.sendApplicationReceivedEmail(user.email, user.full_name, job.title);
+      }
+    } catch (emailErr) {
+      console.error("Failed to send application email:", emailErr);
+    }
+
     res.status(201).json({ message: 'Application submitted successfully', application: newApp });
   } catch (err) {
     next(err);
@@ -162,10 +175,9 @@ const updateApplicationStatus = async (req, res, next) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    // Ensure only valid statuses are used, but we'll let the database check handle strict validation or we can validate here
-    const validStatuses = ['applied', 'shortlisted', 'rejected', 'selected', 'offer_sent'];
+    const validStatuses = ['applied', 'shortlisted', 'interview', 'selected', 'rejected', 'offer_sent'];
     if (status && !validStatuses.includes(status.toLowerCase())) {
-       // Just proceeding and letting db handle or doing basic validation
+       return res.status(400).json({ error: 'Invalid status' });
     }
     
     const updatedApp = await applicationModel.updateApplicationStatus(id, status);
@@ -173,8 +185,20 @@ const updateApplicationStatus = async (req, res, next) => {
     if (!updatedApp) {
       return res.status(404).json({ error: 'Application not found' });
     }
+
+    // Send Email Notification
+    try {
+      // Need user and job details
+      const user = await userModel.getUserById(updatedApp.user_id);
+      const job = await jobModel.getJobById(updatedApp.job_id);
+      if (user && job) {
+        await emailService.sendStatusUpdateEmail(user.email, user.full_name, job.title, status);
+      }
+    } catch (emailErr) {
+      console.error("Failed to send status update email:", emailErr);
+    }
     
-    res.json({ message: 'Application status updated successfully', application: updatedApp });
+    res.json({ message: 'Status updated successfully', application: updatedApp });
   } catch (err) {
     next(err);
   }

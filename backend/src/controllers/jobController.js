@@ -1,4 +1,7 @@
 const jobModel = require('../models/jobModel');
+const applicationModel = require('../models/applicationModel');
+const userModel = require('../models/userModel');
+const emailService = require('../services/emailService');
 
 const getAllJobs = async (req, res, next) => {
   try {
@@ -59,6 +62,23 @@ const updateJob = async (req, res, next) => {
     const updatedJob = await jobModel.updateJob(jobId, jobData);
     if (!updatedJob) return res.status(404).json({ error: "Job not found" });
     
+    // Auto-reject candidates if job is closed
+    if (jobData.status === 'closed') {
+      try {
+        const apps = await applicationModel.getJobApplications(jobId);
+        const toReject = apps.filter(a => a.status !== 'selected' && a.status !== 'offer_sent' && a.status !== 'rejected');
+        
+        for (const app of toReject) {
+          await applicationModel.updateApplicationStatus(app.id, 'rejected');
+          if (app.candidate_email && app.candidate_name) {
+            await emailService.sendStatusUpdateEmail(app.candidate_email, app.candidate_name, updatedJob.title, 'rejected');
+          }
+        }
+      } catch (err) {
+        console.error("Auto-reject failed on job close:", err);
+      }
+    }
+
     res.json({ job: updatedJob });
   } catch (error) {
     next(error);

@@ -759,7 +759,12 @@ export default function JobListings() {
       {selectedJobForQuiz && (
         <ManageQuizModal
           job={selectedJobForQuiz}
-          onClose={() => setSelectedJobForQuiz(null)}
+          onClose={(shouldRefresh) => {
+            setSelectedJobForQuiz(null);
+            if (shouldRefresh === true) {
+              fetchJobs();
+            }
+          }}
         />
       )}
 

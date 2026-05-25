@@ -1,4 +1,8 @@
 const mcqModel = require('../models/mcqModel');
+const jobModel = require('../models/jobModel');
+const applicationModel = require('../models/applicationModel');
+const userModel = require('../models/userModel');
+const emailService = require('../services/emailService');
 
 // QUIZ ENDPOINTS
 const getQuizByJobId = async (req, res, next) => {
@@ -54,6 +58,23 @@ const createOrUpdateQuiz = async (req, res, next) => {
       }
     }
 
+    // Send Test Available Email to Shortlisted Candidates
+    try {
+      const job = await jobModel.getJobById(jobId);
+      const apps = await applicationModel.getJobApplications(jobId);
+      const shortlisted = apps.filter(app => app.status === 'shortlisted');
+      for (const app of shortlisted) {
+        await emailService.sendTestAvailableEmail(
+          app.candidate_email,
+          app.candidate_name,
+          job.title,
+          quiz.scheduled_end_time
+        );
+      }
+    } catch (emailErr) {
+      console.error("Failed to send Test Available emails:", emailErr);
+    }
+
     res.status(200).json({ message: 'Quiz saved successfully', quiz, questions: newQuestions });
   } catch (err) {
     next(err);
@@ -89,6 +110,25 @@ const publishResults = async (req, res, next) => {
 
     const autoRejectedCount = await mcqModel.publishQuizResults(jobId, quiz.id);
     
+    // Send Test Result Emails
+    try {
+      const job = await jobModel.getJobById(jobId);
+      const apps = await applicationModel.getJobApplications(jobId);
+      // Everyone who has a completed test result gets an email
+      const evaluated = apps.filter(app => app.mcq_completed_at !== null);
+      for (const app of evaluated) {
+        await emailService.sendTestResultEmail(
+          app.candidate_email,
+          app.candidate_name,
+          job.title,
+          app.mcq_score,
+          app.mcq_passed
+        );
+      }
+    } catch (emailErr) {
+      console.error("Failed to send Test Result emails:", emailErr);
+    }
+
     res.json({ message: 'Results published successfully', autoRejectedCount });
   } catch (err) {
     next(err);
@@ -182,6 +222,26 @@ const submitCandidateTest = async (req, res, next) => {
     const passed = finalScore >= quiz.passing_score;
 
     const updatedResult = await mcqModel.submitTest(result.id, finalScore, passed);
+
+    // Send instant test result email
+    try {
+      const app = await applicationModel.getApplicationById(applicationId); // Need user/job details
+      if (app) {
+        const user = await userModel.getUserById(app.user_id);
+        const job = await jobModel.getJobById(app.job_id);
+        if (user && job) {
+          await emailService.sendTestResultEmail(
+            user.email,
+            user.full_name,
+            job.title,
+            finalScore,
+            passed
+          );
+        }
+      }
+    } catch (emailErr) {
+      console.error("Failed to send instant Test Result email:", emailErr);
+    }
 
     res.json({ message: 'Test submitted', result: updatedResult });
   } catch (err) {

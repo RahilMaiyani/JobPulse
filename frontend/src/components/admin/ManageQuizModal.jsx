@@ -105,7 +105,7 @@ export default function ManageQuizModal({ job, onClose }) {
       };
       await api.post(`/quizzes/job/${job.id}`, payload);
       toast.success("Aptitude Test saved successfully!");
-      onClose();
+      onClose(true);
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to save quiz");
     } finally {

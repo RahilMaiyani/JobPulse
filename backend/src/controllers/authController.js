@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const userModel = require('../models/userModel');
+const jobModel = require('../models/jobModel');
+const emailService = require('../services/emailService');
 
 // Validation schemas
 const registerSchema = Joi.object({
@@ -42,6 +44,15 @@ const register = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
+
+    // Send Welcome Email with top 3 active jobs
+    try {
+      const allJobs = await jobModel.getAllJobs();
+      const activeJobs = allJobs.filter(j => j.status === 'active').slice(0, 3);
+      await emailService.sendWelcomeEmail(newUser.email, newUser.full_name, activeJobs);
+    } catch (emailErr) {
+      console.error("Failed to send welcome email:", emailErr);
+    }
 
     res.status(201).json({
       message: 'User registered successfully',
