@@ -49,9 +49,9 @@ export default function JobApplicantsModal({ job, onClose }) {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-    if (score >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-rose-600 bg-rose-50 border-rose-200';
+    if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';
+    if (score >= 50) return 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20';
+    return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
   };
 
   const filteredAndSortedApplicants = useMemo(() => {
@@ -164,7 +164,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                   <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
 
                     <div className="flex items-center gap-4 cursor-pointer" onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}>
-                      <div className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center shrink-0 ${getScoreColor(app.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20').replace('50', '50/50').replace('text-', 'bg-').replace('text-', 'bg-')}`}>
+                      <div className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center shrink-0 ${getScoreColor(app.ai_match_score)}`}>
                         <span className="text-xs font-black opacity-80 uppercase leading-none mt-1">Score</span>
                         <span className="text-lg font-black leading-none mb-1">{app.ai_match_score}</span>
                       </div>

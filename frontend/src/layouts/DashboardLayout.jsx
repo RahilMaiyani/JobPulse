@@ -10,12 +10,12 @@ export default function DashboardLayout({ children }) {
 
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-zinc-950 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-slate-100 dark:bg-zinc-900 transition-colors duration-300 p-2 md:p-4 gap-2 md:gap-4">
       
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/50 dark:bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/50 dark:bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden rounded-3xl m-2"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -23,10 +23,10 @@ export default function DashboardLayout({ children }) {
       {/* Sidebar Component */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <div className="flex-1 flex flex-col overflow-hidden relative">
+      <div className="flex-1 flex flex-col overflow-hidden relative gap-2 md:gap-4">
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <div className="flex-1 overflow-auto p-4 md:p-8 relative z-10 custom-scrollbar">
+        <div className="flex-1 overflow-auto p-4 md:p-8 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl relative z-10 custom-scrollbar shadow-sm">
           <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             {children}
           </div>

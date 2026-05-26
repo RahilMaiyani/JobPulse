@@ -88,9 +88,9 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-    if (score >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-rose-600 bg-rose-50 border-rose-200';
+    if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';
+    if (score >= 50) return 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20';
+    return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
   };
 
   return (
@@ -178,7 +178,7 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
               )}
 
               <div className="flex flex-col md:flex-row gap-6">
-                <div className={`p-6 rounded-2xl border flex flex-col items-center justify-center text-center shrink-0 w-full md:w-48 ${getScoreColor(analysisResult.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20 dark:bg-rose-500/10').replace('text-', 'bg-').replace('text-', 'bg-')}`}>
+                <div className={`p-6 rounded-2xl border flex flex-col items-center justify-center text-center shrink-0 w-full md:w-48 ${getScoreColor(analysisResult.ai_match_score)}`}>
                   <p className="text-sm font-black uppercase tracking-widest opacity-80 mb-2">Match Score</p>
                   <h2 className="text-6xl font-black tracking-tighter">{analysisResult.ai_match_score}</h2>
                   <p className="text-xs font-bold mt-2 opacity-80">/ 100 points</p>

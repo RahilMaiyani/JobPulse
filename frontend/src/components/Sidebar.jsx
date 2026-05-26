@@ -27,7 +27,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const inactiveClass = "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/80 hover:text-slate-900 dark:hover:text-zinc-100";
 
   return (
-    <div className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col border-r border-slate-200 dark:border-zinc-800 shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+    <div className={`fixed md:relative top-2 bottom-2 left-2 md:top-0 md:bottom-0 md:left-0 h-[calc(100vh-1rem)] md:h-full w-72 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col border border-slate-200 dark:border-zinc-800 rounded-3xl shrink-0 z-50 transform transition-transform duration-300 ease-in-out shadow-sm ${isOpen ? 'translate-x-0' : '-translate-x-[120%] md:translate-x-0'}`}>
 
       {/* BRANDING */}
       <div className="p-8 mb-2 flex items-center justify-between">

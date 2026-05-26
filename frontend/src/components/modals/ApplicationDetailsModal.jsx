@@ -47,9 +47,9 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-    if (score >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-rose-600 bg-rose-50 border-rose-200';
+    if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';
+    if (score >= 50) return 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20';
+    return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
   };
 
   const getTimelineSteps = () => {
@@ -225,10 +225,10 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
               <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
 
               <div
-                className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score).replace('text-', 'bg-').replace('50', '50/50').replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20 dark:bg-rose-500/10')}`}
+                className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score)}`}
                 onClick={() => setIsAiMatchExpanded(!isAiMatchExpanded)}
               >
-                <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white dark:bg-zinc-900 ${getScoreColor(app.ai_match_score).replace('border-emerald-200', 'border-emerald-200 dark:border-emerald-500/20').replace('border-amber-200', 'border-amber-200 dark:border-amber-500/20').replace('border-rose-200', 'border-rose-200 dark:border-rose-500/20')}`}>
+                <div className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center shrink-0 bg-white dark:bg-zinc-900 ${getScoreColor(app.ai_match_score)}`}>
                   <span className="text-[10px] font-black opacity-80 uppercase leading-none mt-1">Score</span>
                   <span className="text-xl font-black leading-none mb-1">{app.ai_match_score}</span>
                 </div>

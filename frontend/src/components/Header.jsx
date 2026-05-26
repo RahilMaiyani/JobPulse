@@ -41,7 +41,7 @@ export default function Header({ toggleSidebar }) {
   };
 
   return (
-    <div className="h-16 md:h-[72px] bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between px-4 md:px-8 shrink-0 z-10 transition-all duration-300 relative">
+    <div className="h-16 md:h-[72px] bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl flex items-center justify-between px-4 md:px-8 shrink-0 z-10 transition-all duration-300 relative shadow-sm">
       
       <div className="flex items-center gap-4">
         {/* Mobile Toggle */}
