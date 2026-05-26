@@ -21,7 +21,7 @@ export default function Header({ toggleSidebar }) {
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer); 
+    return () => clearInterval(timer);
   }, []);
 
   const hours = time.getHours().toString().padStart(2, '0');
@@ -42,10 +42,10 @@ export default function Header({ toggleSidebar }) {
 
   return (
     <div className="h-16 md:h-[72px] bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl flex items-center justify-between px-4 md:px-8 shrink-0 z-10 transition-all duration-300 relative shadow-sm">
-      
+
       <div className="flex items-center gap-4">
         {/* Mobile Toggle */}
-        <button 
+        <button
           onClick={toggleSidebar}
           className="md:hidden p-2 -ml-2 text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
         >
@@ -65,7 +65,7 @@ export default function Header({ toggleSidebar }) {
       </div>
 
       <div className="flex items-center gap-4">
-        
+
         {/* Theme Toggle */}
         <button
           onClick={cycleTheme}
