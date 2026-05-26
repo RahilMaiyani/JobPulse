@@ -47,6 +47,9 @@ export default function JobApplicantsModal({ job, onClose }) {
       ));
       queryClient.invalidateQueries({ queryKey: ['job-applications', job.id] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to update status");
     }

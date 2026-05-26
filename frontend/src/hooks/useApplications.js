@@ -39,9 +39,13 @@ export const useApplyForJob = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: applyForJob,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       toast.success(data.message || 'Successfully applied for job');
       queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['applications', 'my'] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications', variables.jobId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
     onError: (err) => {
       toast.error(err.response?.data?.error || 'Failed to apply for job');
@@ -56,6 +60,10 @@ export const useRevokeApplication = () => {
     onSuccess: () => {
       toast.success('Application revoked successfully');
       queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['applications', 'my'] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
     onError: () => {
       toast.error('Failed to revoke application');

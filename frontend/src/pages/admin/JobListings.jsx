@@ -315,6 +315,8 @@ export default function JobListings() {
           onSuccess={() => {
             setIsJobFormOpen(false);
             queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+            queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
           }}
         />
       )}

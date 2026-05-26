@@ -73,12 +73,11 @@ exports.getInterviewsByJob = async (req, res) => {
     );
     res.json({ interviews: result.rows });
   } catch (error) {
-    console.error("Get interviews error:", error);
-    res.status(500).json({ error: "Failed to get interviews" });
+    next(error);
   }
 };
 
-exports.getInterviewByApplication = async (req, res) => {
+exports.getInterviewByApplication = async (req, res, next) => {
   const { applicationId } = req.params;
   try {
     const result = await db.query(
@@ -87,7 +86,6 @@ exports.getInterviewByApplication = async (req, res) => {
     );
     res.json({ interview: result.rows[0] });
   } catch (error) {
-    console.error("Get interview error:", error);
-    res.status(500).json({ error: "Failed to get interview details" });
+    next(error);
   }
 };

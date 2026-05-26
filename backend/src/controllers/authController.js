@@ -104,12 +104,11 @@ const login = async (req, res) => {
       user
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 };
 
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await userModel.getUserById(req.user.id);
     if (!user) {

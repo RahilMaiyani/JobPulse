@@ -25,6 +25,9 @@ export const useDeleteJob = () => {
     onSuccess: () => {
       toast.success('Job deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
     },
     onError: () => {
       toast.error('Failed to delete job');
@@ -39,6 +42,9 @@ export const useToggleJobStatus = () => {
     onSuccess: (newStatus) => {
       toast.success(`Job marked as ${newStatus}`);
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
     },
     onError: () => {
       toast.error('Failed to update status');
@@ -53,6 +59,10 @@ export const usePublishJobResults = () => {
     onSuccess: (data) => {
       toast.success(data.message || 'Results published successfully');
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
     onError: (err) => {
       toast.error(err.response?.data?.error || 'Failed to publish results');

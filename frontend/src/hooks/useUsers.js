@@ -21,6 +21,7 @@ export const useCreateUser = (onSuccessCallback) => {
     onSuccess: () => {
       toast.success('User created successfully!');
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
       if (onSuccessCallback) onSuccessCallback();
     },
     onError: (err) => {
@@ -36,6 +37,7 @@ export const useToggleUserStatus = () => {
     onSuccess: (data, variables) => {
       toast.success(`User ${variables.action}d successfully`);
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
     onError: (err, variables) => {
       toast.error(err.response?.data?.error || `Failed to ${variables.action} user`);

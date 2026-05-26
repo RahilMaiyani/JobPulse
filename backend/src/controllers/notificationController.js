@@ -12,12 +12,11 @@ exports.getNotifications = async (req, res) => {
     );
     res.json({ notifications: result.rows });
   } catch (error) {
-    console.error("Get notifications error:", error);
-    res.status(500).json({ error: "Failed to fetch notifications" });
+    next(error);
   }
 };
 
-exports.markAsRead = async (req, res) => {
+exports.markAsRead = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const notificationId = req.params.id;
@@ -29,7 +28,6 @@ exports.markAsRead = async (req, res) => {
     );
     res.json({ message: "Marked as read" });
   } catch (error) {
-    console.error("Mark as read error:", error);
-    res.status(500).json({ error: "Failed to mark as read" });
+    next(error);
   }
 };
