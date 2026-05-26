@@ -24,3 +24,8 @@ export const getMyApplications = async () => {
   const res = await api.get('/applications/my-applications');
   return res.data.applications || [];
 };
+
+export const getJobApplications = async (jobId) => {
+  const res = await api.get(`/applications/job/${jobId}`);
+  return res.data.applications || [];
+};

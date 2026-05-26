@@ -2,7 +2,11 @@ const pool = require('../config/db');
 
 const getAllJobs = async () => {
   const result = await pool.query(`
-    SELECT j.*, q.id as quiz_id, q.scheduled_end_time, q.results_published 
+    SELECT j.*, q.id as quiz_id, q.scheduled_end_time, q.results_published,
+           (SELECT COUNT(*) FROM applications a 
+            WHERE a.job_id = j.id AND a.status = 'interview' 
+            AND NOT EXISTS (SELECT 1 FROM interview_slots i WHERE i.application_id = a.id)
+           ) as unscheduled_count
     FROM jobs j
     LEFT JOIN mcq_quizzes q ON j.id = q.job_id
     ORDER BY j.created_at DESC

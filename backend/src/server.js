@@ -8,6 +8,8 @@ const userRoutes = require('./routes/userRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const mcqRoutes = require('./routes/mcqRoutes');
+const interviewRoutes = require('./routes/interviewRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const path = require('path');
 
 const app = express();
@@ -29,6 +31,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/quizzes', mcqRoutes);
+app.use('/api/interviews', interviewRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

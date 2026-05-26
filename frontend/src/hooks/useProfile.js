@@ -40,6 +40,7 @@ export const useUploadResume = () => {
     onSuccess: () => {
       toast.success('Resume uploaded successfully');
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
     },
     onError: (err) => {
       toast.error(err.response?.data?.error || 'Failed to upload resume');
@@ -54,6 +55,7 @@ export const useDeleteResume = () => {
     onSuccess: () => {
       toast.success('Resume deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
     },
     onError: (err) => {
       toast.error(err.response?.data?.error || 'Failed to delete resume');

@@ -2,7 +2,8 @@ import React from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useCandidateDashboard } from '../../hooks/useDashboard';
-import { Briefcase, FileText, ArrowRight } from 'lucide-react';
+import { useNotifications, useMarkNotificationAsRead } from '../../hooks/useNotifications';
+import { Briefcase, FileText, ArrowRight, Bell, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardStatsSkeleton from '../../components/skeletons/DashboardStatsSkeleton';
 import JobCardSkeleton from '../../components/skeletons/JobCardSkeleton';
@@ -11,6 +12,40 @@ export default function CandidateDashboard() {
   const { user } = useAuth();
 
   const { data: stats = { openRolesCount: 0, myApplicationsCount: 0, recentOpenings: [] }, isLoading: loading } = useCandidateDashboard();
+
+  const { data: notifications = [] } = useNotifications();
+  const markAsReadMutation = useMarkNotificationAsRead();
+  const unreadNotifications = notifications.filter(n => !n.is_read);
+
+  const getTypeStyles = (type) => {
+    switch (type) {
+      case 'success':
+        return {
+          accent: 'bg-emerald-500',
+          iconBg: 'bg-emerald-50 dark:bg-emerald-500/10',
+          iconColor: 'text-emerald-500',
+        };
+      case 'error':
+        return {
+          accent: 'bg-rose-500',
+          iconBg: 'bg-rose-50 dark:bg-rose-500/10',
+          iconColor: 'text-rose-500',
+        };
+      case 'warning':
+        return {
+          accent: 'bg-amber-500',
+          iconBg: 'bg-amber-50 dark:bg-amber-500/10',
+          iconColor: 'text-amber-500',
+        };
+      case 'info':
+      default:
+        return {
+          accent: 'bg-indigo-500',
+          iconBg: 'bg-indigo-50 dark:bg-indigo-500/10',
+          iconColor: 'text-indigo-500',
+        };
+    }
+  };
 
   const statCards = [
     { label: "Open Roles", value: stats.openRolesCount, icon: Briefcase, color: "text-blue-600", bg: "bg-blue-50" },
@@ -23,6 +58,38 @@ export default function CandidateDashboard() {
         <h1 className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">Candidate Portal</h1>
         <p className="text-slate-500 dark:text-zinc-400 font-medium mt-1">Welcome back, {user?.full_name}. Find your next role here.</p>
       </div>
+
+      {unreadNotifications.length > 0 && (
+        <div className="mb-8 space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">Recent Notifications</h2>
+            <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 text-xs font-bold px-2 py-0.5 rounded-full">{unreadNotifications.length} New</span>
+          </div>
+          {unreadNotifications.map(notification => {
+            const styles = getTypeStyles(notification.type);
+            return (
+              <div key={notification.id} className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-lg shadow-slate-200/40 dark:shadow-none flex items-start justify-between group hover:border-slate-300 dark:hover:border-zinc-700 transition-all">
+                <div className={`absolute top-0 left-0 w-1.5 h-full ${styles.accent}`}></div>
+                <div className="flex gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${styles.iconBg}`}>
+                    <Bell className={`w-6 h-6 ${styles.iconColor}`} />
+                  </div>
+                  <div className="pt-0.5">
+                    <h4 className="text-base font-black text-slate-900 dark:text-zinc-100 tracking-tight">{notification.title}</h4>
+                    <p className="text-sm font-medium text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">{notification.message}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => markAsReadMutation.mutate(notification.id)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500 hover:bg-slate-100 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {loading ? (
         <div className="space-y-8">

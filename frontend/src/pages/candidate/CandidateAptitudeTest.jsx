@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -8,6 +9,7 @@ import AptitudeTestSkeleton from '../../components/skeletons/AptitudeTestSkeleto
 export default function CandidateAptitudeTest() {
   const { applicationId } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
@@ -88,6 +90,7 @@ export default function CandidateAptitudeTest() {
       const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers });
       setFinalResult(response.data.result);
       setSubmitted(true);
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
       toast.success("Test submitted successfully!");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to submit test");

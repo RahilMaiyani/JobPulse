@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApplications, applyForJob, revokeApplication, getUserApplications, getMyApplications } from '../services/applicationService';
+import { getApplications, applyForJob, revokeApplication, getUserApplications, getMyApplications, getJobApplications } from '../services/applicationService';
 import toast from 'react-hot-toast';
 
 export const useApplications = () => {
@@ -24,6 +24,14 @@ export const useMyApplications = () => {
     queryKey: ['applications', 'my'],
     queryFn: getMyApplications,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useApplicationsForJob = (jobId) => {
+  return useQuery({
+    queryKey: ['job-applications', jobId],
+    queryFn: () => getJobApplications(jobId),
+    enabled: !!jobId,
   });
 };
 

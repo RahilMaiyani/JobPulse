@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useNotifications } from "../hooks/useNotifications";
 import {
   LayoutDashboard,
   Briefcase,
@@ -14,6 +15,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const { user } = useAuth();
   const location = useLocation();
   const isAdminOrHr = user?.role === "admin" || user?.role === "hr";
+
+  const { data: notifications = [] } = useNotifications();
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const isActive = (path) => {
     if (path === '/admin' || path === '/candidate') {
@@ -112,10 +116,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <Link
               to="/candidate/applications"
               onClick={() => setIsOpen(false)}
-              className={`${baseClass} ${isActive("/candidate/applications") ? activeClass : inactiveClass}`}
+              className={`${baseClass} ${isActive("/candidate/applications") ? activeClass : inactiveClass} justify-between`}
             >
-              <FileText className="w-5 h-5" />
-              My Applications
+              <div className="flex items-center gap-3">
+                <FileText className="w-5 h-5" />
+                My Applications
+              </div>
+              {unreadCount > 0 && (
+                <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
 
             <Link

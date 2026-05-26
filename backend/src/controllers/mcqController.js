@@ -2,6 +2,7 @@ const mcqModel = require('../models/mcqModel');
 const jobModel = require('../models/jobModel');
 const applicationModel = require('../models/applicationModel');
 const emailService = require('../services/emailService');
+const { createNotification } = require('../utils/notificationHelper');
 
 // QUIZ ENDPOINTS
 const getQuizByJobId = async (req, res, next) => {
@@ -69,6 +70,12 @@ const createOrUpdateQuiz = async (req, res, next) => {
           job.title,
           quiz.scheduled_end_time
         );
+        await createNotification(
+          app.user_id,
+          "Aptitude Test Available \u23F0",
+          `Your Aptitude Test for ${job.title} is now available. Deadline: ${new Date(quiz.scheduled_end_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })} IST.`,
+          "info"
+        );
       }
     } catch (emailErr) {
       console.error("Failed to send Test Available emails:", emailErr);
@@ -122,6 +129,12 @@ const publishResults = async (req, res, next) => {
           job.title,
           app.mcq_score,
           app.mcq_passed
+        );
+        await createNotification(
+          app.user_id,
+          "Aptitude Test Results \uD83D\uDCCA",
+          `The results for the ${job.title} Aptitude Test have been published. You scored ${app.mcq_score}%.`,
+          app.mcq_passed ? "success" : "error"
         );
       }
     } catch (emailErr) {

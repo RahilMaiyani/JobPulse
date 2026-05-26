@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useActiveJobs } from '../../hooks/useJobs';
 import { useMyApplications, useApplyForJob } from '../../hooks/useApplications';
@@ -11,6 +12,7 @@ import toast from 'react-hot-toast';
 export default function ViewOpenings() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("All");
+  const queryClient = useQueryClient();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,12 +29,19 @@ export default function ViewOpenings() {
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
+      const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
+      const appliedApp = myApplications.find(a => a.job_id === job.id);
+      
+      if (isExpired && !appliedApp) {
+        return false;
+      }
+
       const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesType = filterType === "All" || job.job_type === filterType;
       return matchesSearch && matchesType;
     });
-  }, [jobs, searchTerm, filterType]);
+  }, [jobs, searchTerm, filterType, myApplications]);
 
   // Reset to page 1 when search or filters change
   useEffect(() => {

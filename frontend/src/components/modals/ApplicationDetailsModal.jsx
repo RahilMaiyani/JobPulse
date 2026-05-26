@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { X, MapPin, ChevronDown, ChevronUp, FileQuestion, ArrowRight, Trash2, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { X, MapPin, ChevronDown, ChevronUp, FileQuestion, ArrowRight, Trash2, Clock, CheckCircle2, XCircle, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useInterviewByApplication } from '../../hooks/useInterviews';
 
 export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevoking }) {
   const [testInfo, setTestInfo] = useState(null);
   const [loadingTest, setLoadingTest] = useState(false);
   const [isAiMatchExpanded, setIsAiMatchExpanded] = useState(false);
   const navigate = useNavigate();
+
+  const { data: interviewData } = useInterviewByApplication(
+    ['interview', 'selected', 'hired'].includes(app?.status?.toLowerCase()) ? app?.id : null
+  );
 
   useEffect(() => {
     if (app) {
@@ -115,8 +120,10 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
       steps.push({
         label: 'Interview Round',
-        description: 'You passed the aptitude test! HR will contact you for an interview.',
-        date: '',
+        description: interviewData 
+          ? `Your interview is scheduled for ${new Date(interviewData.scheduled_date).toLocaleDateString()} at ${interviewData.scheduled_time}. ${interviewData.notes ? `\nNote: ${interviewData.notes}` : ''}`
+          : 'You passed the aptitude test! HR will contact you for an interview.',
+        date: interviewData ? `${new Date(interviewData.scheduled_date).toLocaleDateString()} ${interviewData.scheduled_time}` : '',
         isCompleted: ['selected', 'hired'].includes(s),
         isCurrent: s === 'interview'
       });
@@ -241,6 +248,31 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                 </div>
               </div>
 
+              {/* INTERVIEW DETAILS SECTION */}
+              {interviewData && app.status?.toLowerCase() === 'interview' && (
+                <div className="p-5 rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 shadow-sm space-y-4">
+                  <h4 className="font-black text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
+                    <Calendar className="w-5 h-5" /> Interview Scheduled
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black text-indigo-400 dark:text-indigo-300 uppercase tracking-widest">Date</p>
+                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 mt-0.5">{new Date(interviewData.scheduled_date).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-indigo-400 dark:text-indigo-300 uppercase tracking-widest">Time</p>
+                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 mt-0.5">{interviewData.scheduled_time}</p>
+                    </div>
+                  </div>
+                  {interviewData.notes && (
+                    <div>
+                      <p className="text-[10px] font-black text-indigo-400 dark:text-indigo-300 uppercase tracking-widest mb-1">Notes</p>
+                      <p className="text-sm text-indigo-800 dark:text-indigo-200 font-medium bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-500/20">{interviewData.notes}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* TEST INFO SECTION */}
               {loadingTest ? (
                 <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
@@ -298,7 +330,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                     </div>
                   ) : (
                     <button
-                      onClick={() => navigate(`/candidate/applications/${app.id}/test`)}
+                      onClick={() => navigate(`/candidate/test/${app.id}`)}
                       className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
                       Start Aptitude Test <ArrowRight className="w-4 h-4" />

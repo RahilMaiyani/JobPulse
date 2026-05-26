@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ export default function JobApplicantsModal({ job, onClose }) {
   const [jobApplicants, setJobApplicants] = useState([]);
   const [loadingApplicants, setLoadingApplicants] = useState(true);
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);
+  const queryClient = useQueryClient();
   
   // Search, Filter, Pagination
   const [applicantSearchTerm, setApplicantSearchTerm] = useState("");
@@ -43,6 +45,8 @@ export default function JobApplicantsModal({ job, onClose }) {
       setJobApplicants(prev => prev.map(app =>
         app.id === appId ? { ...app, status: newStatus } : app
       ));
+      queryClient.invalidateQueries({ queryKey: ['job-applications', job.id] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to update status");
     }

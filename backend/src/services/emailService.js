@@ -24,7 +24,7 @@ const sendStatusUpdateEmail = async (email, name, jobTitle, newStatus) => {
   let statusMessage = '';
   let color = '#4f46e5';
 
-  switch(newStatus.toLowerCase()) {
+  switch (newStatus.toLowerCase()) {
     case 'shortlisted':
       statusMessage = `Great news! You have been <strong>shortlisted</strong> for the <strong>${jobTitle}</strong> position. Keep an eye out for further instructions or aptitude test availability on your dashboard.`;
       color = '#d97706'; // amber
@@ -63,8 +63,8 @@ const sendStatusUpdateEmail = async (email, name, jobTitle, newStatus) => {
 };
 
 const sendTestAvailableEmail = async (email, name, jobTitle, scheduledEndTime) => {
-  const formattedDate = new Date(scheduledEndTime).toLocaleString();
-  
+  const formattedDate = new Date(scheduledEndTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) + ' IST';
+
   const html = buildEmailTemplate({
     title: "Aptitude Test Available \u23F0",
     message: `
@@ -151,10 +151,36 @@ const sendWelcomeEmail = async (email, name, activeJobs = []) => {
   });
 };
 
+const sendInterviewScheduledEmail = async (email, name, jobTitle, scheduledDate, scheduledTime, notes) => {
+  const formattedDate = new Date(scheduledDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const html = buildEmailTemplate({
+    title: "Interview Scheduled \uD83D\uDCC5",
+    message: `
+      <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
+      <p style="margin-bottom: 16px;">We are excited to invite you to an interview for the <strong>${jobTitle}</strong> position.</p>
+      <div style="margin-bottom: 16px; padding: 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <p style="margin: 0 0 8px 0;"><strong>Date:</strong> ${formattedDate}</p>
+        <p style="margin: 0 0 8px 0;"><strong>Time:</strong> ${scheduledTime} IST</p>
+        ${notes ? `<p style="margin: 0;"><strong>Notes:</strong> ${notes}</p>` : ''}
+      </div>
+      <p style="margin-bottom: 16px;">Our team is looking forward to speaking with you. Please prepare accordingly.</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobDrive Team</p>
+    `,
+    color: "#4f46e5"
+  });
+
+  await sendEmail({
+    to: email,
+    subject: `Interview Invitation: ${jobTitle}`,
+    html
+  });
+};
+
 module.exports = {
   sendApplicationReceivedEmail,
   sendStatusUpdateEmail,
   sendTestAvailableEmail,
   sendTestResultEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendInterviewScheduledEmail
 };

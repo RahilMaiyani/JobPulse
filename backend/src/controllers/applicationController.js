@@ -4,6 +4,7 @@ const jobModel = require('../models/jobModel');
 const userModel = require('../models/userModel');
 const { GoogleGenAI } = require('@google/genai');
 const emailService = require('../services/emailService');
+const { createNotification } = require('../utils/notificationHelper');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -54,7 +55,7 @@ Format:
 }
     `;
 
-    const fallbackModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const fallbackModels = ['gemini-3.1-flash-lite', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
     let response = null;
     let lastErr = null;
 
@@ -129,6 +130,7 @@ const submitApplication = async (req, res, next) => {
       const job = await jobModel.getJobById(jobId);
       if (user && job) {
         await emailService.sendApplicationReceivedEmail(user.email, user.full_name, job.title);
+        await createNotification(userId, "Application Submitted", `Your application for ${job.title} has been received.`, "success");
       }
     } catch (emailErr) {
       console.error("Failed to send application email:", emailErr);
@@ -204,6 +206,10 @@ const updateApplicationStatus = async (req, res, next) => {
       return res.status(404).json({ error: 'Application not found' });
     }
 
+    if (status.toLowerCase() === 'selected' || status.toLowerCase() === 'hired') {
+      await jobModel.updateJob(updatedApp.job_id, { status: 'closed' });
+    }
+
     // Send Email Notification
     try {
       // Need user and job details
@@ -211,6 +217,7 @@ const updateApplicationStatus = async (req, res, next) => {
       const job = await jobModel.getJobById(updatedApp.job_id);
       if (user && job) {
         await emailService.sendStatusUpdateEmail(user.email, user.full_name, job.title, status);
+        await createNotification(user.id, "Application Status Updated", `Your application for ${job.title} is now: ${status}`, "info");
       }
     } catch (emailErr) {
       console.error("Failed to send status update email:", emailErr);

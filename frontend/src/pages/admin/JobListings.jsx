@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useJobs, useDeleteJob, useToggleJobStatus, usePublishJobResults } from '../../hooks/useJobs';
 import { useQueryClient } from '@tanstack/react-query';
-import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
+import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, FileQuestion, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ManageQuizModal from '../../components/admin/ManageQuizModal';
 import JobListingsSkeleton from '../../components/skeletons/JobListingsSkeleton';
 import JobFormModal from '../../components/modals/JobFormModal';
 import JobApplicantsModal from '../../components/modals/JobApplicantsModal';
+import ScheduleInterviewModal from '../../components/modals/ScheduleInterviewModal';
 
 export default function JobListings() {
   const queryClient = useQueryClient();
@@ -29,6 +30,7 @@ export default function JobListings() {
   const [isJobFormOpen, setIsJobFormOpen] = useState(false);
   const [jobToEdit, setJobToEdit] = useState(null);
   const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null);
+  const [selectedJobForInterviews, setSelectedJobForInterviews] = useState(null);
 
   const { data: jobs = [], isLoading: loading } = useJobs();
 
@@ -195,9 +197,9 @@ export default function JobListings() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <p className="font-bold text-slate-900 dark:text-zinc-100">{job.title}</p>
-                                {job.quiz_id && (
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
-                                    {job.results_published ? 'Results Out' : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
+                                {job.quiz_id && job.status === 'active' && (
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
+                                    {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
                                   </span>
                                 )}
                               </div>
@@ -239,6 +241,14 @@ export default function JobListings() {
                               >
                                 <Users className="w-4 h-4 text-indigo-400" /> View {job.results_published ? 'Results & Applicants' : 'Applicants'}
                               </button>
+                              {job.results_published && job.status === 'active' && (
+                                <button
+                                  onClick={() => { setOpenDropdownId(null); setSelectedJobForInterviews(job); }}
+                                  className="w-full px-4 py-2 text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                                >
+                                  <Calendar className="w-4 h-4 text-emerald-500" /> Schedule Interviews
+                                </button>
+                              )}
                               <div className="h-px bg-slate-100 dark:bg-zinc-800 my-1"></div>
                               <button
                                 onClick={() => openEditModal(job)}
@@ -327,6 +337,14 @@ export default function JobListings() {
               queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
             }
           }}
+        />
+      )}
+
+      {/* SCHEDULE INTERVIEW MODAL */}
+      {selectedJobForInterviews && (
+        <ScheduleInterviewModal
+          job={selectedJobForInterviews}
+          onClose={() => setSelectedJobForInterviews(null)}
         />
       )}
 
