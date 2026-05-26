@@ -12,6 +12,10 @@ exports.scheduleInterview = async (req, res) => {
     // Delete any existing slots for this application to keep it simple
     await db.query(`DELETE FROM interview_slots WHERE application_id = $1`, [applicationId]);
 
+    // Check if this is the first interview being scheduled for this job
+    const existingSlotsCountRes = await db.query(`SELECT COUNT(*) FROM interview_slots WHERE job_id = $1`, [jobId]);
+    const isFirstInterview = parseInt(existingSlotsCountRes.rows[0].count) === 0;
+
     // Insert new slot
     const slotRes = await db.query(
       `INSERT INTO interview_slots 
@@ -26,6 +30,16 @@ exports.scheduleInterview = async (req, res) => {
       `UPDATE applications SET status = 'interview', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [applicationId]
     );
+
+    // If it's the first interview scheduled, reject everyone else who isn't shortlisted for interview
+    if (isFirstInterview) {
+      await db.query(
+        `UPDATE applications 
+         SET status = 'rejected', updated_at = CURRENT_TIMESTAMP 
+         WHERE job_id = $1 AND status NOT IN ('interview', 'selected', 'hired', 'rejected')`,
+        [jobId]
+      );
+    }
 
     // Get candidate and job info for email
     const appInfo = await db.query(

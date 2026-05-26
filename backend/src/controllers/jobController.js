@@ -66,7 +66,7 @@ const updateJob = async (req, res, next) => {
     if (jobData.status === 'closed') {
       try {
         const apps = await applicationModel.getJobApplications(jobId);
-        const toReject = apps.filter(a => a.status !== 'selected' && a.status !== 'offer_sent' && a.status !== 'rejected');
+        const toReject = apps.filter(a => a.status !== 'selected' && a.status !== 'hired' && a.status !== 'rejected');
         
         for (const app of toReject) {
           await applicationModel.updateApplicationStatus(app.id, 'rejected');

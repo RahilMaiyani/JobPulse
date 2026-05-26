@@ -26,52 +26,60 @@ export default function CandidateAptitudeTest() {
   const timerRef = useRef(null);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const startTest = async () => {
+      try {
+        const response = await api.post(`/quizzes/application/${applicationId}/start`);
+        if (!isMounted) return;
+
+        const { result, questions: qs, duration_minutes } = response.data;
+        
+        setQuestions(qs);
+        setQuizDetails({ duration_minutes });
+
+        if (result.completed_at) {
+          setSubmitted(true);
+          setFinalResult(result);
+          setLoading(false);
+          return;
+        }
+
+        // Calculate timer
+        const startTime = new Date(result.started_at).getTime();
+        const endTime = startTime + duration_minutes * 60000;
+        
+        const updateTimer = () => {
+          const now = Date.now();
+          const remMs = endTime - now;
+          if (remMs <= 0) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            setTimeLeft(0);
+            handleAutoSubmit();
+          } else {
+            setTimeLeft(Math.floor(remMs / 1000));
+          }
+        };
+
+        updateTimer();
+        if (endTime - Date.now() > 0 && isMounted) {
+          timerRef.current = setInterval(updateTimer, 1000);
+        }
+        setLoading(false);
+        
+      } catch (err) {
+        if (!isMounted) return;
+        toast.error(err.response?.data?.error || "Failed to start test");
+        navigate('/candidate/applications');
+      }
+    };
+
     startTest();
     return () => {
+      isMounted = false;
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [applicationId]);
-
-  const startTest = async () => {
-    try {
-      const response = await api.post(`/quizzes/application/${applicationId}/start`);
-      const { result, questions: qs, duration_minutes } = response.data;
-      
-      setQuestions(qs);
-      setQuizDetails({ duration_minutes });
-
-      if (result.completed_at) {
-        setSubmitted(true);
-        setFinalResult(result);
-        setLoading(false);
-        return;
-      }
-
-      // Calculate timer
-      const startTime = new Date(result.started_at).getTime();
-      const endTime = startTime + duration_minutes * 60000;
-      
-      const updateTimer = () => {
-        const now = Date.now();
-        const remainingMs = endTime - now;
-        if (remainingMs <= 0) {
-          clearInterval(timerRef.current);
-          setTimeLeft(0);
-          handleAutoSubmit();
-        } else {
-          setTimeLeft(Math.floor(remainingMs / 1000));
-        }
-      };
-
-      updateTimer();
-      timerRef.current = setInterval(updateTimer, 1000);
-      setLoading(false);
-      
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to start test");
-      navigate('/candidate/applications');
-    }
-  };
 
   const handleAutoSubmit = async () => {
     toast("Time's up! Auto-submitting your test...", { icon: '⏳' });

@@ -120,18 +120,18 @@ const submitTest = async (resultId, score, passed) => {
 const publishQuizResults = async (jobId, quizId) => {
   // Find shortlisted applicants who don't have a completed result, or have no result at all
   const query = `
-    WITH missing_apps AS (
+    WITH failing_apps AS (
       SELECT a.id 
       FROM applications a
       LEFT JOIN mcq_results mr ON a.id = mr.application_id AND mr.quiz_id = $2
-      WHERE a.job_id = $1 AND a.status = 'shortlisted' AND (mr.id IS NULL OR mr.completed_at IS NULL)
+      WHERE a.job_id = $1 AND a.status = 'shortlisted' AND (mr.id IS NULL OR mr.completed_at IS NULL OR mr.passed = false)
     ),
     inserted_results AS (
       INSERT INTO mcq_results (quiz_id, application_id, score, passed, started_at, completed_at)
       SELECT $2, id, 0, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-      FROM missing_apps
+      FROM failing_apps
       ON CONFLICT (quiz_id, application_id) 
-      DO UPDATE SET score = 0, passed = false, completed_at = CURRENT_TIMESTAMP
+      DO UPDATE SET score = EXCLUDED.score, passed = false, completed_at = CURRENT_TIMESTAMP
       RETURNING application_id
     )
     UPDATE applications

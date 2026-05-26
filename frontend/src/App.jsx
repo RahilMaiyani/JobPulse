@@ -11,6 +11,7 @@ import PageLoader from './components/PageLoader';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import NotFound from './pages/NotFound';
 
 import ProtectedRoute from './routes/ProtectedRoute';
 import CandidateDashboard from './pages/candidate/CandidateDashboard';
@@ -75,6 +76,7 @@ function App() {
                         <Route path="applications" element={<MyApplications />} />
                         <Route path="profile" element={<CandidateProfile />} />
                         <Route path="test/:applicationId" element={<CandidateAptitudeTest />} />
+                        <Route path="*" element={<NotFound />} />
                       </Routes>
                     </ProtectedRoute>
                   }
@@ -89,10 +91,14 @@ function App() {
                         <Route path="" element={<AdminDashboard />} />
                         <Route path="jobs" element={<JobListings />} />
                         <Route path="users" element={<ManageUsers />} />
+                        <Route path="*" element={<NotFound />} />
                       </Routes>
                     </ProtectedRoute>
                   }
                 />
+
+                {/* CATCH ALL ROUTE */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </Router>
