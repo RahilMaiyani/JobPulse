@@ -204,17 +204,27 @@ export default function JobListings() {
                 return 'Competitive';
               };
 
+              const isActive = job.status === 'active';
+
               return (
                 <div 
                   key={job.id} 
-                  className={`bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:border-slate-300 dark:hover:border-zinc-700/80 flex flex-col justify-between relative group h-[290px]`}
+                  className={`border border-slate-200 dark:border-zinc-800 border-l-4 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${
+                    isActive 
+                      ? 'bg-white dark:bg-zinc-900 border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:border-slate-300 dark:hover:border-zinc-700/80' 
+                      : 'bg-slate-50/50 dark:bg-zinc-900/40 border-l-slate-300 dark:border-l-zinc-700/85 opacity-70 grayscale-[10%] hover:opacity-90 hover:shadow-md'
+                  }`}
                 >
                   <div className="space-y-4">
                     {/* Header Row */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-zinc-800/80 flex items-center justify-center shrink-0 border border-slate-100 dark:border-zinc-800 group-hover:scale-105 transition-transform duration-300">
-                          <Briefcase className="w-6 h-6 text-slate-600 dark:text-zinc-400" />
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 ${
+                          isActive 
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400' 
+                            : 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-400 dark:text-zinc-500'
+                        }`}>
+                          <Briefcase className="w-6 h-6" />
                         </div>
                         <div>
                           <h3 
@@ -228,7 +238,7 @@ export default function JobListings() {
                             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/50 dark:border-zinc-700/50">
                               {job.job_type}
                             </span>
-                            {job.status === 'active' ? (
+                            {isActive ? (
                               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
                                 Active
                               </span>
@@ -393,17 +403,29 @@ export default function JobListings() {
                 {currentJobs.length > 0 ? (
                   currentJobs.map((job) => {
                     const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
+                    const isActive = job.status === 'active';
                     return (
-                      <tr key={job.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group">
+                      <tr 
+                        key={job.id} 
+                        className={`transition-colors group ${
+                          isActive 
+                            ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100' 
+                            : 'opacity-60 grayscale-[10%] hover:opacity-80 text-slate-500 dark:text-zinc-400 bg-slate-50/5 dark:bg-zinc-900/5'
+                        }`}
+                      >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
-                              <Briefcase className="w-5 h-5 text-slate-600 dark:text-zinc-400" />
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${
+                              isActive 
+                                ? 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-600 dark:text-zinc-400' 
+                                : 'bg-slate-200/40 dark:bg-zinc-800/30 border-slate-200/20 dark:border-zinc-700/20 text-slate-400 dark:text-zinc-500'
+                            }`}>
+                              <Briefcase className="w-5 h-5" />
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <p className="font-bold text-slate-900 dark:text-zinc-100">{job.title}</p>
-                                {job.quiz_id && job.status === 'active' && (
+                                <p className={`font-bold ${isActive ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 dark:text-zinc-400'}`}>{job.title}</p>
+                                {job.quiz_id && isActive && (
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                                     {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
                                   </span>
