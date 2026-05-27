@@ -170,7 +170,7 @@ export default function CandidateProfile() {
                   <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Bio / About Me</label>
                   <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500">{profileForm.bio.length} / 1000</span>
                 </div>
-                <textarea maxLength="1000" value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-600 outline-none min-h-[100px]" placeholder="Tell us about yourself..."></textarea>
+                <textarea maxLength="1000" value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-600 outline-none min-h-[250px] max-h-[500px]" placeholder="Tell us about yourself..."></textarea>
               </div>
 
               <div className="space-y-2">

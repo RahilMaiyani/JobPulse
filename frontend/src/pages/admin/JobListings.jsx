@@ -211,8 +211,8 @@ export default function JobListings() {
                 <div
                   key={job.id}
                   className={`border border-l-4 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${isMenuOpen
-                      ? 'ring-2 ring-slate-800 dark:ring-zinc-100 shadow-xl scale-[1.01] bg-slate-50 dark:bg-zinc-850/40 border-slate-350 dark:border-zinc-700'
-                      : 'border-slate-200 dark:border-zinc-800'
+                    ? 'ring-2 ring-slate-800 dark:ring-zinc-100 shadow-xl scale-[1.01] bg-slate-50 dark:bg-zinc-850/40 border-slate-350 dark:border-zinc-700'
+                    : 'border-slate-200 dark:border-zinc-800'
                     } ${isActive
                       ? 'bg-white dark:bg-zinc-900 border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:border-slate-300 dark:hover:border-zinc-700/80'
                       : 'bg-slate-50/70 dark:bg-zinc-900/40 border-l-slate-300/90 dark:border-l-zinc-700/90'
@@ -223,8 +223,8 @@ export default function JobListings() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 ${isActive
-                            ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                            : 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-400 dark:text-zinc-500'
+                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-400 dark:text-zinc-500'
                           }`}>
                           <Briefcase className="w-6 h-6" />
                         </div>
@@ -260,8 +260,8 @@ export default function JobListings() {
                           onMouseDown={(e) => e.stopPropagation()}
                           onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
                           className={`p-1.5 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
-                              ? 'text-slate-900 dark:text-zinc-50 bg-slate-100 dark:bg-zinc-800 shadow-sm border border-slate-200/30 dark:border-zinc-700'
-                              : 'text-slate-500 dark:text-zinc-450 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                            ? 'text-slate-900 dark:text-zinc-50 bg-slate-100 dark:bg-zinc-800 shadow-sm border border-slate-200/30 dark:border-zinc-700'
+                            : 'text-slate-500 dark:text-zinc-450 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
                             }`}
                         >
                           <MoreHorizontal className="w-5 h-5" />
@@ -339,7 +339,7 @@ export default function JobListings() {
                         <CircleDollarSign className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>{formatSalary(job.salary_min, job.salary_max)}</span>
                       </div>
-                      <div className={`flex items-center gap-2 text-xs font-medium ${isDeadlinePassed ? 'text-rose-600 dark:text-rose-450 font-semibold' : ''}`}>
+                      <div className={`flex items-center gap-2 text-xs font-medium ${isDeadlinePassed ? 'text-rose-600 dark:text-rose-450 font-semibold   ' : ''}`}>
                         <Calendar className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>
                           {job.application_deadline ? `Deadline: ${new Date(job.application_deadline).toLocaleDateString()}` : 'No Deadline'}
@@ -379,8 +379,8 @@ export default function JobListings() {
                       <button
                         onClick={() => handleViewApplicants(job)}
                         className={`h-8 px-3 text-[11px] font-black rounded-xl shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer ${isActive
-                            ? 'text-white dark:text-zinc-950 bg-slate-900 dark:bg-zinc-50 hover:bg-slate-800 dark:hover:bg-white'
-                            : 'text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200/50 dark:border-zinc-700/50'
+                          ? 'text-white dark:text-zinc-950 bg-slate-900 dark:bg-zinc-50 hover:bg-slate-800 dark:hover:bg-white'
+                          : 'text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200/50 dark:border-zinc-700/50'
                           }`}
                       >
                         <span>View Applicants</span>
@@ -419,17 +419,17 @@ export default function JobListings() {
                       <tr
                         key={job.id}
                         className={`transition-colors group border-b border-slate-100 dark:border-zinc-800/80 ${isMenuOpen
-                            ? 'bg-slate-100/90 dark:bg-zinc-800/80 text-slate-900 dark:text-zinc-50 shadow-inner'
-                            : isActive
-                              ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100'
-                              : 'bg-slate-50/20 dark:bg-zinc-900/10 hover:bg-slate-50/40 dark:hover:bg-zinc-800/20'
+                          ? 'bg-slate-100/90 dark:bg-zinc-800/80 text-slate-900 dark:text-zinc-50 shadow-inner'
+                          : isActive
+                            ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100'
+                            : 'bg-slate-50/20 dark:bg-zinc-900/10 hover:bg-slate-50/40 dark:hover:bg-zinc-800/20'
                           }`}
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${isActive
-                                ? 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-600 dark:text-zinc-400'
-                                : 'bg-slate-200/40 dark:bg-zinc-800/30 border-slate-200/20 dark:border-zinc-700/20 text-slate-400 dark:text-zinc-500'
+                              ? 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-600 dark:text-zinc-400'
+                              : 'bg-slate-200/40 dark:bg-zinc-800/30 border-slate-200/20 dark:border-zinc-700/20 text-slate-400 dark:text-zinc-500'
                               }`}>
                               <Briefcase className="w-5 h-5" />
                             </div>
@@ -468,8 +468,8 @@ export default function JobListings() {
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
                             className={`p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
-                                ? 'text-slate-900 dark:text-zinc-50 bg-slate-200/80 dark:bg-zinc-700/80 shadow-sm border border-slate-300/50 dark:border-zinc-650'
-                                : 'text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                              ? 'text-slate-900 dark:text-zinc-50 bg-slate-200/80 dark:bg-zinc-700/80 shadow-sm border border-slate-300/50 dark:border-zinc-650'
+                              : 'text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
                               }`}
                           >
                             <MoreHorizontal className="w-5 h-5" />
