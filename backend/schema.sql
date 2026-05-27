@@ -6,7 +6,6 @@ CREATE TABLE users (
   full_name VARCHAR(255) NOT NULL,
   role VARCHAR(50) NOT NULL DEFAULT 'candidate', -- 'candidate', 'hr', 'admin'
   phone VARCHAR(20),
-  profile_picture_url VARCHAR(500),
   bio TEXT,
   skills JSONB, -- {"skills": ["Node.js", "React", ...]}
   experience_years INT,

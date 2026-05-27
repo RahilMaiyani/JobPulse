@@ -145,7 +145,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 relative z-10">
         <div className="flex items-center gap-3">
           <img
-            src={user?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name)}&background=0f172a&color=fff`}
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name)}&background=0f172a&color=fff`}
             className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
             alt={user?.full_name}
             draggable="false"

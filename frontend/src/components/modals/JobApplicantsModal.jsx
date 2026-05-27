@@ -193,7 +193,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                         <>
                           {app.resume_path && (
                             <a
-                              href={`http://localhost:5000${app.resume_path}`}
+                              href={app.resume_path}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 px-4 h-9 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-lg transition-colors border border-slate-200 dark:border-zinc-700"

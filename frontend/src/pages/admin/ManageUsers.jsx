@@ -159,7 +159,7 @@ export default function ManageUsers() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={u.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`}
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`}
                             className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-zinc-700 grayscale"
                             style={{ filter: !u.is_active ? 'grayscale(100%)' : 'none' }}
                             alt={u.full_name}
@@ -324,7 +324,7 @@ export default function ManageUsers() {
                 <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50">
                   <div className="flex items-center gap-4">
                     <img
-                      src={selectedUserProfile.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUserProfile.full_name)}&background=f1f5f9&color=0f172a`}
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUserProfile.full_name)}&background=f1f5f9&color=0f172a`}
                       className="w-16 h-16 rounded-2xl object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
                       alt={selectedUserProfile.full_name}
                     />

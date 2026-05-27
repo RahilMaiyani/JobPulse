@@ -274,7 +274,7 @@ export default function CandidateProfile() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a href={`http://localhost:5000${r.file_path}`} target="_blank" rel="noopener noreferrer" className="p-2 text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                        <a href={r.file_path} target="_blank" download rel="noopener noreferrer" className="p-2 text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors">
                           <Download className="w-4 h-4" />
                         </a>
                         <button onClick={() => handleDeleteResume(r.id)} className="p-2 text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">

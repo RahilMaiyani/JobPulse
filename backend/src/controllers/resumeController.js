@@ -1,7 +1,6 @@
 const resumeModel = require('../models/resumeModel');
 const pdfParse = require('pdf-parse');
-const fs = require('fs');
-const path = require('path');
+const supabase = require('../config/supabase');
 
 const uploadResume = async (req, res, next) => {
   try {
@@ -14,25 +13,36 @@ const uploadResume = async (req, res, next) => {
     // Check resume limit
     const existingResumes = await resumeModel.getUserResumes(userId);
     if (existingResumes.length >= 3) {
-      // delete the uploaded file since we are rejecting
-      fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'You can only upload a maximum of 3 resumes' });
     }
 
     const fileName = req.file.originalname;
-    const filePath = `/uploads/resumes/${req.file.filename}`;
 
-    // Read and parse PDF text
-    const dataBuffer = fs.readFileSync(req.file.path);
+    // Read and parse PDF text from memory buffer
     let parsedText = '';
     try {
-      const data = await pdfParse(dataBuffer);
+      const data = await pdfParse(req.file.buffer);
       parsedText = data.text;
     } catch (parseErr) {
-      // If parsing fails, we might still want to store the file or reject it
       console.error("PDF Parsing error:", parseErr);
       return res.status(400).json({ error: `Could not extract text from the provided PDF: ${parseErr.message || 'Unknown error'}` });
     }
+
+    // Upload to Supabase Storage
+    const uniqueFilename = `${userId}-${Date.now()}-${fileName.replace(/[^a-zA-Z0-9.]/g, '')}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('resumes')
+      .upload(uniqueFilename, req.file.buffer, {
+        contentType: req.file.mimetype
+      });
+
+    if (uploadError) {
+      console.error("Supabase upload error:", uploadError);
+      return res.status(500).json({ error: 'Failed to upload resume to storage' });
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('resumes').getPublicUrl(uniqueFilename);
+    const filePath = publicUrlData.publicUrl;
 
     const newResume = await resumeModel.uploadResume(userId, fileName, filePath, parsedText);
     
@@ -65,10 +75,17 @@ const deleteResume = async (req, res, next) => {
       return res.status(404).json({ error: 'Resume not found' });
     }
 
-    // Delete file from disk
-    const absolutePath = path.join(__dirname, '..', '..', resume.file_path);
-    if (fs.existsSync(absolutePath)) {
-      fs.unlinkSync(absolutePath);
+    // Delete file from Supabase Storage
+    try {
+      const fileNameToDelete = resume.file_path.split('/').pop();
+      if (fileNameToDelete) {
+        const { error: removeError } = await supabase.storage.from('resumes').remove([fileNameToDelete]);
+        if (removeError) {
+          console.error("Error removing from Supabase:", removeError);
+        }
+      }
+    } catch (storageErr) {
+      console.error("Could not delete from storage:", storageErr);
     }
 
     await resumeModel.deleteResume(id, userId);

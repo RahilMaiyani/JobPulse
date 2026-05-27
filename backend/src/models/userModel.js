@@ -19,14 +19,14 @@ const getUserByEmail = async (email) => {
 };
 
 const getUserById = async (id) => {
-  const query = `SELECT id, email, full_name, role, phone, profile_picture_url, bio, skills, experience_years, current_company, linkedin_profile, created_at FROM users WHERE id = $1;`;
+  const query = `SELECT id, email, full_name, role, phone, bio, skills, experience_years, current_company, linkedin_profile, created_at FROM users WHERE id = $1;`;
   const result = await db.query(query, [id]);
   return result.rows[0];
 };
 
 const getAllUsers = async () => {
   const query = `
-    SELECT id, email, full_name, role, phone, profile_picture_url, is_active, created_at,
+    SELECT id, email, full_name, role, phone, is_active, created_at,
            EXISTS(SELECT 1 FROM applications a WHERE a.user_id = users.id AND a.status IN ('hired', 'selected')) AS is_hired
     FROM users 
     ORDER BY created_at DESC;
@@ -47,7 +47,7 @@ const updateUserProfile = async (id, profileData) => {
         linkedin_profile = COALESCE($6, linkedin_profile),
         updated_at = CURRENT_TIMESTAMP
     WHERE id = $7
-    RETURNING id, email, full_name, role, phone, profile_picture_url, bio, skills, experience_years, current_company, linkedin_profile;
+    RETURNING id, email, full_name, role, phone, bio, skills, experience_years, current_company, linkedin_profile;
   `;
   const result = await db.query(query, [
     phone || null,
