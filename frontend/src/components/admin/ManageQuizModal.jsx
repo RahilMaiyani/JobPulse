@@ -3,9 +3,9 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { X, Plus, Trash2, Calendar, FileText, CheckCircle2, Clock, Users } from 'lucide-react';
 import ManageQuizSkeleton from '../skeletons/ManageQuizSkeleton';
+import { useQuizForJob } from '../../hooks/useQuizzes';
 
 export default function ManageQuizModal({ job, onClose }) {
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [quizForm, setQuizForm] = useState({
@@ -18,41 +18,29 @@ export default function ManageQuizModal({ job, onClose }) {
   });
 
   const [questions, setQuestions] = useState([]);
+  
+  const { data: quizData, isLoading: loading } = useQuizForJob(job.id);
 
   useEffect(() => {
-    fetchQuiz();
-  }, [job.id]);
-
-  const fetchQuiz = async () => {
-    try {
-      const response = await api.get(`/quizzes/job/${job.id}`);
-      if (response.data && response.data.quiz) {
-        const q = response.data.quiz;
-        // Format dates for input[type="datetime-local"]
-        const formatDt = (dtStr) => {
-          if (!dtStr) return '';
-          const d = new Date(dtStr);
-          const pad = (n) => n.toString().padStart(2, '0');
-          return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        };
-        setQuizForm({
-          title: q.title || '',
-          description: q.description || '',
-          duration_minutes: q.duration_minutes || 30,
-          passing_score: q.passing_score || 50,
-          scheduled_start_time: formatDt(q.scheduled_start_time),
-          scheduled_end_time: formatDt(q.scheduled_end_time)
-        });
-        setQuestions(response.data.questions || []);
-      }
-    } catch (err) {
-      if (err.response?.status !== 404) {
-        toast.error("Failed to load quiz details");
-      }
-    } finally {
-      setLoading(false);
+    if (quizData && quizData.quiz) {
+      const q = quizData.quiz;
+      const formatDt = (dtStr) => {
+        if (!dtStr) return '';
+        const d = new Date(dtStr);
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      };
+      setQuizForm({
+        title: q.title || '',
+        description: q.description || '',
+        duration_minutes: q.duration_minutes || 30,
+        passing_score: q.passing_score || 50,
+        scheduled_start_time: formatDt(q.scheduled_start_time),
+        scheduled_end_time: formatDt(q.scheduled_end_time)
+      });
+      setQuestions(quizData.questions || []);
     }
-  };
+  }, [quizData]);
 
   const handleAddQuestion = () => {
     setQuestions([
@@ -108,7 +96,7 @@ export default function ManageQuizModal({ job, onClose }) {
       toast.success("Aptitude Test saved successfully!");
       onClose(true);
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to save quiz");
+      toast.error(err.response?.data?.error || "Failed to save test");
     } finally {
       setIsSubmitting(false);
     }

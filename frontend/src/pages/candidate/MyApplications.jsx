@@ -9,11 +9,11 @@ import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsM
 
 export default function MyApplications() {
   const [selectedApp, setSelectedApp] = useState(null);
-  
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   const navigate = useNavigate();
 
   const { data: applications = [], isLoading: loading } = useMyApplications();
@@ -126,7 +126,7 @@ export default function MyApplications() {
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination Controls */}
           {Math.ceil(applications.length / itemsPerPage) > 1 && (
             <div className="flex justify-center items-center gap-2 p-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-800/50">

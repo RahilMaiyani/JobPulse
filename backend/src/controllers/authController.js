@@ -25,27 +25,21 @@ const register = async (req, res) => {
 
     const { email, password, fullName } = req.body;
 
-    // Check if user exists
     const existingUser = await userModel.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
-
-    // Save user - explicitly setting role to candidate
     const newUser = await userModel.createUser({ email, passwordHash, fullName, role: 'candidate' });
 
-    // Generate token
     const token = jwt.sign(
       { id: newUser.id, email: newUser.email, role: newUser.role },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '10h' }
     );
 
-    // Send Welcome Email with top 3 active jobs
     try {
       const allJobs = await jobModel.getAllJobs();
       const activeJobs = allJobs.filter(j => j.status === 'active').slice(0, 3);
@@ -72,7 +66,6 @@ const login = async (req, res) => {
 
     const { email, password } = req.body;
 
-    // Check user
     const user = await userModel.getUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -92,7 +85,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '10h' }
     );
 
     // Remove password hash from response

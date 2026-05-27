@@ -3,10 +3,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useApplicationsForJob } from '../../hooks/useApplications';
 
 export default function JobApplicantsModal({ job, onClose }) {
-  const [jobApplicants, setJobApplicants] = useState([]);
-  const [loadingApplicants, setLoadingApplicants] = useState(true);
+  const { data: jobApplicants = [], isLoading: loadingApplicants } = useApplicationsForJob(job?.id);
+  
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);
   const queryClient = useQueryClient();
   
@@ -16,35 +17,10 @@ export default function JobApplicantsModal({ job, onClose }) {
   const [applicantPage, setApplicantPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    if (job) {
-      fetchApplicants();
-    }
-  }, [job]);
-
-  const fetchApplicants = async () => {
-    setLoadingApplicants(true);
-    setExpandedApplicantId(null);
-    setApplicantSearchTerm("");
-    setApplicantSortBy("highest_ai");
-    setApplicantPage(1);
-    try {
-      const response = await api.get(`/applications/job/${job.id}`);
-      setJobApplicants(response.data.applications || []);
-    } catch (err) {
-      toast.error("Failed to fetch applicants");
-    } finally {
-      setLoadingApplicants(false);
-    }
-  };
-
   const handleStatusChange = async (appId, newStatus) => {
     try {
       await api.put(`/applications/${appId}/status`, { status: newStatus });
       toast.success(`Status updated to ${newStatus}`);
-      setJobApplicants(prev => prev.map(app =>
-        app.id === appId ? { ...app, status: newStatus } : app
-      ));
       queryClient.invalidateQueries({ queryKey: ['job-applications', job.id] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
       queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });

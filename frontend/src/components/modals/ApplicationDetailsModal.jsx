@@ -3,10 +3,9 @@ import api from '../../services/api';
 import { X, MapPin, ChevronDown, ChevronUp, FileQuestion, ArrowRight, Trash2, Clock, CheckCircle2, XCircle, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useInterviewByApplication } from '../../hooks/useInterviews';
+import { useTestInfo } from '../../hooks/useQuizzes';
 
 export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevoking }) {
-  const [testInfo, setTestInfo] = useState(null);
-  const [loadingTest, setLoadingTest] = useState(false);
   const [isAiMatchExpanded, setIsAiMatchExpanded] = useState(false);
   const navigate = useNavigate();
 
@@ -14,29 +13,8 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
     ['interview', 'selected', 'hired'].includes(app?.status?.toLowerCase()) ? app?.id : null
   );
 
-  useEffect(() => {
-    if (app) {
-      const s = app.status?.toLowerCase();
-      if (s === 'shortlisted' || s === 'hired' || s === 'rejected' || s === 'applied' || s === 'selected') {
-        fetchTestInfo(app.id);
-      } else {
-        setTestInfo(null);
-      }
-    }
-  }, [app]);
-
-  const fetchTestInfo = async (appId) => {
-    setLoadingTest(true);
-    setTestInfo(null);
-    try {
-      const response = await api.get(`/quizzes/application/${appId}/test-info`);
-      setTestInfo(response.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingTest(false);
-    }
-  };
+  const shouldFetchTest = app && ['shortlisted', 'hired', 'rejected', 'applied', 'selected'].includes(app.status?.toLowerCase());
+  const { data: testInfo, isLoading: loadingTest } = useTestInfo(shouldFetchTest ? app.id : null);
 
   const getStatusBadge = (status) => {
     const s = (status || '').toLowerCase();

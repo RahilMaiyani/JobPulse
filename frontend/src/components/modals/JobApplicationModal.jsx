@@ -3,28 +3,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { X, FileText, UploadCloud, Sparkles, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useResumes, useUploadResume } from '../../hooks/useProfile';
 
 export default function JobApplicationModal({ job, onClose, onSuccess }) {
-  const [resumes, setResumes] = useState([]);
+  const { data: resumes = [], isLoading: isLoadingResumes } = useResumes();
+  const uploadResumeMutation = useUploadResume();
   const [selectedResumeId, setSelectedResumeId] = useState("");
   const [isUploadingResume, setIsUploadingResume] = useState(false);
   const queryClient = useQueryClient();
   const [analysisState, setAnalysisState] = useState('idle'); // idle | analyzing | done | error
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    fetchResumes();
-  }, []);
-
-  const fetchResumes = async () => {
-    try {
-      const response = await api.get('/resumes');
-      setResumes(response.data.resumes);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
@@ -36,21 +25,19 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
     formData.append('resume', file);
 
     setIsUploadingResume(true);
-    try {
-      const res = await api.post('/resumes', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      toast.success("Resume uploaded!");
-      setResumes([res.data.resume, ...resumes]);
-      setSelectedResumeId(res.data.resume.id);
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to upload resume");
-    } finally {
-      setIsUploadingResume(false);
-      e.target.value = '';
-    }
+    uploadResumeMutation.mutate(formData, {
+      onSuccess: (data) => {
+        if (data && data.resume) {
+          setSelectedResumeId(data.resume.id);
+        }
+        setIsUploadingResume(false);
+        e.target.value = '';
+      },
+      onError: () => {
+        setIsUploadingResume(false);
+        e.target.value = '';
+      }
+    });
   };
 
   const handleAnalyzeFit = async () => {

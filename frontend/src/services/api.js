@@ -18,4 +18,22 @@ api.interceptors.request.use(
   }
 );
 
+// Add a response interceptor to catch 401s and redirect to home
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Ignore if the request was to login or register
+      if (!error.config.url.includes('/auth/login') && !error.config.url.includes('/auth/register')) {
+        localStorage.removeItem('token');
+        sessionStorage.setItem('sessionExpired', 'true');
+        window.location.href = '/';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Suspense } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Suspense, useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -33,6 +33,13 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  useEffect(() => {
+    if (sessionStorage.getItem('sessionExpired') === 'true') {
+      toast.error("Your session has expired. Please log in again.", { duration: 6000 });
+      sessionStorage.removeItem('sessionExpired');
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

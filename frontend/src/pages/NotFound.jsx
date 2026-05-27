@@ -6,8 +6,8 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center selection:bg-indigo-100">
-      <div className="w-24 h-24 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mb-8 mx-auto shadow-sm">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center selection:bg-slate-200 dark:selection:bg-zinc-800">
+      <div className="w-24 h-24 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white rounded-full flex items-center justify-center mb-8 mx-auto shadow-sm">
         <SearchX className="w-12 h-12" />
       </div>
       
@@ -30,7 +30,7 @@ export default function NotFound() {
         </button>
         <button 
           onClick={() => navigate('/')}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
+          className="px-6 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-bold rounded-xl transition-all shadow-md active:scale-95"
         >
           Return Home
         </button>

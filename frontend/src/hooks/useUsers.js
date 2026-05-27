@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getUsers, createUser, toggleUserStatus } from '../services/userService';
+import { getProfile } from '../services/profileService';
 import toast from 'react-hot-toast';
 
 export const useUsers = (currentUserId) => {
@@ -11,6 +12,14 @@ export const useUsers = (currentUserId) => {
     },
     enabled: !!currentUserId,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUserProfile = (userId) => {
+  return useQuery({
+    queryKey: ['user', userId, 'profile'],
+    queryFn: () => getProfile(userId),
+    enabled: !!userId,
   });
 };
 

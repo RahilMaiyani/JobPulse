@@ -171,7 +171,7 @@ export default function JobListings() {
       {loading ? (
         <JobListingsSkeleton count={5} />
       ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm dark:shadow-none pb-32" ref={dropdownRef}>
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm dark:shadow-none pb-32">
           <div className="w-full">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -226,7 +226,8 @@ export default function JobListings() {
                         </td>
                         <td className="px-6 py-4 text-right relative">
                           <button
-                            onClick={() => setOpenDropdownId(openDropdownId === job.id ? null : job.id)}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
                             className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors focus:outline-none"
                           >
                             <MoreHorizontal className="w-5 h-5" />
@@ -234,7 +235,7 @@ export default function JobListings() {
 
                           {/* Action Dropdown */}
                           {openDropdownId === job.id && (
-                            <div className={`absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14`}>
+                            <div ref={dropdownRef} className={`absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14`}>
                               <button
                                 onClick={() => handleViewApplicants(job)}
                                 className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"

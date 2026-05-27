@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { useUsers, useCreateUser, useToggleUserStatus } from '../../hooks/useUsers';
+import { useUsers, useCreateUser, useToggleUserStatus, useUserProfile } from '../../hooks/useUsers';
+import { useUserApplications } from '../../hooks/useApplications';
 import { Users, Search, Plus, Shield, UserCircle, Briefcase, Mail, Phone, Calendar, X, Ban, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import ManageUsersSkeleton from '../../components/skeletons/ManageUsersSkeleton';
 import toast from 'react-hot-toast';
@@ -20,8 +21,8 @@ export default function ManageUsers() {
   // Modal States
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [userApplications, setUserApplications] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserRole, setSelectedUserRole] = useState(null);
 
   const [userForm, setUserForm] = useState({
     fullName: '',
@@ -31,6 +32,9 @@ export default function ManageUsers() {
   });
 
   const { data: users = [], isLoading: loading } = useUsers(currentUser.id);
+  
+  const { data: selectedUserProfile, isLoading: loadingProfile } = useUserProfile(selectedUserId);
+  const { data: userApplications = [], isLoading: loadingApplications } = useUserApplications(selectedUserRole === 'candidate' ? selectedUserId : null);
 
   // Reset to page 1 if filters change
   useEffect(() => {
@@ -47,26 +51,10 @@ export default function ManageUsers() {
     createUserMutation.mutate(userForm);
   };
 
-  const openProfile = async (user) => {
-    try {
-      const response = await api.get(`/users/${user.id}/profile`);
-      setSelectedUser(response.data.user);
-      setIsProfileModalOpen(true);
-      if (user.role === 'candidate') {
-        fetchUserApplications(user.id);
-      }
-    } catch (err) {
-      toast.error("Failed to load profile details");
-    }
-  };
-
-  const fetchUserApplications = async (userId) => {
-    try {
-      const response = await api.get(`/applications/user/${userId}`);
-      setUserApplications(response.data.applications || []);
-    } catch (err) {
-      toast.error("Failed to fetch user applications");
-    }
+  const openProfile = (user) => {
+    setSelectedUserId(user.id);
+    setSelectedUserRole(user.role);
+    setIsProfileModalOpen(true);
   };
 
   const getScoreColor = (score) => {
@@ -183,9 +171,12 @@ export default function ManageUsers() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
-                        {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
-                        {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                        <div className="flex flex-wrap gap-2">
+                          {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
+                          {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
+                          {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                          {u.is_hired && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20"><CheckCircle2 className="w-3 h-3" /> Hired</span>}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         {u.is_active ? (
@@ -317,120 +308,136 @@ export default function ManageUsers() {
       )}
 
       {/* VIEW PROFILE MODAL */}
-      {isProfileModalOpen && selectedUser && (
+      {isProfileModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={() => setIsProfileModalOpen(false)}></div>
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-            <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50">
-              <div className="flex items-center gap-4">
-                <img
-                  src={selectedUser.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUser.full_name)}&background=f1f5f9&color=0f172a`}
-                  className="w-16 h-16 rounded-2xl object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
-                  alt={selectedUser.full_name}
-                />
-                <div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-zinc-100">{selectedUser.full_name}</h2>
-                  <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1">{selectedUser.role}</p>
-                </div>
+            
+            {loadingProfile ? (
+              <div className="p-12 text-center space-y-4 animate-pulse flex flex-col items-center">
+                <div className="w-16 h-16 bg-slate-200 dark:bg-zinc-800 rounded-2xl"></div>
+                <div className="w-48 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
               </div>
-              <button onClick={() => setIsProfileModalOpen(false)} className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"><X className="w-5 h-5" /></button>
-            </div>
-
-            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-zinc-900">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Email</p>
-                    <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Mail className="w-4 h-4" /> {selectedUser.email}</p>
+            ) : selectedUserProfile ? (
+              <>
+                <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={selectedUserProfile.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUserProfile.full_name)}&background=f1f5f9&color=0f172a`}
+                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
+                      alt={selectedUserProfile.full_name}
+                    />
+                    <div>
+                      <h2 className="text-2xl font-black text-slate-900 dark:text-zinc-100">{selectedUserProfile.full_name}</h2>
+                      <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1">{selectedUserProfile.role}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Phone</p>
-                    <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Phone className="w-4 h-4" /> {selectedUser.phone || 'Not provided'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Joined</p>
-                    <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Calendar className="w-4 h-4" /> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
-                  </div>
+                  <button onClick={() => setIsProfileModalOpen(false)} className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"><X className="w-5 h-5" /></button>
                 </div>
 
-                <div className="space-y-4">
-                  {selectedUser.current_company && (
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Current Company</p>
-                      <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUser.current_company}</p>
-                    </div>
-                  )}
-                  {selectedUser.experience_years != null && (
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Experience</p>
-                      <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUser.experience_years || 0} years</p>
-                    </div>
-                  )}
-                  {selectedUser.skills && selectedUser.skills.length > 0 && (
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Skills</p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedUser.skills.map((s, i) => (
-                          <span key={i} className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 text-xs font-bold rounded-md">{s}</span>
-                        ))}
+                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-zinc-900">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Email</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Mail className="w-4 h-4" /> {selectedUserProfile.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Phone</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Phone className="w-4 h-4" /> {selectedUserProfile.phone || 'Not provided'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Joined</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Calendar className="w-4 h-4" /> {new Date(selectedUserProfile.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
 
-              {selectedUser.bio && (
-                <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Bio</p>
-                  <p className="text-sm font-medium text-slate-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{selectedUser.bio}</p>
-                </div>
-              )}
-
-              {selectedUser.role === 'candidate' && (
-                <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
-                  <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-4">Application History</h3>
-                  {userApplications.length === 0 ? (
-                    <div className="bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 text-center text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                      This candidate has not applied to any jobs yet.
+                    <div className="space-y-4">
+                      {selectedUserProfile.current_company && (
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Current Company</p>
+                          <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUserProfile.current_company}</p>
+                        </div>
+                      )}
+                      {selectedUserProfile.experience_years != null && (
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Experience</p>
+                          <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUserProfile.experience_years || 0} years</p>
+                        </div>
+                      )}
+                      {selectedUserProfile.skills && selectedUserProfile.skills.length > 0 && (
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Skills</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedUserProfile.skills.map((s, i) => (
+                              <span key={i} className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 text-xs font-bold rounded-md">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800">
-                            <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Job Title</th>
-                            <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Applied On</th>
-                            <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-center">AI Score</th>
-                            <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-right">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-                          {userApplications.map(app => (
-                            <tr key={app.id} className="hover:bg-slate-50 dark:hover:bg-zinc-800/30 transition-colors">
-                              <td className="px-4 py-3">
-                                <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">{app.title}</p>
-                                <p className="text-xs font-medium text-slate-500 dark:text-zinc-400 mt-0.5">{app.company_name}</p>
-                              </td>
-                              <td className="px-4 py-3 text-sm font-medium text-slate-600 dark:text-zinc-300">
-                                {new Date(app.applied_at).toLocaleDateString()}
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border font-black text-xs ${getScoreColor(app.ai_match_score)}`}>
-                                  {app.ai_match_score}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-right">
-                                <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded-md">{app.status}</span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  </div>
+
+                  {selectedUserProfile.bio && (
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
+                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Bio</p>
+                      <p className="text-sm font-medium text-slate-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{selectedUserProfile.bio}</p>
                     </div>
                   )}
+
+                  {selectedUserProfile.role === 'candidate' && (
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
+                      <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-4">Application History</h3>
+                      {loadingApplications ? (
+                        <div className="space-y-2 animate-pulse">
+                          <div className="h-10 bg-slate-100 dark:bg-zinc-800 rounded w-full"></div>
+                          <div className="h-10 bg-slate-100 dark:bg-zinc-800 rounded w-full"></div>
+                        </div>
+                      ) : userApplications.length === 0 ? (
+                        <div className="bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 text-center text-slate-500 dark:text-zinc-400 text-sm font-medium">
+                          This candidate has not applied to any jobs yet.
+                        </div>
+                      ) : (
+                        <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800">
+                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Job Title</th>
+                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Applied On</th>
+                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-center">AI Score</th>
+                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-right">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+                              {userApplications.map(app => (
+                                <tr key={app.id} className="hover:bg-slate-50 dark:hover:bg-zinc-800/30 transition-colors">
+                                  <td className="px-4 py-3">
+                                    <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">{app.title}</p>
+                                    <p className="text-xs font-medium text-slate-500 dark:text-zinc-400 mt-0.5">{app.company_name}</p>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm font-medium text-slate-600 dark:text-zinc-300">
+                                    {new Date(app.applied_at).toLocaleDateString()}
+                                  </td>
+                                  <td className="px-4 py-3 text-center">
+                                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border font-black text-xs ${getScoreColor(app.ai_match_score)}`}>
+                                      {app.ai_match_score}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded-md">{app.status}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            ) : null}
           </div>
         </div>
       )}

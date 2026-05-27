@@ -26,7 +26,8 @@ const getUserById = async (id) => {
 
 const getAllUsers = async () => {
   const query = `
-    SELECT id, email, full_name, role, phone, profile_picture_url, is_active, created_at 
+    SELECT id, email, full_name, role, phone, profile_picture_url, is_active, created_at,
+           EXISTS(SELECT 1 FROM applications a WHERE a.user_id = users.id AND a.status IN ('hired', 'selected')) AS is_hired
     FROM users 
     ORDER BY created_at DESC;
   `;
