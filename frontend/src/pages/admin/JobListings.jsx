@@ -209,10 +209,14 @@ export default function JobListings() {
               return (
                 <div 
                   key={job.id} 
-                  className={`border border-slate-200 dark:border-zinc-800 border-l-4 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${
+                  className={`border border-l-4 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${
+                    isMenuOpen 
+                      ? 'ring-2 ring-slate-800 dark:ring-zinc-100 shadow-xl scale-[1.01] bg-slate-50 dark:bg-zinc-850/40 border-slate-350 dark:border-zinc-700' 
+                      : 'border-slate-200 dark:border-zinc-800'
+                  } ${
                     isActive 
                       ? 'bg-white dark:bg-zinc-900 border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:border-slate-300 dark:hover:border-zinc-700/80' 
-                      : 'bg-slate-50/50 dark:bg-zinc-900/40 border-l-slate-300 dark:border-l-zinc-700/85 opacity-70 grayscale-[10%] hover:opacity-90 hover:shadow-md'
+                      : 'bg-slate-50/70 dark:bg-zinc-900/40 border-l-slate-300/90 dark:border-l-zinc-700/90'
                   }`}
                 >
                   <div className="space-y-4">
@@ -229,7 +233,9 @@ export default function JobListings() {
                         <div>
                           <h3 
                             onClick={() => handleViewApplicants(job)}
-                            className="font-bold text-base text-slate-900 dark:text-zinc-50 leading-snug hover:text-slate-700 dark:hover:text-zinc-300 cursor-pointer line-clamp-1 transition-colors"
+                            className={`font-bold text-base leading-snug hover:text-slate-700 dark:hover:text-zinc-300 cursor-pointer line-clamp-1 transition-colors ${
+                              isActive ? 'text-slate-900 dark:text-zinc-50' : 'text-slate-450 dark:text-zinc-400 font-semibold'
+                            }`}
                             title={job.title}
                           >
                             {job.title}
@@ -256,7 +262,11 @@ export default function JobListings() {
                         <button
                           onMouseDown={(e) => e.stopPropagation()}
                           onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
-                          className="p-1.5 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors focus:outline-none"
+                          className={`p-1.5 rounded-lg transition-colors focus:outline-none cursor-pointer ${
+                            isMenuOpen 
+                              ? 'text-slate-900 dark:text-zinc-50 bg-slate-100 dark:bg-zinc-800 shadow-sm border border-slate-200/30 dark:border-zinc-700' 
+                              : 'text-slate-500 dark:text-zinc-450 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                          }`}
                         >
                           <MoreHorizontal className="w-5 h-5" />
                         </button>
@@ -323,24 +333,26 @@ export default function JobListings() {
                     </div>
 
                     {/* Metadata Section */}
-                    <div className="space-y-2.5 pt-1 text-slate-600 dark:text-zinc-400">
+                    <div className={`space-y-2.5 pt-1 transition-colors ${
+                      isActive ? 'text-slate-600 dark:text-zinc-400' : 'text-slate-400 dark:text-zinc-500 font-medium'
+                    }`}>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <MapPin className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                        <MapPin className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>{job.location || 'Remote'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <CircleDollarSign className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                        <CircleDollarSign className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>{formatSalary(job.salary_min, job.salary_max)}</span>
                       </div>
-                      <div className={`flex items-center gap-2 text-xs font-medium ${isDeadlinePassed ? 'text-rose-600 dark:text-rose-400' : ''}`}>
-                        <Calendar className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                      <div className={`flex items-center gap-2 text-xs font-medium ${isDeadlinePassed ? 'text-rose-600 dark:text-rose-450 font-semibold animate-pulse' : ''}`}>
+                        <Calendar className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>
                           {job.application_deadline ? `Deadline: ${new Date(job.application_deadline).toLocaleDateString()}` : 'No Deadline'}
                           {isDeadlinePassed && ' (Passed)'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <Users className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                        <Users className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
                         <span>
                           {job.applicant_count || 0} {job.applicant_count === 1 ? 'Applicant' : 'Applicants'}
                         </span>
@@ -355,23 +367,27 @@ export default function JobListings() {
                         {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
                       </span>
                     ) : (
-                      <div className="text-[10px] text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-widest">
+                      <div className="text-[10px] text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-widest text-center">
                         Aptitude test info
                       </div>
                     )}
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                       {job.results_published && job.status === 'active' && (
                         <button
                           onClick={() => setSelectedJobForInterviews(job)}
-                          className="h-8 px-3 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 bg-emerald-50/50 dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20 rounded-xl transition-all"
+                          className="h-8 px-3 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 bg-emerald-50/50 dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20 rounded-xl transition-all cursor-pointer"
                         >
                           Schedule
                         </button>
                       )}
                       <button
                         onClick={() => handleViewApplicants(job)}
-                        className="h-8 px-3 text-[11px] font-black text-white dark:text-zinc-950 bg-slate-900 dark:bg-zinc-50 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1"
+                        className={`h-8 px-3 text-[11px] font-black rounded-xl shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer ${
+                          isActive 
+                            ? 'text-white dark:text-zinc-950 bg-slate-900 dark:bg-zinc-50 hover:bg-slate-800 dark:hover:bg-white' 
+                            : 'text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200/50 dark:border-zinc-700/50'
+                        }`}
                       >
                         <span>View Applicants</span>
                       </button>
@@ -404,13 +420,16 @@ export default function JobListings() {
                   currentJobs.map((job) => {
                     const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
                     const isActive = job.status === 'active';
+                    const isMenuOpen = openDropdownId === job.id;
                     return (
                       <tr 
                         key={job.id} 
-                        className={`transition-colors group ${
-                          isActive 
-                            ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100' 
-                            : 'opacity-60 grayscale-[10%] hover:opacity-80 text-slate-500 dark:text-zinc-400 bg-slate-50/5 dark:bg-zinc-900/5'
+                        className={`transition-colors group border-b border-slate-100 dark:border-zinc-800/80 ${
+                          isMenuOpen
+                            ? 'bg-slate-100/90 dark:bg-zinc-800/80 text-slate-900 dark:text-zinc-50 shadow-inner'
+                            : isActive 
+                              ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100' 
+                              : 'bg-slate-50/20 dark:bg-zinc-900/10 hover:bg-slate-50/40 dark:hover:bg-zinc-800/20'
                         }`}
                       >
                         <td className="px-6 py-4">
@@ -424,7 +443,7 @@ export default function JobListings() {
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <p className={`font-bold ${isActive ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 dark:text-zinc-400'}`}>{job.title}</p>
+                                <p className={`font-bold ${isActive ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 dark:text-zinc-405'}`}>{job.title}</p>
                                 {job.quiz_id && isActive && (
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                                     {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
@@ -437,7 +456,7 @@ export default function JobListings() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-medium text-sm text-slate-700 dark:text-zinc-300">{job.job_type}</td>
+                        <td className={`px-6 py-4 font-medium text-sm ${isActive ? 'text-slate-700 dark:text-zinc-300' : 'text-slate-450 dark:text-zinc-550'}`}>{job.job_type}</td>
                         <td className="px-6 py-4">
                           {job.status === 'active' ? (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
@@ -449,14 +468,18 @@ export default function JobListings() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm font-medium text-slate-500 dark:text-zinc-400">
+                        <td className={`px-6 py-4 text-sm font-medium ${isActive ? 'text-slate-500 dark:text-zinc-400' : 'text-slate-450 dark:text-zinc-550'}`}>
                           {job.application_deadline ? new Date(job.application_deadline).toLocaleDateString() : 'No Deadline'}
                         </td>
                         <td className="px-6 py-4 text-right relative">
                           <button
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
-                            className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors focus:outline-none"
+                            className={`p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${
+                              isMenuOpen 
+                                ? 'text-slate-900 dark:text-zinc-50 bg-slate-200/80 dark:bg-zinc-700/80 shadow-sm border border-slate-300/50 dark:border-zinc-650' 
+                                : 'text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                            }`}
                           >
                             <MoreHorizontal className="w-5 h-5" />
                           </button>
