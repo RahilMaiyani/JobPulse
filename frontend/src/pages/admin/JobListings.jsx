@@ -205,6 +205,7 @@ export default function JobListings() {
               };
 
               const isActive = job.status === 'active';
+              const isMenuOpen = openDropdownId === job.id;
 
               return (
                 <div 
