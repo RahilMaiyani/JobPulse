@@ -6,7 +6,8 @@ const getAllJobs = async () => {
            (SELECT COUNT(*) FROM applications a 
             WHERE a.job_id = j.id AND a.status = 'interview' 
             AND NOT EXISTS (SELECT 1 FROM interview_slots i WHERE i.application_id = a.id)
-           ) as unscheduled_count
+           ) as unscheduled_count,
+           (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) as applicant_count
     FROM jobs j
     LEFT JOIN mcq_quizzes q ON j.id = q.job_id
     ORDER BY j.created_at DESC
