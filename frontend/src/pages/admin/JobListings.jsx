@@ -358,8 +358,8 @@ export default function JobListings() {
                   {/* Footer Row Actions */}
                   <div className="border-t border-slate-100 dark:border-zinc-800/80 pt-4 flex items-center justify-between gap-3">
                     {job.quiz_id && job.status === 'active' ? (
-                      <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
-                        {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
+                      <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
+                        {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
                       </span>
                     ) : (
                       <div className="text-[10px] text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-widest text-center">
@@ -368,12 +368,20 @@ export default function JobListings() {
                     )}
 
                     <div className="flex gap-2 shrink-0">
+                      {isQuizFinished && !job.results_published && job.status === 'active' && (
+                        <button
+                          onClick={() => handlePublishResults(job)}
+                          className="h-8 px-3 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 bg-emerald-50/50 dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Publish
+                        </button>
+                      )}
                       {job.results_published && job.status === 'active' && (
                         <button
                           onClick={() => setSelectedJobForInterviews(job)}
-                          className="h-8 px-3 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 bg-emerald-50/50 dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20 rounded-xl transition-all cursor-pointer"
+                          className="h-8 px-3 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-zinc-800 bg-emerald-50/50 dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20 rounded-xl transition-all cursor-pointer flex items-center gap-1"
                         >
-                          Schedule
+                          <Calendar className="w-3.5 h-3.5" /> Schedule
                         </button>
                       )}
                       <button
@@ -437,8 +445,8 @@ export default function JobListings() {
                               <div className="flex items-center gap-2">
                                 <p className={`font-bold ${isActive ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 dark:text-zinc-405'}`}>{job.title}</p>
                                 {job.quiz_id && isActive && (
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
-                                    {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Quiz Finished' : 'Quiz Set'}
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
+                                    {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
                                   </span>
                                 )}
                               </div>

@@ -148,6 +148,13 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                       </div>
 
                       <div className="flex flex-col justify-end shrink-0 md:w-48 pt-4 md:pt-0">
+                        {isAlreadyScheduled && (
+                          <div className="mb-3 text-center">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2 py-1 rounded-md inline-block shadow-sm">
+                              Last Sent: {new Date(existingInterviews.find(i => i.application_id === app.id).updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                        )}
                         <button 
                           onClick={() => handleScheduleSubmit(app)}
                           disabled={scheduleMutation.isPending}

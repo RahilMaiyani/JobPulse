@@ -176,11 +176,31 @@ const sendInterviewScheduledEmail = async (email, name, jobTitle, scheduledDate,
   });
 };
 
+const sendTestClosedEmail = async (email, name, jobTitle) => {
+  const html = buildEmailTemplate({
+    title: "Aptitude Test Closed \uD83D\uDD12",
+    message: `
+      <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
+      <p style="margin-bottom: 16px;">The Aptitude Test for the <strong>${jobTitle}</strong> position is now closed.</p>
+      <p style="margin-bottom: 16px;">We are currently evaluating the tests and results will be declared soon.</p>
+      <p style="margin-bottom: 0;">Best of luck!<br>The JobDrive Team</p>
+    `,
+    color: "#eab308" // yellow
+  });
+
+  await sendEmail({
+    to: email,
+    subject: `Update: Aptitude Test for ${jobTitle} is Closed`,
+    html
+  });
+};
+
 module.exports = {
   sendApplicationReceivedEmail,
   sendStatusUpdateEmail,
   sendTestAvailableEmail,
   sendTestResultEmail,
   sendWelcomeEmail,
-  sendInterviewScheduledEmail
+  sendInterviewScheduledEmail,
+  sendTestClosedEmail
 };

@@ -58,27 +58,45 @@ const createOrUpdateQuiz = async (req, res, next) => {
       }
     }
 
-    // Send Test Available Email to Shortlisted Candidates
+    // Send Emails and Notifications to Shortlisted Candidates
     try {
       const job = await jobModel.getJobById(jobId);
       const apps = await applicationModel.getJobApplications(jobId);
       const shortlisted = apps.filter(app => app.status === 'shortlisted');
+      
+      const now = new Date();
+      const end = new Date(quiz.scheduled_end_time);
+
       for (const app of shortlisted) {
-        await emailService.sendTestAvailableEmail(
-          app.candidate_email,
-          app.candidate_name,
-          job.title,
-          quiz.scheduled_end_time
-        );
-        await createNotification(
-          app.user_id,
-          "Aptitude Test Available \u23F0",
-          `Your Aptitude Test for ${job.title} is now available. Deadline: ${new Date(quiz.scheduled_end_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })} IST.`,
-          "info"
-        );
+        if (now < end) {
+          await emailService.sendTestAvailableEmail(
+            app.candidate_email,
+            app.candidate_name,
+            job.title,
+            quiz.scheduled_end_time
+          );
+          await createNotification(
+            app.user_id,
+            "Aptitude Test Available \u23F0",
+            `Your Aptitude Test for ${job.title} is now available. Deadline: ${new Date(quiz.scheduled_end_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })} IST.`,
+            "info"
+          );
+        } else {
+          await emailService.sendTestClosedEmail(
+            app.candidate_email,
+            app.candidate_name,
+            job.title
+          );
+          await createNotification(
+            app.user_id,
+            "Aptitude Test Closed \uD83D\uDD12",
+            `The Aptitude Test for ${job.title} has closed. Results will be declared soon.`,
+            "info"
+          );
+        }
       }
     } catch (emailErr) {
-      console.error("Failed to send Test Available emails:", emailErr);
+      console.error("Failed to send emails:", emailErr);
     }
 
     res.status(200).json({ message: 'Quiz saved successfully', quiz, questions: newQuestions });
