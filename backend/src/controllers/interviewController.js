@@ -60,7 +60,7 @@ exports.scheduleInterview = async (req, res) => {
       // Send Notification
       await createNotification(
         candidateId,
-        "Interview Scheduled \uD83D\uDCC5",
+        "Interview Scheduled",
         `Your interview for the ${title} position has been scheduled on ${new Date(scheduledDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'long' })} at ${scheduledTime} IST.`,
         'success'
       );

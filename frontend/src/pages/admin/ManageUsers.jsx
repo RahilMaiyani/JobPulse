@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { useUsers, useCreateUser, useToggleUserStatus, useUserProfile } from '../../hooks/useUsers';
-import { useUserApplications } from '../../hooks/useApplications';
-import { Users, Search, Plus, Shield, UserCircle, Briefcase, Mail, Phone, Calendar, X, Ban, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useUsers, useCreateUser, useToggleUserStatus } from '../../hooks/useUsers';
+import { Users, Search, Plus, Shield, UserCircle, Briefcase, X, Ban, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import ManageUsersSkeleton from '../../components/skeletons/ManageUsersSkeleton';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import ViewUserProfileModal from '../../components/modals/ViewUserProfileModal';
 
 export default function ManageUsers() {
   const { user: currentUser } = useAuth();
-  
+
   // Filters and Pagination
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -21,8 +21,7 @@ export default function ManageUsers() {
   // Modal States
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedUserRole, setSelectedUserRole] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [userForm, setUserForm] = useState({
     fullName: '',
@@ -32,9 +31,6 @@ export default function ManageUsers() {
   });
 
   const { data: users = [], isLoading: loading } = useUsers(currentUser.id);
-  
-  const { data: selectedUserProfile, isLoading: loadingProfile } = useUserProfile(selectedUserId);
-  const { data: userApplications = [], isLoading: loadingApplications } = useUserApplications(selectedUserRole === 'candidate' ? selectedUserId : null);
 
   // Reset to page 1 if filters change
   useEffect(() => {
@@ -52,15 +48,8 @@ export default function ManageUsers() {
   };
 
   const openProfile = (user) => {
-    setSelectedUserId(user.id);
-    setSelectedUserRole(user.role);
+    setSelectedUser(user);
     setIsProfileModalOpen(true);
-  };
-
-  const getScoreColor = (score) => {
-    if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';
-    if (score >= 50) return 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/10 dark:border-yellow-500/20';
-    return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
   };
 
   const toggleStatusMutation = useToggleUserStatus();
@@ -74,9 +63,9 @@ export default function ManageUsers() {
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' || 
-                          (statusFilter === 'active' && user.is_active) || 
-                          (statusFilter === 'deactivated' && !user.is_active);
+    const matchesStatus = statusFilter === 'all' ||
+      (statusFilter === 'active' && user.is_active) ||
+      (statusFilter === 'deactivated' && !user.is_active);
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -88,21 +77,21 @@ export default function ManageUsers() {
     <DashboardLayout>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">Manage Users</h1>
-          <p className="text-slate-500 dark:text-zinc-400 font-medium mt-1">Directory of all Candidates, HR, and Admins.</p>
+          <h1 className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Manage Users</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-2 text-sm">Directory of all Candidates, HR, and Admins.</p>
         </div>
         <button
           onClick={() => setIsNewUserModalOpen(true)}
-          className="inline-flex items-center justify-center h-10 px-4 font-bold text-white bg-slate-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-lg shadow-slate-300 dark:shadow-none transition-all active:scale-95 gap-2 whitespace-nowrap"
+          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-tranzinc-y-0.5 gap-2 whitespace-nowrap duration-300"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           New User
         </button>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="md:col-span-2 relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500">
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="md:col-span-2 relative group">
+          <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
             <Search className="w-5 h-5" />
           </div>
           <input
@@ -110,14 +99,14 @@ export default function ManageUsers() {
             placeholder="Search users by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 h-12 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none"
+            className="w-full pl-12 pr-4 h-12 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all"
           />
         </div>
         <div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="w-full h-12 px-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none"
+            className="w-full h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
           >
             <option value="all">All Roles</option>
             <option value="candidate">Candidate</option>
@@ -129,7 +118,7 @@ export default function ManageUsers() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full h-12 px-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none"
+            className="w-full h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -141,32 +130,32 @@ export default function ManageUsers() {
       {loading ? (
         <ManageUsersSkeleton count={5} />
       ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm dark:shadow-none overflow-hidden flex flex-col">
+        <div className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] shadow-xl shadow-zinc-200/20 dark:shadow-none overflow-hidden flex flex-col relative">
           <div className="overflow-x-auto min-h-[400px] flex-1">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800">
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">User</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Role</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Status</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-right">Actions</th>
+                <tr className="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800/60">
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">User</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Role</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((u) => (
-                    <tr key={u.id} className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors ${!u.is_active ? 'opacity-60 bg-slate-50 dark:bg-zinc-800/20' : ''}`}>
+                    <tr key={u.id} className={`hover:bg-zinc-50/80 dark:hover:bg-zinc-900/40 transition-colors group ${!u.is_active ? 'opacity-60 bg-zinc-50/50 dark:bg-zinc-900/20' : ''}`}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`}
-                            className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-zinc-700 grayscale"
+                            className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700 grayscale"
                             style={{ filter: !u.is_active ? 'grayscale(100%)' : 'none' }}
                             alt={u.full_name}
                           />
                           <div>
-                            <p className="font-bold text-slate-900 dark:text-zinc-100 line-clamp-1">{u.full_name}</p>
-                            <p className="text-xs font-medium text-slate-500 dark:text-zinc-400">{u.email}</p>
+                            <p className="font-bold text-zinc-900 dark:text-zinc-100 line-clamp-1">{u.full_name}</p>
+                            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
                           </div>
                         </div>
                       </td>
@@ -180,36 +169,34 @@ export default function ManageUsers() {
                       </td>
                       <td className="px-6 py-4">
                         {u.is_active ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4"/> Active</span>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-zinc-500"><Ban className="w-4 h-4"/> Deactivated</span>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deactivated</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openProfile(u)}
-                            className="px-4 py-2 text-xs font-bold text-slate-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg shadow-sm transition-colors"
+                            className="px-4 py-2 text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-xl shadow-sm hover:shadow transition-all active:scale-95"
                           >
-                            View Profile
+                            Profile
                           </button>
                           {u.is_active ? (
                             <button
                               onClick={() => handleToggleUserStatus(u)}
-                              className="px-3 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-lg transition-colors flex items-center gap-1.5"
+                              className="w-8 h-8 flex items-center justify-center text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 rounded-xl transition-all active:scale-95"
                               title="Deactivate User"
                             >
-                              <Ban className="w-3.5 h-3.5" />
-                              Deactivate
+                              <Ban className="w-4 h-4" />
                             </button>
                           ) : (
                             <button
                               onClick={() => handleToggleUserStatus(u)}
-                              className="px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 rounded-lg transition-colors flex items-center gap-1.5"
+                              className="w-8 h-8 flex items-center justify-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 rounded-xl transition-all active:scale-95"
                               title="Reactivate User"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              Reactivate
+                              <CheckCircle2 className="w-4 h-4" />
                             </button>
                           )}
                         </div>
@@ -218,7 +205,7 @@ export default function ManageUsers() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-12 text-center text-slate-500 dark:text-zinc-500">
+                    <td colSpan="4" className="px-6 py-12 text-center text-zinc-500 dark:text-zinc-500">
                       No users found matching your filters.
                     </td>
                   </tr>
@@ -226,40 +213,39 @@ export default function ManageUsers() {
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50 dark:bg-zinc-800/50">
-              <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
-                Showing <span className="font-bold text-slate-900 dark:text-zinc-100">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-bold text-slate-900 dark:text-zinc-100">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of <span className="font-bold text-slate-900 dark:text-zinc-100">{filteredUsers.length}</span> results
+            <div className="px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between bg-white dark:bg-zinc-950">
+              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                Showing <span className="text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of <span className="text-zinc-700 dark:text-zinc-300">{filteredUsers.length}</span>
               </p>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
+                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4"/>
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 rounded-lg text-sm font-bold flex items-center justify-center transition-colors ${
-                        currentPage === page ? 'bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800'
-                      }`}
+                      className={`w-9 h-9 rounded-xl text-xs font-black flex items-center justify-center transition-all ${currentPage === page ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 scale-110' : 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-105'
+                        }`}
                     >
                       {page}
                     </button>
                   ))}
                 </div>
-                <button 
+                <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
+                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4"/>
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -269,37 +255,40 @@ export default function ManageUsers() {
 
       {/* NEW USER MODAL */}
       {isNewUserModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={() => setIsNewUserModalOpen(false)}></div>
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-800/50">
-              <h2 className="text-xl font-black text-slate-900 dark:text-zinc-100">Create New User</h2>
-              <button onClick={() => setIsNewUserModalOpen(false)} className="text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors"><X className="w-5 h-5" /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+          <div className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setIsNewUserModalOpen(false)}></div>
+          <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
+            <div className="p-6 md:p-8 flex justify-between items-start bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">Create New User</h2>
+                <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">Add to directory</p>
+              </div>
+              <button onClick={() => setIsNewUserModalOpen(false)} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"><X className="w-5 h-5" /></button>
             </div>
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Full Name *</label>
-                <input required type="text" value={userForm.fullName} onChange={(e) => setUserForm({ ...userForm, fullName: e.target.value })} className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none" placeholder="John Doe" />
+            <form onSubmit={handleCreateUser} className="p-6 md:p-8 space-y-5 bg-white dark:bg-zinc-950">
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Full Name *</label>
+                <input required type="text" value={userForm.fullName} onChange={(e) => setUserForm({ ...userForm, fullName: e.target.value })} className="w-full h-12 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" placeholder="John Doe" />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Email Address *</label>
-                <input required type="email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none" placeholder="john@example.com" />
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Email Address *</label>
+                <input required type="email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} className="w-full h-12 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" placeholder="john@example.com" />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Password *</label>
-                <input required type="password" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none" placeholder="••••••••" />
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Password *</label>
+                <input required type="password" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} className="w-full h-12 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" placeholder="••••••••" />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">Role</label>
-                <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })} className="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm font-medium text-slate-900 dark:text-zinc-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700 outline-none">
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Role</label>
+                <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })} className="w-full h-12 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all cursor-pointer appearance-none">
                   <option value="candidate">Candidate</option>
                   <option value="hr">HR</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div className="pt-4">
-                <button disabled={createUserMutation.isPending} type="submit" className="w-full h-12 font-bold text-white dark:text-zinc-900 bg-slate-900 dark:bg-zinc-100 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                  {createUserMutation.isPending ? <div className="w-4 h-4 border-2 border-slate-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Create User'}
+              <div className="pt-6">
+                <button disabled={createUserMutation.isPending} type="submit" className="w-full h-12 font-black text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2 hover:-tranzinc-y-0.5 duration-300">
+                  {createUserMutation.isPending ? <div className="w-5 h-5 border-2 border-zinc-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Create User'}
                 </button>
               </div>
             </form>
@@ -308,139 +297,11 @@ export default function ManageUsers() {
       )}
 
       {/* VIEW PROFILE MODAL */}
-      {isProfileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={() => setIsProfileModalOpen(false)}></div>
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-            
-            {loadingProfile ? (
-              <div className="p-12 text-center space-y-4 animate-pulse flex flex-col items-center">
-                <div className="w-16 h-16 bg-slate-200 dark:bg-zinc-800 rounded-2xl"></div>
-                <div className="w-48 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-                <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-              </div>
-            ) : selectedUserProfile ? (
-              <>
-                <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUserProfile.full_name)}&background=f1f5f9&color=0f172a`}
-                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white dark:border-zinc-800 shadow-sm"
-                      alt={selectedUserProfile.full_name}
-                    />
-                    <div>
-                      <h2 className="text-2xl font-black text-slate-900 dark:text-zinc-100">{selectedUserProfile.full_name}</h2>
-                      <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1">{selectedUserProfile.role}</p>
-                    </div>
-                  </div>
-                  <button onClick={() => setIsProfileModalOpen(false)} className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"><X className="w-5 h-5" /></button>
-                </div>
-
-                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-zinc-900">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Email</p>
-                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Mail className="w-4 h-4" /> {selectedUserProfile.email}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Phone</p>
-                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Phone className="w-4 h-4" /> {selectedUserProfile.phone || 'Not provided'}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Joined</p>
-                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-2 mt-1"><Calendar className="w-4 h-4" /> {new Date(selectedUserProfile.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {selectedUserProfile.current_company && (
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Current Company</p>
-                          <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUserProfile.current_company}</p>
-                        </div>
-                      )}
-                      {selectedUserProfile.experience_years != null && (
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Experience</p>
-                          <p className="text-sm font-bold text-slate-700 dark:text-zinc-300 mt-1">{selectedUserProfile.experience_years || 0} years</p>
-                        </div>
-                      )}
-                      {selectedUserProfile.skills && selectedUserProfile.skills.length > 0 && (
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Skills</p>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedUserProfile.skills.map((s, i) => (
-                              <span key={i} className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 text-xs font-bold rounded-md">{s}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {selectedUserProfile.bio && (
-                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Bio</p>
-                      <p className="text-sm font-medium text-slate-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{selectedUserProfile.bio}</p>
-                    </div>
-                  )}
-
-                  {selectedUserProfile.role === 'candidate' && (
-                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-zinc-800">
-                      <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-4">Application History</h3>
-                      {loadingApplications ? (
-                        <div className="space-y-2 animate-pulse">
-                          <div className="h-10 bg-slate-100 dark:bg-zinc-800 rounded w-full"></div>
-                          <div className="h-10 bg-slate-100 dark:bg-zinc-800 rounded w-full"></div>
-                        </div>
-                      ) : userApplications.length === 0 ? (
-                        <div className="bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 text-center text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                          This candidate has not applied to any jobs yet.
-                        </div>
-                      ) : (
-                        <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-                          <table className="w-full text-left border-collapse">
-                            <thead>
-                              <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800">
-                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Job Title</th>
-                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Applied On</th>
-                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-center">AI Score</th>
-                                <th className="px-4 py-3 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-right">Status</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-                              {userApplications.map(app => (
-                                <tr key={app.id} className="hover:bg-slate-50 dark:hover:bg-zinc-800/30 transition-colors">
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">{app.title}</p>
-                                    <p className="text-xs font-medium text-slate-500 dark:text-zinc-400 mt-0.5">{app.company_name}</p>
-                                  </td>
-                                  <td className="px-4 py-3 text-sm font-medium text-slate-600 dark:text-zinc-300">
-                                    {new Date(app.applied_at).toLocaleDateString()}
-                                  </td>
-                                  <td className="px-4 py-3 text-center">
-                                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border font-black text-xs ${getScoreColor(app.ai_match_score)}`}>
-                                      {app.ai_match_score}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3 text-right">
-                                    <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded-md">{app.status}</span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : null}
-          </div>
-        </div>
-      )}
+      <ViewUserProfileModal 
+        isOpen={isProfileModalOpen} 
+        onClose={() => setIsProfileModalOpen(false)} 
+        user={selectedUser} 
+      />
     </DashboardLayout>
   );
 }

@@ -127,16 +127,16 @@ export default function CandidateAptitudeTest() {
 
   if (submitted && finalResult) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white max-w-md w-full rounded-3xl p-8 text-center shadow-xl border border-slate-200">
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+        <div className="bg-white max-w-md w-full rounded-3xl p-8 text-center shadow-xl border border-zinc-200">
           <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 ${finalResult.passed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
             {finalResult.passed ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
           </div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">Test Completed</h1>
-          <p className="text-slate-500 font-medium mb-8">Your answers have been securely saved and evaluated.</p>
+          <h1 className="text-3xl font-black text-zinc-900 mb-2">Test Completed</h1>
+          <p className="text-zinc-500 font-medium mb-8">Your answers have been securely saved and evaluated.</p>
           
-          <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Your Score</p>
+          <div className="bg-zinc-50 rounded-2xl p-6 mb-8 border border-zinc-100">
+            <p className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1">Your Score</p>
             <p className={`text-5xl font-black tabular-nums ${finalResult.passed ? 'text-emerald-600' : 'text-rose-600'}`}>
               {finalResult.score}%
             </p>
@@ -147,7 +147,7 @@ export default function CandidateAptitudeTest() {
 
           <button 
             onClick={() => navigate('/candidate/applications')}
-            className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
+            className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
           >
             Return to Dashboard
           </button>
@@ -161,20 +161,20 @@ export default function CandidateAptitudeTest() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-indigo-100">
+    <div className="min-h-screen bg-zinc-50 flex flex-col font-sans selection:bg-indigo-100">
       {/* HEADER */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
+      <header className="bg-white border-b border-zinc-200 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <div className="hidden sm:block">
-            <h1 className="text-xl font-black text-slate-900">Aptitude Test</h1>
-            <p className="text-xs font-bold text-slate-500">Do not refresh the page</p>
+            <h1 className="text-xl font-black text-zinc-900">Aptitude Test</h1>
+            <p className="text-xs font-bold text-zinc-500">Do not refresh the page</p>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <div className="flex flex-col items-end">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Time Remaining</span>
-            <div className={`flex items-center gap-2 text-2xl font-black tabular-nums ${timeLeft < 300 ? 'text-rose-600 animate-pulse' : 'text-slate-900'}`}>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Time Remaining</span>
+            <div className={`flex items-center gap-2 text-2xl font-black tabular-nums ${timeLeft < 300 ? 'text-rose-600 animate-pulse' : 'text-zinc-900'}`}>
               <Clock className="w-5 h-5" />
               {formatTime(timeLeft)}
             </div>
@@ -183,9 +183,9 @@ export default function CandidateAptitudeTest() {
           <button 
             onClick={() => submitTest(true)}
             disabled={isSubmitting}
-            className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-70 flex items-center gap-2"
+            className="h-10 px-6 bg-zinc-900 hover:bg-zinc-800 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-70 flex items-center gap-2"
           >
-            {isSubmitting ? <div className="w-4 h-4 border-2 border-slate-400 border-t-white rounded-full animate-spin"></div> : null}
+            {isSubmitting ? <div className="w-4 h-4 border-2 border-zinc-400 border-t-white rounded-full animate-spin"></div> : null}
             Submit Test
           </button>
         </div>
@@ -196,8 +196,8 @@ export default function CandidateAptitudeTest() {
         
         {/* SIDEBAR NAVIGATION */}
         <div className="w-full md:w-64 shrink-0 flex flex-col gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm sticky top-28">
-            <h3 className="text-sm font-black text-slate-900 mb-4">Question Navigator</h3>
+          <div className="bg-white rounded-2xl border border-zinc-200 p-5 shadow-sm sticky top-28">
+            <h3 className="text-sm font-black text-zinc-900 mb-4">Question Navigator</h3>
             <div className="grid grid-cols-5 gap-2">
               {questions.map((q, i) => {
                 const isAnswered = answers[q.id] !== undefined;
@@ -209,7 +209,7 @@ export default function CandidateAptitudeTest() {
                     className={`
                       h-10 rounded-lg text-sm font-bold flex items-center justify-center transition-all tabular-nums
                       ${isCurrent ? 'ring-2 ring-indigo-600 ring-offset-2' : ''}
-                      ${isAnswered ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}
+                      ${isAnswered ? 'bg-indigo-600 text-white shadow-sm' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'}
                     `}
                   >
                     {i + 1}
@@ -218,12 +218,12 @@ export default function CandidateAptitudeTest() {
               })}
             </div>
             
-            <div className="mt-6 pt-6 border-t border-slate-100">
+            <div className="mt-6 pt-6 border-t border-zinc-100">
               <div className="flex justify-between items-center text-sm font-bold">
-                <span className="text-slate-500">Answered:</span>
+                <span className="text-zinc-500">Answered:</span>
                 <span className="text-indigo-600">{answeredCount} / {totalQ}</span>
               </div>
-              <div className="w-full h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+              <div className="w-full h-2 bg-zinc-100 rounded-full mt-2 overflow-hidden">
                 <div 
                   className="h-full bg-indigo-600 transition-all duration-500"
                   style={{ width: `${(answeredCount / totalQ) * 100}%` }}
@@ -236,12 +236,12 @@ export default function CandidateAptitudeTest() {
         {/* MAIN QUESTION AREA */}
         <div className="flex-1 flex flex-col">
           {currentQ ? (
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 flex-1">
+            <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm p-6 sm:p-10 flex-1">
               <div className="mb-8">
                 <span className="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-black uppercase tracking-widest mb-4">
                   Question {currentQuestionIndex + 1} of {totalQ}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-snug whitespace-pre-wrap">
+                <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 leading-snug whitespace-pre-wrap">
                   {currentQ.question_text}
                 </h2>
               </div>
@@ -257,16 +257,16 @@ export default function CandidateAptitudeTest() {
                         w-full text-left p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group
                         ${isSelected 
                           ? 'border-indigo-600 bg-indigo-50/50 shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' 
-                          : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'}
+                          : 'border-zinc-200 hover:border-indigo-300 hover:bg-zinc-50'}
                       `}
                     >
                       <div className={`
                         w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors
-                        ${isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 group-hover:border-indigo-400'}
+                        ${isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-zinc-300 group-hover:border-indigo-400'}
                       `}>
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white"></div>}
                       </div>
-                      <span className={`text-base font-semibold ${isSelected ? 'text-indigo-900' : 'text-slate-700'}`}>
+                      <span className={`text-base font-semibold ${isSelected ? 'text-indigo-900' : 'text-zinc-700'}`}>
                         {opt}
                       </span>
                     </button>
@@ -275,8 +275,8 @@ export default function CandidateAptitudeTest() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 flex items-center justify-center">
-              <p className="text-slate-500 font-bold">No questions available.</p>
+            <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm p-10 flex items-center justify-center">
+              <p className="text-zinc-500 font-bold">No questions available.</p>
             </div>
           )}
 
@@ -285,7 +285,7 @@ export default function CandidateAptitudeTest() {
             <button
               onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
               disabled={currentQuestionIndex === 0}
-              className="h-12 px-6 rounded-xl font-bold flex items-center gap-2 transition-colors disabled:opacity-30 text-slate-700 hover:bg-white hover:shadow-sm"
+              className="h-12 px-6 rounded-xl font-bold flex items-center gap-2 transition-colors disabled:opacity-30 text-zinc-700 hover:bg-white hover:shadow-sm"
             >
               <ChevronLeft className="w-5 h-5" /> Previous
             </button>
@@ -293,7 +293,7 @@ export default function CandidateAptitudeTest() {
             {currentQuestionIndex < totalQ - 1 ? (
               <button
                 onClick={() => setCurrentQuestionIndex(prev => Math.min(totalQ - 1, prev + 1))}
-                className="h-12 px-6 rounded-xl font-bold flex items-center gap-2 bg-white text-indigo-600 shadow-sm border border-slate-200 hover:border-indigo-300 transition-colors"
+                className="h-12 px-6 rounded-xl font-bold flex items-center gap-2 bg-white text-indigo-600 shadow-sm border border-zinc-200 hover:border-indigo-300 transition-colors"
               >
                 Next Question <ChevronRight className="w-5 h-5" />
               </button>

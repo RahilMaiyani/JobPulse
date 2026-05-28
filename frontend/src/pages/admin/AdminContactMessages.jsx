@@ -41,20 +41,20 @@ export default function AdminContactMessages() {
       <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-            <MessageCircle className="w-6 h-6 text-slate-900 dark:text-zinc-100" />
+          <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <MessageCircle className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
             Contact Messages
           </h1>
-          <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium mt-1">View and manage messages from candidates</p>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-1">View and manage messages from candidates</p>
         </div>
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -tranzinc-y-1/2 text-zinc-400" />
           <input
             type="text"
             placeholder="Search messages..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-64 h-10 pl-9 pr-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-100 outline-none"
+            className="w-full md:w-64 h-10 pl-9 pr-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 outline-none"
           />
         </div>
       </div>
@@ -62,37 +62,37 @@ export default function AdminContactMessages() {
       {isLoading ? (
         <AdminMessagesSkeleton />
       ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
           {filteredMessages.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-slate-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
+            <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-zinc-100">No Messages</h3>
-            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium mt-1">You're all caught up!</p>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">No Messages</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-1">You're all caught up!</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-zinc-800/80">
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
             {filteredMessages.map((msg) => (
               <div 
                 key={msg.id} 
                 onClick={() => handleMarkAsRead(msg.id, msg.is_read)}
-                className={`p-5 transition-colors cursor-pointer group ${msg.is_read ? 'bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800/50' : 'bg-slate-50/50 dark:bg-zinc-800/30 hover:bg-slate-100 dark:hover:bg-zinc-800'}`}
+                className={`p-5 transition-colors cursor-pointer group ${msg.is_read ? 'bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/50' : 'bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3 flex-wrap">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-slate-900 dark:bg-zinc-100'}`}></div>
-                        <h3 className={`font-bold text-slate-900 dark:text-zinc-100 ${msg.is_read ? 'text-base' : 'text-base'}`}>{msg.subject}</h3>
+                        <div className={`w-2 h-2 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-zinc-900 dark:bg-zinc-100'}`}></div>
+                        <h3 className={`font-bold text-zinc-900 dark:text-zinc-100 ${msg.is_read ? 'text-base' : 'text-base'}`}>{msg.subject}</h3>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-zinc-400">
+                      <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
                         <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" /> {msg.sender_name} ({msg.sender_email})</span>
-                        <span className="text-slate-300 dark:text-zinc-600">•</span>
+                        <span className="text-zinc-300 dark:text-zinc-600">•</span>
                         <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {new Date(msg.created_at).toLocaleString()}</span>
                       </div>
                     </div>
-                    <p className={`text-sm ${msg.is_read ? 'text-slate-500 dark:text-zinc-400 font-medium' : 'text-slate-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap pl-4`}>
+                    <p className={`text-sm ${msg.is_read ? 'text-zinc-500 dark:text-zinc-400 font-medium' : 'text-zinc-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap pl-4`}>
                       {msg.message}
                     </p>
                   </div>
@@ -100,7 +100,7 @@ export default function AdminContactMessages() {
                     {!msg.is_read && (
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleMarkAsRead(msg.id, msg.is_read); }}
-                        className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                        className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
                         title="Mark as Read"
                       >
                         <CheckCircle className="w-4 h-4" />
@@ -108,7 +108,7 @@ export default function AdminContactMessages() {
                     )}
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleArchive(msg.id); }}
-                      className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                      className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
                       title="Archive Message"
                     >
                       <Archive className="w-4 h-4" />

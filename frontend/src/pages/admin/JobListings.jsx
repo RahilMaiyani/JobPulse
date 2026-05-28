@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useJobs, useDeleteJob, useToggleJobStatus, usePublishJobResults } from '../../hooks/useJobs';
 import { useQueryClient } from '@tanstack/react-query';
-import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, FileQuestion, Calendar, LayoutGrid, List, CircleDollarSign } from 'lucide-react';
+import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, FileQuestion, Calendar, LayoutGrid, List, CircleDollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ManageQuizModal from '../../components/admin/ManageQuizModal';
 import JobListingsSkeleton from '../../components/skeletons/JobListingsSkeleton';
@@ -127,33 +127,33 @@ export default function JobListings() {
     <DashboardLayout>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">Job Listings</h1>
-          <p className="text-slate-500 dark:text-zinc-400 font-medium mt-1">Manage active job postings and applicants.</p>
+          <h1 className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Job Listings</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-2 text-sm">Manage active job postings and applicants.</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center h-10 px-4 font-bold text-white bg-slate-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-slate-800 dark:hover:bg-white rounded-xl shadow-lg shadow-slate-300 dark:shadow-none transition-all active:scale-95 gap-2"
+          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-tranzinc-y-0.5 gap-2 duration-300 whitespace-nowrap"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           Post New Job
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500" />
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -tranzinc-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors" />
           <input
             type="text"
             placeholder="Search jobs by title or location..."
             value={jobSearchTerm}
             onChange={(e) => setJobSearchTerm(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 dark:focus:ring-zinc-700 dark:focus:border-zinc-700 outline-none"
+            className="w-full h-12 pl-12 pr-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all"
           />
         </div>
         <select
           value={jobFilterStatus}
           onChange={(e) => setJobFilterStatus(e.target.value)}
-          className="h-10 px-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-slate-700 dark:text-zinc-300 outline-none cursor-pointer focus:ring-2 focus:ring-slate-900 dark:focus:ring-zinc-700"
+          className="h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
         >
           <option value="all">All Statuses</option>
           <option value="active">Active Jobs</option>
@@ -162,25 +162,25 @@ export default function JobListings() {
         {(jobSearchTerm || jobFilterStatus !== 'all') && (
           <button
             onClick={resetJobFilters}
-            className="h-10 px-4 text-sm font-bold text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-200 dark:hover:bg-zinc-800 bg-slate-100 dark:bg-zinc-800/50 rounded-xl transition-colors shrink-0"
+            className="h-12 px-4 text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl transition-colors shrink-0 active:scale-95"
           >
             Clear Filters
           </button>
         )}
-        <div className="flex items-center bg-slate-100 dark:bg-zinc-800/50 p-1 rounded-xl border border-slate-200/50 dark:border-zinc-800 shrink-0 h-10 self-stretch sm:self-auto justify-center">
+        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-2xl border border-zinc-200/50 dark:border-zinc-800 shrink-0 h-12 self-stretch sm:self-auto justify-center">
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 shadow-sm border border-slate-200/10 dark:border-zinc-700/50' : 'text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300'}`}
+            className={`p-2 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 scale-105' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 hover:scale-105'}`}
             title="Grid View"
           >
-            <LayoutGrid className="w-4 h-4" />
+            <LayoutGrid className="w-5 h-5" />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 shadow-sm border border-slate-200/10 dark:border-zinc-700/50' : 'text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300'}`}
+            className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 scale-105' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 hover:scale-105'}`}
             title="List View"
           >
-            <List className="w-4 h-4" />
+            <List className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -210,12 +210,12 @@ export default function JobListings() {
               return (
                 <div
                   key={job.id}
-                  className={`border border-l-4 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${isMenuOpen
-                    ? 'ring-2 ring-slate-800 dark:ring-zinc-100 shadow-xl scale-[1.01] bg-slate-50 dark:bg-zinc-850/40 border-slate-350 dark:border-zinc-700'
-                    : 'border-slate-200 dark:border-zinc-800'
+                  className={`border-l-4 rounded-[2rem] p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${isMenuOpen
+                    ? 'ring-2 ring-zinc-800 dark:ring-zinc-100 shadow-xl scale-[1.02] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border-zinc-300 dark:border-zinc-700 z-10'
+                    : 'border-zinc-200/60 dark:border-zinc-800/60 border-t border-r border-b'
                     } ${isActive
-                      ? 'bg-white dark:bg-zinc-900 border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:border-slate-300 dark:hover:border-zinc-700/80'
-                      : 'bg-slate-50/70 dark:bg-zinc-900/40 border-l-slate-300/90 dark:border-l-zinc-700/90'
+                      ? 'bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:bg-white dark:hover:bg-zinc-900 hover:-tranzinc-y-1'
+                      : 'bg-zinc-50/50 dark:bg-zinc-900/30 backdrop-blur-sm border-l-zinc-300/50 dark:border-l-zinc-700/50 hover:bg-zinc-50/80 dark:hover:bg-zinc-900/50'
                     }`}
                 >
                   <div className="space-y-4">
@@ -224,21 +224,21 @@ export default function JobListings() {
                       <div className="flex items-center gap-3">
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 ${isActive
                           ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-400 dark:text-zinc-500'
+                          : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200/50 dark:border-zinc-700/50 text-zinc-400 dark:text-zinc-500'
                           }`}>
                           <Briefcase className="w-6 h-6" />
                         </div>
                         <div>
                           <h3
                             onClick={() => handleViewApplicants(job)}
-                            className={`font-bold text-base leading-snug hover:text-slate-700 dark:hover:text-zinc-300 cursor-pointer line-clamp-1 transition-colors ${isActive ? 'text-slate-900 dark:text-zinc-50' : 'text-slate-450 dark:text-zinc-400 font-semibold'
+                            className={`font-bold text-base leading-snug hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer line-clamp-1 transition-colors ${isActive ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-450 dark:text-zinc-400 font-semibold'
                               }`}
                             title={job.title}
                           >
                             {job.title}
                           </h3>
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/50 dark:border-zinc-700/50">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-700/50">
                               {job.job_type}
                             </span>
                             {isActive ? (
@@ -260,8 +260,8 @@ export default function JobListings() {
                           onMouseDown={(e) => e.stopPropagation()}
                           onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
                           className={`p-1.5 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
-                            ? 'text-slate-900 dark:text-zinc-50 bg-slate-100 dark:bg-zinc-800 shadow-sm border border-slate-200/30 dark:border-zinc-700'
-                            : 'text-slate-500 dark:text-zinc-450 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                            ? 'text-zinc-900 dark:text-zinc-50 bg-zinc-100 dark:bg-zinc-800 shadow-sm border border-zinc-200/30 dark:border-zinc-700'
+                            : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                             }`}
                         >
                           <MoreHorizontal className="w-5 h-5" />
@@ -269,7 +269,7 @@ export default function JobListings() {
 
                         {/* Action Dropdown */}
                         {openDropdownId === job.id && (
-                          <div ref={dropdownRef} className="absolute right-0 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left mt-1">
+                          <div ref={dropdownRef} className="absolute right-0 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left mt-1">
                             <button
                               onClick={() => handleViewApplicants(job)}
                               className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
@@ -284,26 +284,26 @@ export default function JobListings() {
                                 <Calendar className="w-4 h-4 text-emerald-500" /> Schedule Interviews
                               </button>
                             )}
-                            <div className="h-px bg-slate-100 dark:bg-zinc-800 my-1"></div>
+                            <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1"></div>
                             <button
                               onClick={() => openEditModal(job)}
-                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                             >
-                              <Edit2 className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> Edit Job
+                              <Edit2 className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> Edit Job
                             </button>
                             <button
                               onClick={() => handleToggleStatus(job)}
-                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                             >
-                              <PowerOff className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> {job.status === 'active' ? 'Close Job' : 'Reopen Job'}
+                              <PowerOff className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> {job.status === 'active' ? 'Close Job' : 'Reopen Job'}
                             </button>
 
                             {!job.results_published ? (
                               <button
                                 onClick={() => { setOpenDropdownId(null); setSelectedJobForQuiz(job); }}
-                                className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                                className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                               >
-                                <FileQuestion className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> Manage Aptitude Test
+                                <FileQuestion className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> Manage Aptitude Test
                               </button>
                             ) : null}
 
@@ -316,7 +316,7 @@ export default function JobListings() {
                               </button>
                             )}
 
-                            <div className="h-px bg-slate-100 dark:bg-zinc-800 my-1"></div>
+                            <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1"></div>
                             <button
                               onClick={() => handleDeleteJob(job.id)}
                               className="w-full px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-zinc-800 flex items-center gap-2"
@@ -329,25 +329,25 @@ export default function JobListings() {
                     </div>
 
                     {/* Metadata Section */}
-                    <div className={`space-y-2.5 pt-1 transition-colors ${isActive ? 'text-slate-600 dark:text-zinc-400' : 'text-slate-400 dark:text-zinc-500 font-medium'
+                    <div className={`space-y-2.5 pt-1 transition-colors ${isActive ? 'text-zinc-600 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-500 font-medium'
                       }`}>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <MapPin className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
+                        <MapPin className="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
                         <span>{job.location || 'Remote'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <CircleDollarSign className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
+                        <CircleDollarSign className="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
                         <span>{formatSalary(job.salary_min, job.salary_max)}</span>
                       </div>
                       <div className={`flex items-center gap-2 text-xs font-medium ${isDeadlinePassed ? 'text-rose-600 dark:text-rose-450 font-semibold   ' : ''}`}>
-                        <Calendar className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
+                        <Calendar className="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
                         <span>
                           {job.application_deadline ? `Deadline: ${new Date(job.application_deadline).toLocaleDateString()}` : 'No Deadline'}
                           {isDeadlinePassed && ' (Passed)'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium">
-                        <Users className="w-4 h-4 text-slate-400 dark:text-zinc-500 shrink-0" />
+                        <Users className="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
                         <span>
                           {job.applicant_count || 0} {job.applicant_count === 1 ? 'Applicant' : 'Applicants'}
                         </span>
@@ -356,13 +356,13 @@ export default function JobListings() {
                   </div>
 
                   {/* Footer Row Actions */}
-                  <div className="border-t border-slate-100 dark:border-zinc-800/80 pt-4 flex items-center justify-between gap-3">
+                  <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-4 flex items-center justify-between gap-3">
                     {job.quiz_id && job.status === 'active' ? (
                       <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                         {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
                       </span>
                     ) : (
-                      <div className="text-[10px] text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-widest text-center">
+                      <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-widest text-center">
                         Aptitude test info
                       </div>
                     )}
@@ -387,8 +387,8 @@ export default function JobListings() {
                       <button
                         onClick={() => handleViewApplicants(job)}
                         className={`h-8 px-3 text-[11px] font-black rounded-xl shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer ${isActive
-                          ? 'text-white dark:text-zinc-950 bg-slate-900 dark:bg-zinc-50 hover:bg-slate-800 dark:hover:bg-white'
-                          : 'text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200/50 dark:border-zinc-700/50'
+                          ? 'text-white dark:text-zinc-950 bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-white'
+                          : 'text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200/50 dark:border-zinc-700/50'
                           }`}
                       >
                         <span>View Applicants</span>
@@ -399,25 +399,25 @@ export default function JobListings() {
               );
             })
           ) : (
-            <div className="col-span-full py-16 text-center text-slate-500 dark:text-zinc-500 font-medium bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl">
+            <div className="col-span-full py-16 text-center text-zinc-500 dark:text-zinc-500 font-medium bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
               No jobs posted yet. Click "Post New Job" to get started.
             </div>
           )}
         </div>
       ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm dark:shadow-none pb-32">
+        <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-none rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden pb-4 mb-32">
           <div className="w-full">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800">
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Role</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest hidden md:table-cell">Type</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Status</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest hidden sm:table-cell">Deadline</th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest text-right">Actions</th>
+                <tr className="bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800/60">
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Role</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest hidden md:table-cell">Type</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest hidden sm:table-cell">Deadline</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {currentJobs.length > 0 ? (
                   currentJobs.map((job) => {
                     const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
@@ -426,37 +426,37 @@ export default function JobListings() {
                     return (
                       <tr
                         key={job.id}
-                        className={`transition-colors group border-b border-slate-100 dark:border-zinc-800/80 ${isMenuOpen
-                          ? 'bg-slate-100/90 dark:bg-zinc-800/80 text-slate-900 dark:text-zinc-50 shadow-inner'
+                        className={`transition-all duration-300 group border-b border-zinc-50 dark:border-zinc-800/40 ${isMenuOpen
+                          ? 'bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-50 shadow-inner scale-[1.01] z-10 relative rounded-xl'
                           : isActive
-                            ? 'hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 text-slate-900 dark:text-zinc-100'
-                            : 'bg-slate-50/20 dark:bg-zinc-900/10 hover:bg-slate-50/40 dark:hover:bg-zinc-800/20'
+                            ? 'hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50 text-zinc-900 dark:text-zinc-100 hover:shadow-md'
+                            : 'bg-zinc-50/30 dark:bg-zinc-900/20 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 opacity-80 hover:opacity-100'
                           }`}
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${isActive
-                              ? 'bg-slate-100 dark:bg-zinc-800 border-slate-200/50 dark:border-zinc-700/50 text-slate-600 dark:text-zinc-400'
-                              : 'bg-slate-200/40 dark:bg-zinc-800/30 border-slate-200/20 dark:border-zinc-700/20 text-slate-400 dark:text-zinc-500'
+                              ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200/50 dark:border-zinc-700/50 text-zinc-600 dark:text-zinc-400'
+                              : 'bg-zinc-200/40 dark:bg-zinc-800/30 border-zinc-200/20 dark:border-zinc-700/20 text-zinc-400 dark:text-zinc-500'
                               }`}>
                               <Briefcase className="w-5 h-5" />
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <p className={`font-bold ${isActive ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 dark:text-zinc-405'}`}>{job.title}</p>
+                                <p className={`font-bold ${isActive ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-405'}`}>{job.title}</p>
                                 {job.quiz_id && isActive && (
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                                     {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs font-medium text-slate-500 dark:text-zinc-500 flex items-center gap-1 mt-0.5">
+                              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-500 flex items-center gap-1 mt-0.5">
                                 <MapPin className="w-3 h-3" /> {job.location || 'Remote'}
                               </p>
                             </div>
                           </div>
                         </td>
-                        <td className={`px-6 py-4 font-medium text-sm ${isActive ? 'text-slate-700 dark:text-zinc-300' : 'text-slate-450 dark:text-zinc-550'}`}>{job.job_type}</td>
+                        <td className={`px-6 py-4 font-medium text-sm ${isActive ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-450 dark:text-zinc-550'}`}>{job.job_type}</td>
                         <td className="px-6 py-4">
                           {job.status === 'active' ? (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
@@ -468,7 +468,7 @@ export default function JobListings() {
                             </span>
                           )}
                         </td>
-                        <td className={`px-6 py-4 text-sm font-medium ${isActive ? 'text-slate-500 dark:text-zinc-400' : 'text-slate-450 dark:text-zinc-550'}`}>
+                        <td className={`px-6 py-4 text-sm font-medium ${isActive ? 'text-zinc-500 dark:text-zinc-400' : 'text-zinc-450 dark:text-zinc-550'}`}>
                           {job.application_deadline ? new Date(job.application_deadline).toLocaleDateString() : 'No Deadline'}
                         </td>
                         <td className="px-6 py-4 text-right relative">
@@ -476,8 +476,8 @@ export default function JobListings() {
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
                             className={`p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
-                              ? 'text-slate-900 dark:text-zinc-50 bg-slate-200/80 dark:bg-zinc-700/80 shadow-sm border border-slate-300/50 dark:border-zinc-650'
-                              : 'text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                              ? 'text-zinc-900 dark:text-zinc-50 bg-zinc-200/80 dark:bg-zinc-700/80 shadow-sm border border-zinc-300/50 dark:border-zinc-650'
+                              : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                               }`}
                           >
                             <MoreHorizontal className="w-5 h-5" />
@@ -485,7 +485,7 @@ export default function JobListings() {
 
                           {/* Action Dropdown */}
                           {openDropdownId === job.id && (
-                            <div ref={dropdownRef} className="absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14">
+                            <div ref={dropdownRef} className="absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14">
                               <button
                                 onClick={() => handleViewApplicants(job)}
                                 className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
@@ -500,26 +500,26 @@ export default function JobListings() {
                                   <Calendar className="w-4 h-4 text-emerald-500" /> Schedule Interviews
                                 </button>
                               )}
-                              <div className="h-px bg-slate-100 dark:bg-zinc-800 my-1"></div>
+                              <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1"></div>
                               <button
                                 onClick={() => openEditModal(job)}
-                                className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                                className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                               >
-                                <Edit2 className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> Edit Job
+                                <Edit2 className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> Edit Job
                               </button>
                               <button
                                 onClick={() => handleToggleStatus(job)}
-                                className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                                className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                               >
-                                <PowerOff className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> {job.status === 'active' ? 'Close Job' : 'Reopen Job'}
+                                <PowerOff className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> {job.status === 'active' ? 'Close Job' : 'Reopen Job'}
                               </button>
 
                               {!job.results_published ? (
                                 <button
                                   onClick={() => { setOpenDropdownId(null); setSelectedJobForQuiz(job); }}
-                                  className="w-full px-4 py-2 text-sm font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                                  className="w-full px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                                 >
-                                  <FileQuestion className="w-4 h-4 text-slate-400 dark:text-zinc-500" /> Manage Aptitude Test
+                                  <FileQuestion className="w-4 h-4 text-zinc-400 dark:text-zinc-500" /> Manage Aptitude Test
                                 </button>
                               ) : null}
 
@@ -532,7 +532,7 @@ export default function JobListings() {
                                 </button>
                               )}
 
-                              <div className="h-px bg-slate-100 dark:bg-zinc-800 my-1"></div>
+                              <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1"></div>
                               <button
                                 onClick={() => handleDeleteJob(job.id)}
                                 className="w-full px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-zinc-800 flex items-center gap-2"
@@ -547,7 +547,7 @@ export default function JobListings() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-slate-500 dark:text-zinc-500 font-medium">
+                    <td colSpan="5" className="px-6 py-12 text-center text-zinc-500 dark:text-zinc-500 font-medium">
                       No jobs posted yet. Click "Post New Job" to get started.
                     </td>
                   </tr>
@@ -560,28 +560,28 @@ export default function JobListings() {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-200 dark:border-zinc-800/80 pt-6 mt-4 pb-12">
-          <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
-            Showing <span className="font-bold text-slate-800 dark:text-zinc-200">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
-            <span className="font-bold text-slate-800 dark:text-zinc-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between border-t border-zinc-200/60 dark:border-zinc-800/60 pt-6 mt-6 pb-12 gap-4">
+          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 px-4 py-2 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50">
+            Showing <span className="font-black text-zinc-800 dark:text-zinc-200">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+            <span className="font-black text-zinc-800 dark:text-zinc-200">
               {Math.min(currentPage * itemsPerPage, filteredAndSortedJobs.length)}
             </span>{' '}
-            of <span className="font-bold text-slate-800 dark:text-zinc-200">{filteredAndSortedJobs.length}</span> jobs
+            of <span className="font-black text-zinc-800 dark:text-zinc-200">{filteredAndSortedJobs.length}</span> jobs
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 bg-zinc-50 dark:bg-zinc-900/50 p-1.5 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="h-9 px-4 text-sm font-bold text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors border border-slate-200/20 dark:border-zinc-700/30 cursor-pointer"
+              className="h-10 px-5 text-sm font-black text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-800 disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-sm disabled:shadow-none hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
             >
-              Previous
+              <ChevronLeft className="w-4 h-4" /> Prev
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="h-9 px-4 text-sm font-bold text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors border border-slate-200/20 dark:border-zinc-700/30 cursor-pointer"
+              className="h-10 px-5 text-sm font-black text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-800 disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-sm disabled:shadow-none hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
             >
-              Next
+              Next <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>

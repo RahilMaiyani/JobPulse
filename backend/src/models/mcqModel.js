@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// QUIZ OPERATIONS
 const getQuizByJobId = async (jobId) => {
   const query = `SELECT * FROM mcq_quizzes WHERE job_id = $1`;
   const result = await db.query(query, [jobId]);
@@ -140,10 +139,10 @@ const publishQuizResults = async (jobId, quizId) => {
     RETURNING id;
   `;
   const result = await db.query(query, [jobId, quizId]);
-  
+
   // Mark quiz as published
   await db.query(`UPDATE mcq_quizzes SET results_published = TRUE WHERE id = $1`, [quizId]);
-  
+
   return result.rows.length; // return count of auto-rejected applicants
 };
 

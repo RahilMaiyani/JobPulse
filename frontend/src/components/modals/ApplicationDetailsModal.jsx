@@ -25,7 +25,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
       case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-xs rounded-full border border-purple-200 dark:border-purple-500/20"><CheckCircle2 className="w-3 h-3" /> Interview</span>;
       case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold text-xs rounded-full border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Selected</span>;
       case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-bold text-xs rounded-full border border-rose-200 dark:border-rose-500/20"><XCircle className="w-3 h-3" /> Rejected</span>;
-      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold text-xs rounded-full border border-slate-200 dark:border-zinc-700 capitalize">{status}</span>;
+      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold text-xs rounded-full border border-zinc-200 dark:border-zinc-700 capitalize">{status}</span>;
     }
   };
 
@@ -137,18 +137,18 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        <div className="p-6 md:p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-start bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
+      <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+        <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-zinc-100">{app.title}</h2>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">{app.title}</h2>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm font-bold text-slate-600 dark:text-zinc-400">{app.company_name || 'Company'}</span>
-              <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-zinc-700"></span>
-              <span className="text-xs font-bold text-slate-400 dark:text-zinc-500 flex items-center gap-1"><MapPin className="w-3 h-3" /> {app.location || 'Remote'}</span>
+              <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">{app.company_name || 'Company'}</span>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+              <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 flex items-center gap-1"><MapPin className="w-3 h-3" /> {app.location || 'Remote'}</span>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+          <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -158,14 +158,14 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
             {/* LEFT COLUMN: TIMELINE UI */}
             <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Application Tracking</h3>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 mb-6">Application Tracking</h3>
               <div className="relative pl-4 space-y-6">
                 {getTimelineSteps().map((step, idx) => {
                   const allSteps = getTimelineSteps();
                   const hasNextCompleted = allSteps[idx + 1] && (allSteps[idx + 1].isCompleted || allSteps[idx + 1].isCurrent);
                   const hasNextFuture = allSteps[idx + 1] && allSteps[idx + 1].isFuture;
                   const drawLine = idx !== allSteps.length - 1;
-                  const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700';
+                  const lineColor = step.isCompleted && !step.isRejected && hasNextCompleted ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700';
 
                   return (
                     <div key={idx} className="relative flex items-start gap-5 min-h-[48px]">
@@ -188,16 +188,16 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                             <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
                           </div>
                         ) : (
-                          <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 border-[3px] border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
-                            <div className="w-2 h-2 bg-slate-200 dark:bg-zinc-600 rounded-full"></div>
+                          <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 border-[3px] border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
+                            <div className="w-2 h-2 bg-zinc-200 dark:bg-zinc-600 rounded-full"></div>
                           </div>
                         )}
                       </div>
 
                       <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
-                        <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-zinc-100'}`}>{step.label}</h4>
-                        {step.date && <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
-                        {step.description && <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
+                        <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-zinc-900 dark:text-zinc-100'}`}>{step.label}</h4>
+                        {step.date && <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
+                        {step.description && <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
                       </div>
                     </div>
                   );
@@ -207,7 +207,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
             {/* RIGHT COLUMN: DETAILS */}
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-slate-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 mb-6">Details & Actions</h3>
 
               <div
                 className={`p-4 rounded-2xl border flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow relative ${getScoreColor(app.ai_match_score)}`}
@@ -218,10 +218,10 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                   <span className="text-xl font-black leading-none mb-1">{app.ai_match_score}</span>
                 </div>
                 <div className="flex-1 pr-6">
-                  <p className="text-sm font-bold text-slate-900 dark:text-zinc-100">AI Compatibility Match</p>
-                  <p className={`text-xs font-medium text-slate-600 dark:text-zinc-400 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
+                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">AI Compatibility Match</p>
+                  <p className={`text-xs font-medium text-zinc-600 dark:text-zinc-400 mt-0.5 whitespace-pre-wrap ${!isAiMatchExpanded ? 'line-clamp-2' : ''}`}>{app.ai_match_details?.reasoning || 'Your resume is a good match for this position.'}</p>
                 </div>
-                <div className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500">
+                <div className="absolute top-1/2 right-4 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500">
                   {isAiMatchExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                 </div>
               </div>
@@ -253,48 +253,48 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
               {/* TEST INFO SECTION */}
               {loadingTest ? (
-                <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
+                <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 animate-pulse">
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
-                      <div className="w-48 h-5 bg-slate-200 dark:bg-zinc-800 rounded"></div>
-                      <div className="w-32 h-4 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                      <div className="w-48 h-5 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
+                      <div className="w-32 h-4 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
                     </div>
-                    <div className="w-16 h-6 bg-slate-200 dark:bg-zinc-800 rounded"></div>
+                    <div className="w-16 h-6 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
                   </div>
-                  <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-700 grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-zinc-100 dark:border-zinc-700 grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                      <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-24 h-4 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
                     </div>
                     <div className="space-y-2">
-                      <div className="w-16 h-3 bg-slate-200 dark:bg-zinc-700 rounded"></div>
-                      <div className="w-24 h-4 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
+                      <div className="w-24 h-4 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
                     </div>
                   </div>
                 </div>
               ) : testInfo?.quiz ? (
-                <div className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 relative overflow-hidden">
+                <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
-                      <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes}m</p>
+                      <h4 className="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2"><FileQuestion className="w-4 h-4 text-indigo-500" /> Aptitude Test Scheduled</h4>
+                      <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mt-0.5">{testInfo.quiz.title} • {testInfo.quiz.duration_minutes}m</p>
                     </div>
                     {testInfo.result?.completed_at ? (
-                      <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded border border-slate-200 dark:border-zinc-700">Completed</span>
+                      <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded border border-zinc-200 dark:border-zinc-700">Completed</span>
                     ) : (
                       <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded border border-amber-200 dark:border-amber-500/20">Pending</span>
                     )}
                   </div>
 
-                  <div className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-slate-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
-                      <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
+                      <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
+                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
-                      <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
+                      <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
+                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
                     </div>
                   </div>
 
@@ -321,7 +321,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
         </div>
 
         {/* BOTTOM ACTIONS */}
-        <div className="p-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-800/50 shrink-0">
+        <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
             {app.status?.toLowerCase() === 'applied' && (
               <button
@@ -336,7 +336,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2 text-sm font-bold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+            className="px-6 py-2 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
           >
             Close
           </button>

@@ -77,7 +77,7 @@ const createOrUpdateQuiz = async (req, res, next) => {
           );
           await createNotification(
             app.user_id,
-            "Aptitude Test Available \u23F0",
+            "Aptitude Test Available",
             `Your Aptitude Test for ${job.title} is now available. Deadline: ${new Date(quiz.scheduled_end_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })} IST.`,
             "info"
           );
@@ -89,7 +89,7 @@ const createOrUpdateQuiz = async (req, res, next) => {
           );
           await createNotification(
             app.user_id,
-            "Aptitude Test Closed \uD83D\uDD12",
+            "Aptitude Test Closed",
             `The Aptitude Test for ${job.title} has closed. Results will be declared soon.`,
             "info"
           );
@@ -150,7 +150,7 @@ const publishResults = async (req, res, next) => {
         );
         await createNotification(
           app.user_id,
-          "Aptitude Test Results \uD83D\uDCCA",
+          "Aptitude Test Results",
           `The results for the ${job.title} Aptitude Test have been published. You scored ${app.mcq_score}%.`,
           app.mcq_passed ? "success" : "error"
         );
