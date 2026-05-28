@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useContactMessages, useMarkMessageAsRead, useArchiveMessage } from '../../hooks/useContact';
 import { Mail, Archive, CheckCircle, Search, User, Clock, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import PageLoader from '../../components/PageLoader';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import AdminMessagesSkeleton from '../../components/skeletons/AdminMessagesSkeleton';
 
 export default function AdminContactMessages() {
   const { data: messages, isLoading } = useContactMessages();
@@ -29,8 +29,6 @@ export default function AdminContactMessages() {
       toast.error('Failed to archive message');
     }
   };
-
-  if (isLoading) return <PageLoader />;
 
   const filteredMessages = messages?.filter(msg => 
     msg.subject.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -61,8 +59,11 @@ export default function AdminContactMessages() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
-        {filteredMessages.length === 0 ? (
+      {isLoading ? (
+        <AdminMessagesSkeleton />
+      ) : (
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+          {filteredMessages.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-slate-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
@@ -119,6 +120,7 @@ export default function AdminContactMessages() {
           </div>
         )}
       </div>
+      )}
     </div>
     </DashboardLayout>
   );
