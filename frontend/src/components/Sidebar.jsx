@@ -8,8 +8,13 @@ import {
   FileText,
   Search,
   User,
-  X
+  X,
+  MessageSquare,
+  MessageCircle
 } from "lucide-react";
+import ContactUsModal from "./modals/ContactUsModal";
+import { useState } from "react";
+import { useUnreadContactCount } from "../hooks/useContact";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { user } = useAuth();
@@ -18,6 +23,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const { data: notifications = [] } = useNotifications();
   const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  const { data: unreadContactCount = 0 } = useUnreadContactCount();
+
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const isActive = (path) => {
     if (path === '/admin' || path === '/candidate') {
@@ -89,6 +98,22 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <Users className="w-5 h-5" />
               Manage Users
             </Link>
+
+            <Link
+              to="/admin/messages"
+              onClick={() => setIsOpen(false)}
+              className={`${baseClass} ${isActive("/admin/messages") ? activeClass : inactiveClass} justify-between`}
+            >
+              <div className="flex items-center gap-3">
+                <MessageSquare className="w-5 h-5" />
+                Messages
+              </div>
+              {unreadContactCount > 0 && (
+                <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                  {unreadContactCount}
+                </span>
+              )}
+            </Link>
           </>
         )}
 
@@ -137,9 +162,19 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <User className="w-5 h-5" />
               My Profile
             </Link>
+
+            <button
+              onClick={() => setShowContactModal(true)}
+              className={`${baseClass} ${inactiveClass} w-[calc(100%-1.5rem)] text-left justify-start`}
+            >
+              <MessageCircle className="w-5 h-5" />
+              Contact Us
+            </button>
           </>
         )}
       </nav>
+
+      {showContactModal && <ContactUsModal onClose={() => setShowContactModal(false)} />}
 
       {/* USER CONTEXT FOOTER */}
       <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 relative z-10">

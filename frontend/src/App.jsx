@@ -22,6 +22,7 @@ import CandidateAptitudeTest from './pages/candidate/CandidateAptitudeTest';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import JobListings from './pages/admin/JobListings';
 import ManageUsers from './pages/admin/ManageUsers';
+import AdminContactMessages from './pages/admin/AdminContactMessages';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,6 +99,7 @@ function App() {
                         <Route path="" element={<AdminDashboard />} />
                         <Route path="jobs" element={<JobListings />} />
                         <Route path="users" element={<ManageUsers />} />
+                        <Route path="messages" element={<AdminContactMessages />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </ProtectedRoute>
