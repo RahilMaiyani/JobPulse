@@ -48,14 +48,9 @@ function App() {
           position="top-center"
           toastOptions={{
             duration: 4000,
+            className: "!bg-white dark:!bg-zinc-900 !text-zinc-900 dark:!text-zinc-100 !border !border-zinc-200/50 dark:!border-zinc-800/50 !shadow-2xl !rounded-2xl !font-bold tracking-tight",
             style: {
-              background: "#1e293b",
-              color: "#fff",
-              borderRadius: "12px",
-              fontSize: "14px",
-              fontWeight: "600",
-              padding: "12px 20px",
-              border: "1px solid rgba(255,255,255,0.1)"
+              padding: "16px 20px",
             },
             success: { iconTheme: { primary: "#10b981", secondary: "#fff" } },
             error: { iconTheme: { primary: "#ef4444", secondary: "#fff" } }
