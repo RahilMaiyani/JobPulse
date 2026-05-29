@@ -51,7 +51,7 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hovered
         }}
         className={`relative flex items-center justify-center w-full h-full rounded-2xl transition-transform ease-out
           ${active
-            ? 'bg-zinc-900/90 dark:bg-white/90 text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20'
+            ? 'bg-zinc-900/90 dark:bg-white/90 text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20 transform translate-y-[-2px]'
             : 'bg-white/40 dark:bg-zinc-800/40 text-zinc-600 dark:text-zinc-300 group-hover:bg-white/80 dark:group-hover:bg-zinc-700/80 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:shadow-md border border-transparent group-hover:border-white/50 dark:group-hover:border-zinc-600/50'
           }
         `}

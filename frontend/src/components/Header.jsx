@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Menu, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, Menu, Sun, Moon, Monitor, Briefcase } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
 export default function Header({ toggleSidebar }) {
@@ -59,6 +59,16 @@ export default function Header({ toggleSidebar }) {
         >
           <Menu className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
         </button>
+
+        {/* Branding Logo */}
+        <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
+          <div className="w-8 h-8 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm">
+            <Briefcase className="w-5 h-5 text-white dark:text-zinc-900" strokeWidth={2.5} />
+          </div>
+          <h1 className="text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 transition-colors group-hover:text-zinc-600 dark:group-hover:text-zinc-400 hidden sm:block">
+            JobPulse<span className="text-zinc-400 dark:text-zinc-600 animate-pulse">.</span>
+          </h1>
+        </div>
 
         {/* Final Clock Section */}
         <div className="hidden md:flex items-center gap-4 ml-4 border-l border-zinc-200 dark:border-zinc-800 pl-4 group cursor-default">
