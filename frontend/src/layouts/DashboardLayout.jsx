@@ -10,10 +10,10 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300 p-2 md:p-4 gap-2 md:gap-4 relative">
-      
+
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-zinc-900/50 dark:bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden rounded-3xl m-2"
           onClick={() => setIsSidebarOpen(false)}
         />
