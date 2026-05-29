@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Menu, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, Menu, Sun, Moon, Monitor, Grip } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
-export default function Header({ toggleSidebar }) {
+export default function Header({ toggleHub }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
@@ -52,12 +52,13 @@ export default function Header({ toggleSidebar }) {
     <div className="h-16 md:h-[72px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl flex items-center justify-between px-4 md:px-8 shrink-0 z-10 transition-all duration-300 relative shadow-sm hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700">
 
       <div className="flex items-center gap-4">
-        {/* Mobile Toggle */}
+        {/* Hub Toggle */}
         <button
-          onClick={toggleSidebar}
-          className="md:hidden p-2 -ml-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95 group"
+          onClick={toggleHub}
+          className="p-2 -ml-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95 group"
+          title="Open Navigation Hub"
         >
-          <Menu className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+          <Grip className="w-6 h-6 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
         </button>
 
         {/* Final Clock Section */}
