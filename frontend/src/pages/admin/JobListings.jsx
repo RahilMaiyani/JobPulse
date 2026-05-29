@@ -25,7 +25,8 @@ export default function JobListings() {
   // Manage Quiz State
   const [selectedJobForQuiz, setSelectedJobForQuiz] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const dropdownRef = useRef(null);
+  const gridDropdownRef = useRef(null);
+  const listDropdownRef = useRef(null);
 
   // Modals State
   const [isJobFormOpen, setIsJobFormOpen] = useState(false);
@@ -37,7 +38,9 @@ export default function JobListings() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      const inGrid = gridDropdownRef.current && gridDropdownRef.current.contains(event.target);
+      const inList = listDropdownRef.current && listDropdownRef.current.contains(event.target);
+      if (!inGrid && !inList) {
         setOpenDropdownId(null);
       }
     };
@@ -270,7 +273,7 @@ export default function JobListings() {
 
                           {/* Action Dropdown */}
                           {openDropdownId === job.id && (
-                            <div ref={dropdownRef} className="absolute right-0 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left mt-1">
+                            <div ref={gridDropdownRef} className="absolute right-0 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left mt-1">
                               <button
                                 onClick={() => handleViewApplicants(job)}
                                 className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
@@ -485,7 +488,7 @@ export default function JobListings() {
 
                             {/* Action Dropdown */}
                             {openDropdownId === job.id && (
-                              <div ref={dropdownRef} className="absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14">
+                              <div ref={listDropdownRef} className="absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14">
                                 <button
                                   onClick={() => handleViewApplicants(job)}
                                   className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
