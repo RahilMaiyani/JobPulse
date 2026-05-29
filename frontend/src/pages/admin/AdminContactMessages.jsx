@@ -79,39 +79,39 @@ export default function AdminContactMessages() {
                 onClick={() => handleMarkAsRead(msg.id, msg.is_read)}
                 className={`p-5 transition-colors cursor-pointer group ${msg.is_read ? 'bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/50' : 'bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-zinc-900 dark:bg-zinc-100'}`}></div>
+                      <div className="flex items-center gap-2 break-all">
+                        <div className={`w-2 h-2 shrink-0 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-zinc-900 dark:bg-zinc-100'}`}></div>
                         <h3 className={`font-bold text-zinc-900 dark:text-zinc-100 ${msg.is_read ? 'text-base' : 'text-base'}`}>{msg.subject}</h3>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                        <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" /> {msg.sender_name} ({msg.sender_email})</span>
-                        <span className="text-zinc-300 dark:text-zinc-600">•</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {new Date(msg.created_at).toLocaleString()}</span>
+                      <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400 flex-wrap">
+                        <span className="flex items-center gap-1"><User className="w-3.5 h-3.5 shrink-0" /> <span className="line-clamp-1">{msg.sender_name} ({msg.sender_email})</span></span>
+                        <span className="text-zinc-300 dark:text-zinc-600 hidden sm:inline">•</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 shrink-0" /> {new Date(msg.created_at).toLocaleString()}</span>
                       </div>
                     </div>
-                    <p className={`text-sm ${msg.is_read ? 'text-zinc-500 dark:text-zinc-400 font-medium' : 'text-zinc-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap pl-4`}>
+                    <p className={`text-sm ${msg.is_read ? 'text-zinc-500 dark:text-zinc-400 font-medium' : 'text-zinc-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap pl-4 break-words`}>
                       {msg.message}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end mt-2 md:mt-0 pt-3 md:pt-0 border-t border-zinc-200/50 dark:border-zinc-800/50 md:border-none">
                     {!msg.is_read && (
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleMarkAsRead(msg.id, msg.is_read); }}
-                        className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                        className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all shadow-sm"
                         title="Mark as Read"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="w-4 h-4" /> <span className="md:hidden">Mark Read</span>
                       </button>
                     )}
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleArchive(msg.id); }}
-                      className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                      className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-zinc-200/50 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-500/20 rounded-xl transition-all shadow-sm"
                       title="Archive Message"
                     >
-                      <Archive className="w-4 h-4" />
+                      <Archive className="w-4 h-4" /> <span className="md:hidden">Archive</span>
                     </button>
                   </div>
                 </div>

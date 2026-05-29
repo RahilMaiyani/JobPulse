@@ -130,7 +130,47 @@ export default function ManageUsers() {
       {loading ? (
         <ManageUsersSkeleton count={5} />
       ) : (
-        <div className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] shadow-xl shadow-zinc-200/20 dark:shadow-none overflow-hidden flex flex-col relative">
+        <>
+        {/* Mobile Grid View */}
+        <div className="grid md:hidden grid-cols-1 gap-4 mb-4">
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((u) => (
+              <div key={u.id} className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex flex-col gap-4 ${!u.is_active ? 'opacity-70 grayscale' : ''}`}>
+                <div className="flex items-center gap-3">
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`} className="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-700 object-cover" alt={u.full_name} />
+                  <div>
+                    <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{u.full_name}</h3>
+                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-y border-zinc-100 dark:border-zinc-800/60 py-3">
+                  <div className="flex flex-wrap gap-2">
+                    {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
+                    {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
+                    {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                  </div>
+                  <div>
+                    {u.is_active ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deact</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <button onClick={() => openProfile(u)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">Profile</button>
+                  <button onClick={() => handleToggleUserStatus(u)} className={`w-11 h-11 flex items-center justify-center rounded-xl border transition-colors ${u.is_active ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100'}`}>
+                    {u.is_active ? <Ban className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 font-medium bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl">No users found.</div>
+          )}
+        </div>
+        {/* Desktop Table View */}
+        <div className="hidden md:flex bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] shadow-xl shadow-zinc-200/20 dark:shadow-none overflow-hidden flex-col relative">
           <div className="overflow-x-auto min-h-[400px] flex-1">
             <table className="w-full text-left border-collapse">
               <thead>

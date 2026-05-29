@@ -63,7 +63,50 @@ export default function MyApplications() {
           <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1">Head over to Open Roles to find your next opportunity.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm dark:shadow-none overflow-hidden">
+        <>
+        {/* Mobile Grid View */}
+        <div className="grid md:hidden grid-cols-1 gap-4 mb-4">
+          {applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((app) => (
+            <div 
+              key={app.id}
+              onClick={() => setSelectedApp(app)}
+              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400">
+                  <Briefcase className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{app.title}</h3>
+                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">{app.company_name || 'Company'} • {app.job_type}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {app.mcq_score != null ? (
+                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20'}`}>
+                    Aptitude: {app.mcq_score}%
+                  </span>
+                ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
+                    Test Available
+                  </span>
+                ) : null}
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getScoreColor(app.ai_match_score)}`}>
+                  AI Match: {app.ai_match_score}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800/60 pt-4 mt-1">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(app.applied_at).toLocaleDateString()}
+                </div>
+                <div>{getStatusBadge(app.status)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop Table View */}
+        <div className="hidden md:block bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm dark:shadow-none overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -164,6 +207,7 @@ export default function MyApplications() {
             </div>
           )}
         </div>
+        </>
       )}
 
       {/* APPLICATION DETAILS MODAL */}

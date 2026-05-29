@@ -167,7 +167,7 @@ export default function JobListings() {
             Clear Filters
           </button>
         )}
-        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-2xl border border-zinc-200/50 dark:border-zinc-800 shrink-0 h-12 self-stretch sm:self-auto justify-center">
+        <div className="hidden md:flex items-center bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-2xl border border-zinc-200/50 dark:border-zinc-800 shrink-0 h-12 self-stretch sm:self-auto justify-center">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-2 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 scale-105' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 hover:scale-105'}`}
@@ -187,8 +187,9 @@ export default function JobListings() {
 
       {loading ? (
         <JobListingsSkeleton count={6} viewMode={viewMode} />
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-32">
+      ) : (
+        <>
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-32 ${viewMode === 'list' ? 'md:hidden' : ''}`}>
           {currentJobs.length > 0 ? (
             currentJobs.map((job) => {
               const isQuizFinished = job.quiz_id && new Date() > new Date(job.scheduled_end_time);
@@ -404,8 +405,7 @@ export default function JobListings() {
             </div>
           )}
         </div>
-      ) : (
-        <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-none rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden pb-4 mb-32">
+        <div className={`bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-none rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden pb-4 mb-32 hidden ${viewMode === 'list' ? 'md:block' : ''}`}>
           <div className="w-full">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -556,6 +556,7 @@ export default function JobListings() {
             </table>
           </div>
         </div>
+        </>
       )}
 
       {/* Pagination Controls */}
