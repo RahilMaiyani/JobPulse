@@ -47,7 +47,7 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hovered
       <div
         style={{
           transform: transformStyle,
-          transitionDuration: "400ms",
+          transitionDuration: "300ms",
         }}
         className={`relative flex items-center justify-center w-full h-full rounded-2xl transition-transform ease-out
           ${active
@@ -189,18 +189,18 @@ export default function Dock() {
 
   const menuItems = isAdminOrHr
     ? [
-        { to: "/admin", icon: LayoutDashboard, label: "Overview" },
-        { to: "/admin/jobs", icon: Briefcase, label: "Job Listings" },
-        { to: "/admin/users", icon: Users, label: "Manage Users" },
-        { to: "/admin/messages", icon: MessageSquare, label: "Messages", badge: unreadContactCount },
-      ]
+      { to: "/admin", icon: LayoutDashboard, label: "Overview" },
+      { to: "/admin/jobs", icon: Briefcase, label: "Job Listings" },
+      { to: "/admin/users", icon: Users, label: "Manage Users" },
+      { to: "/admin/messages", icon: MessageSquare, label: "Messages", badge: unreadContactCount },
+    ]
     : [
-        { to: "/candidate", icon: LayoutDashboard, label: "Dashboard" },
-        { to: "/candidate/openings", icon: Search, label: "View Openings" },
-        { to: "/candidate/applications", icon: FileText, label: "Applications", badge: unreadCount },
-        { to: "/candidate/profile", icon: User, label: "My Profile" },
-        { onClick: () => setShowContactModal(true), icon: MessageCircle, label: "Contact Us" },
-      ];
+      { to: "/candidate", icon: LayoutDashboard, label: "Dashboard" },
+      { to: "/candidate/openings", icon: Search, label: "View Openings" },
+      { to: "/candidate/applications", icon: FileText, label: "Applications", badge: unreadCount },
+      { to: "/candidate/profile", icon: User, label: "My Profile" },
+      { onClick: () => setShowContactModal(true), icon: MessageCircle, label: "Contact Us" },
+    ];
 
   return (
     <>
