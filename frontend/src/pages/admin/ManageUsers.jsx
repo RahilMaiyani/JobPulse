@@ -291,6 +291,7 @@ export default function ManageUsers() {
             </div>
           )}
         </div>
+        </>
       )}
 
       {/* NEW USER MODAL */}
