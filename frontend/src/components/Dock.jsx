@@ -15,6 +15,70 @@ import ContactUsModal from "./modals/ContactUsModal";
 import { useState, useEffect, useRef } from "react";
 import { useUnreadContactCount } from "../hooks/useContact";
 
+const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hoveredIndex, setHoveredIndex }) => {
+  const Wrapper = to ? Link : 'button';
+  const wrapperProps = to ? { to } : { onClick };
+
+  // macOS Magnification Effect style
+  let transformStyle = "translateY(0px) scale(1)";
+  let zIndexStyle = "auto";
+
+  if (hoveredIndex !== null) {
+    if (hoveredIndex === index) {
+      transformStyle = "translateY(-14px) scale(1.2)";
+      zIndexStyle = "10";
+    } else if (Math.abs(hoveredIndex - index) === 1) {
+      transformStyle = "translateY(-6px) scale(1.1)";
+      zIndexStyle = "5";
+    }
+  }
+
+  return (
+    <Wrapper
+      {...wrapperProps}
+      onMouseEnter={() => setHoveredIndex(index)}
+      onMouseLeave={() => setHoveredIndex(null)}
+      style={{
+        zIndex: zIndexStyle,
+      }}
+      className="relative group flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-transparent border-none outline-none cursor-pointer"
+    >
+      {/* Dynamic Magnifying Inner Content */}
+      <div
+        style={{
+          transform: transformStyle,
+          transitionDuration: "400ms",
+        }}
+        className={`relative flex items-center justify-center w-full h-full rounded-2xl transition-transform ease-out
+          ${active
+            ? 'bg-zinc-900/90 dark:bg-white/90 text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20'
+            : 'bg-white/40 dark:bg-zinc-800/40 text-zinc-600 dark:text-zinc-300 group-hover:bg-white/80 dark:group-hover:bg-zinc-700/80 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:shadow-md border border-transparent group-hover:border-white/50 dark:group-hover:border-zinc-600/50'
+          }
+        `}
+      >
+        <Icon className={`w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`} />
+
+        {/* Badge */}
+        {badge > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-sm shadow-rose-500/30 animate-pulse border-2 border-white dark:border-zinc-900">
+            {badge > 9 ? '9+' : badge}
+          </span>
+        )}
+      </div>
+
+      {/* Tooltip */}
+      <span className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-zinc-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-zinc-900 text-xs font-bold px-3 py-1.5 rounded-xl pointer-events-none whitespace-nowrap shadow-xl border border-white/10 dark:border-black/10">
+        {label}
+      </span>
+
+      {/* Indicator for Active State */}
+      {active && (
+        <span className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-zinc-900 dark:bg-white shadow-[0_0_8px_rgba(0,0,0,0.5)] dark:shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+      )}
+    </Wrapper>
+  );
+};
+
 export default function Dock() {
   const { user } = useAuth();
   const location = useLocation();
@@ -25,6 +89,7 @@ export default function Dock() {
 
   const { data: unreadContactCount = 0 } = useUnreadContactCount();
   const [showContactModal, setShowContactModal] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   // Robust Auto-hide logic
   const [isDockVisible, setIsDockVisible] = useState(true); // Start visible
@@ -122,43 +187,20 @@ export default function Dock() {
     return location.pathname.startsWith(path);
   };
 
-  const NavItem = ({ to, icon: Icon, label, badge, onClick }) => {
-    const active = isActive(to);
-
-    const Wrapper = to ? Link : 'button';
-    const wrapperProps = to ? { to } : { onClick };
-
-    return (
-      <Wrapper
-        {...wrapperProps}
-        className={`relative group flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-110 
-          ${active
-            ? 'bg-zinc-900/90 dark:bg-white/90 text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20'
-            : 'bg-white/40 dark:bg-zinc-800/40 text-zinc-600 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-700/80 hover:text-zinc-900 dark:hover:text-zinc-100 hover:shadow-md border border-transparent hover:border-white/50 dark:hover:border-zinc-600/50'
-          }
-        `}
-      >
-        <Icon className={`w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`} />
-
-        {/* Tooltip */}
-        <span className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-zinc-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-zinc-900 text-xs font-bold px-3 py-1.5 rounded-xl pointer-events-none whitespace-nowrap shadow-xl border border-white/10 dark:border-black/10">
-          {label}
-        </span>
-
-        {/* Indicator for Active State */}
-        {active && (
-          <span className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-zinc-900 dark:bg-white shadow-[0_0_8px_rgba(0,0,0,0.5)] dark:shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-        )}
-
-        {/* Badge */}
-        {badge > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-sm shadow-rose-500/30 animate-pulse border-2 border-white dark:border-zinc-900">
-            {badge > 9 ? '9+' : badge}
-          </span>
-        )}
-      </Wrapper>
-    );
-  };
+  const menuItems = isAdminOrHr
+    ? [
+        { to: "/admin", icon: LayoutDashboard, label: "Overview" },
+        { to: "/admin/jobs", icon: Briefcase, label: "Job Listings" },
+        { to: "/admin/users", icon: Users, label: "Manage Users" },
+        { to: "/admin/messages", icon: MessageSquare, label: "Messages", badge: unreadContactCount },
+      ]
+    : [
+        { to: "/candidate", icon: LayoutDashboard, label: "Dashboard" },
+        { to: "/candidate/openings", icon: Search, label: "View Openings" },
+        { to: "/candidate/applications", icon: FileText, label: "Applications", badge: unreadCount },
+        { to: "/candidate/profile", icon: User, label: "My Profile" },
+        { onClick: () => setShowContactModal(true), icon: MessageCircle, label: "Contact Us" },
+      ];
 
   return (
     <>
@@ -179,22 +221,20 @@ export default function Dock() {
 
           <div className="w-px h-8 bg-black/10 dark:bg-white/10 mx-1 md:mx-2 rounded-full" />
 
-          {isAdminOrHr ? (
-            <>
-              <NavItem to="/admin" icon={LayoutDashboard} label="Overview" />
-              <NavItem to="/admin/jobs" icon={Briefcase} label="Job Listings" />
-              <NavItem to="/admin/users" icon={Users} label="Manage Users" />
-              <NavItem to="/admin/messages" icon={MessageSquare} label="Messages" badge={unreadContactCount} />
-            </>
-          ) : (
-            <>
-              <NavItem to="/candidate" icon={LayoutDashboard} label="Dashboard" />
-              <NavItem to="/candidate/openings" icon={Search} label="View Openings" />
-              <NavItem to="/candidate/applications" icon={FileText} label="Applications" badge={unreadCount} />
-              <NavItem to="/candidate/profile" icon={User} label="My Profile" />
-              <NavItem onClick={() => setShowContactModal(true)} icon={MessageCircle} label="Contact Us" />
-            </>
-          )}
+          {menuItems.map((item, index) => (
+            <NavItem
+              key={item.label}
+              to={item.to}
+              icon={item.icon}
+              label={item.label}
+              badge={item.badge}
+              onClick={item.onClick}
+              index={index}
+              active={isActive(item.to)}
+              hoveredIndex={hoveredIndex}
+              setHoveredIndex={setHoveredIndex}
+            />
+          ))}
 
           <div className="w-px h-8 bg-black/10 dark:bg-white/10 mx-1 md:mx-2 rounded-full" />
 
