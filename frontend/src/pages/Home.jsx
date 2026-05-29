@@ -73,7 +73,7 @@ export default function Home() {
             {/* Minimalist geometric composition */}
             <div className="absolute w-[80%] h-[80%] border-[40px] border-zinc-100 dark:border-zinc-800 rounded-full animate-[spin_60s_linear_infinite]" />
             <div className="absolute w-[50%] h-[50%] bg-zinc-900 dark:bg-zinc-100 rounded-2xl rotate-12 shadow-2xl shadow-zinc-300/50 dark:shadow-none" />
-            <div className="absolute w-[30%] h-[30%] border-[20px] border-zinc-200 dark:border-zinc-700 rounded-full -tranzinc-x-1/2 tranzinc-y-1/2" />
+            <div className="absolute w-[30%] h-[30%] border-[20px] border-zinc-200 dark:border-zinc-700 rounded-full -translate-x-1/2 translate-y-1/2" />
             <div className="absolute w-24 h-24 bg-emerald-500/10 dark:bg-emerald-500/20 backdrop-blur-3xl rounded-full top-1/4 right-1/4" />
           </div>
         </div>

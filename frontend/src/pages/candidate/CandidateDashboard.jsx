@@ -152,7 +152,7 @@ export default function CandidateDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {stats.recentOpenings.length > 0 ? (
                 stats.recentOpenings.map((job) => (
-                  <Link to="/candidate/openings" key={job.id} className="block p-6 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/80 shadow-sm dark:shadow-none hover:shadow-xl hover:shadow-zinc-200/40 hover:-tranzinc-y-1 transition-all duration-300 group">
+                  <Link to="/candidate/openings" key={job.id} className="block p-6 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/80 shadow-sm dark:shadow-none hover:shadow-xl hover:shadow-zinc-200/40 hover:-translate-y-1 transition-all duration-300 group">
                     <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 transition-transform duration-500">
                       <Briefcase className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
                     </div>
@@ -164,7 +164,7 @@ export default function CandidateDashboard() {
                       <span className="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
                         {job.salary_min ? `₹${(job.salary_min / 1000).toFixed(0)}k+` : 'Competitive'}
                       </span>
-                      <ArrowRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:tranzinc-x-1 transition-all" />
+                      <ArrowRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:translate-x-1 transition-all" />
                     </div>
                   </Link>
                 ))

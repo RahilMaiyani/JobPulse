@@ -60,7 +60,7 @@ export default function Register() {
             <div className="space-y-2.5">
               <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 ml-1 uppercase tracking-wider">Full Name</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
                   <User className="w-5 h-5" />
                 </div>
                 <input
@@ -78,7 +78,7 @@ export default function Register() {
             <div className="space-y-2.5">
               <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 ml-1 uppercase tracking-wider">Work Email</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
                   <Mail className="w-5 h-5" />
                 </div>
                 <input
@@ -96,7 +96,7 @@ export default function Register() {
             <div className="space-y-2.5">
               <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 ml-1 uppercase tracking-wider">Password</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
@@ -109,7 +109,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors p-1"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -136,7 +136,7 @@ export default function Register() {
                 ) : (
                   <>
                     Create Account
-                    <ArrowRight className="w-5 h-5 group-hover:tranzinc-x-1.5 transition-transform" />
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                   </>
                 )}
               </button>
@@ -157,8 +157,8 @@ export default function Register() {
       <div className="hidden lg:flex lg:w-1/2 relative bg-zinc-50 dark:bg-zinc-900 items-center justify-center overflow-hidden">
         {/* Simple geometric aesthetic */}
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="absolute w-[120%] aspect-square bg-white dark:bg-zinc-950 rounded-full tranzinc-x-[20%] -tranzinc-y-[20%] border border-zinc-200 dark:border-zinc-800" />
-          <div className="absolute w-[80%] aspect-square bg-zinc-100 dark:bg-zinc-900 rounded-full -tranzinc-x-[10%] tranzinc-y-[10%] border border-zinc-200 dark:border-zinc-800" />
+          <div className="absolute w-[120%] aspect-square bg-white dark:bg-zinc-950 rounded-full translate-x-[20%] -translate-y-[20%] border border-zinc-200 dark:border-zinc-800" />
+          <div className="absolute w-[80%] aspect-square bg-zinc-100 dark:bg-zinc-900 rounded-full -translate-x-[10%] translate-y-[10%] border border-zinc-200 dark:border-zinc-800" />
           
           <div className="relative z-10 max-w-md px-12 text-center animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
             <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight mb-4">Join the future.</h2>

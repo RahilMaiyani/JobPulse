@@ -82,7 +82,7 @@ export default function ViewOpenings() {
       {/* SEARCH AND FILTER */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
             <Search className="w-5 h-5" />
           </div>
           <input
@@ -106,7 +106,7 @@ export default function ViewOpenings() {
             <option value="Contract">Contract</option>
             <option value="Internship">Internship</option>
           </select>
-          <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
             <Filter className="w-4 h-4" />
           </div>
         </div>

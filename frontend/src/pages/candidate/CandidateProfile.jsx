@@ -162,7 +162,7 @@ export default function CandidateProfile() {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Current Company</label>
                   <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"><Briefcase className="w-4 h-4" /></div>
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"><Briefcase className="w-4 h-4" /></div>
                     <input type="text" value={profileForm.current_company} onChange={(e) => setProfileForm({ ...profileForm, current_company: e.target.value })} className="w-full h-12 pl-11 pr-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-600 outline-none transition-all" placeholder="Acme Corp or 'None'" />
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function CandidateProfile() {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">LinkedIn Profile</label>
                   <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"><Link className="w-4 h-4" /></div>
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"><Link className="w-4 h-4" /></div>
                     <input type="text" value={profileForm.linkedin_profile} onChange={(e) => setProfileForm({ ...profileForm, linkedin_profile: e.target.value })} className="w-full h-12 pl-11 pr-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-600 outline-none transition-all" placeholder="https://linkedin.com/in/johndoe" />
                   </div>
                 </div>

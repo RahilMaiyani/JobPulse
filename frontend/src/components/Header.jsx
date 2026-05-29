@@ -122,15 +122,15 @@ export default function Header({ toggleSidebar }) {
         >
           <Sun className={`absolute w-5 h-5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${theme === 'light' ? 'scale-100 opacity-100 rotate-0' : 'scale-50 opacity-0 -rotate-90'}`} />
           <Moon className={`absolute w-5 h-5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${theme === 'dark' ? 'scale-100 opacity-100 rotate-0' : 'scale-50 opacity-0 rotate-90'}`} />
-          <Monitor className={`absolute w-5 h-5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${theme === 'system' ? 'scale-100 opacity-100 tranzinc-y-0' : 'scale-50 opacity-0 tranzinc-y-4'}`} />
+          <Monitor className={`absolute w-5 h-5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${theme === 'system' ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-4'}`} />
         </button>
 
         <button
           onClick={handleLogout}
           className="group inline-flex items-center justify-center h-10 px-4 gap-2 font-bold text-zinc-600 dark:text-zinc-300 hover:text-rose-600 dark:hover:text-rose-400 bg-zinc-50 dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-zinc-800 rounded-xl transition-all border border-zinc-200 dark:border-zinc-700 hover:border-rose-200 dark:hover:border-zinc-600 active:scale-95 overflow-hidden"
         >
-          <LogOut className="w-4 h-4 transition-transform duration-300 group-hover:-tranzinc-x-1 group-hover:scale-110" />
-          <span className="hidden sm:inline transition-transform duration-300 group-hover:tranzinc-x-1">Logout</span>
+          <LogOut className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1 group-hover:scale-110" />
+          <span className="hidden sm:inline transition-transform duration-300 group-hover:translate-x-1">Logout</span>
         </button>
       </div>
     </div>

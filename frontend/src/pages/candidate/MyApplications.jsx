@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useMyApplications, useRevokeApplication } from '../../hooks/useApplications';
-import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSkeleton';
@@ -129,24 +129,38 @@ export default function MyApplications() {
 
           {/* Pagination Controls */}
           {Math.ceil(applications.length / itemsPerPage) > 1 && (
-            <div className="flex justify-center items-center gap-2 p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 text-sm font-bold text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-              <div className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
-                Page {currentPage} of {Math.ceil(applications.length / itemsPerPage)}
+            <div className="px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between bg-white dark:bg-zinc-950">
+              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                Showing <span className="text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * itemsPerPage, applications.length)}</span> of <span className="text-zinc-700 dark:text-zinc-300">{applications.length}</span>
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: Math.ceil(applications.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-9 h-9 rounded-xl text-xs font-black flex items-center justify-center transition-all ${currentPage === page ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 scale-110' : 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-105'
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(Math.ceil(applications.length / itemsPerPage), p + 1))}
+                  disabled={currentPage === Math.ceil(applications.length / itemsPerPage)}
+                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(applications.length / itemsPerPage)))}
-                disabled={currentPage === Math.ceil(applications.length / itemsPerPage)}
-                className="px-4 py-2 text-sm font-bold text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
             </div>
           )}
         </div>

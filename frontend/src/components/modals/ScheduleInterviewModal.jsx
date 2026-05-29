@@ -111,7 +111,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                           <div>
                             <label className="block text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">Date</label>
                             <div className="relative">
-                              <CalendarIcon className="absolute left-3 top-1/2 -tranzinc-y-1/2 w-4 h-4 text-zinc-400" />
+                              <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                               <input 
                                 type="date" 
                                 value={schedule.date}
@@ -123,7 +123,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                           <div>
                             <label className="block text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">Time</label>
                             <div className="relative">
-                              <Clock className="absolute left-3 top-1/2 -tranzinc-y-1/2 w-4 h-4 text-zinc-400" />
+                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                               <input 
                                 type="time" 
                                 value={schedule.time}

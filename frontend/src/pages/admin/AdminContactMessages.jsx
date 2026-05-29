@@ -48,7 +48,7 @@ export default function AdminContactMessages() {
           <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-1">View and manage messages from candidates</p>
         </div>
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -tranzinc-y-1/2 text-zinc-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
             placeholder="Search messages..."

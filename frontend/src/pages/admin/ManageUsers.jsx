@@ -82,7 +82,7 @@ export default function ManageUsers() {
         </div>
         <button
           onClick={() => setIsNewUserModalOpen(true)}
-          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-tranzinc-y-0.5 gap-2 whitespace-nowrap duration-300"
+          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-translate-y-0.5 gap-2 whitespace-nowrap duration-300"
         >
           <Plus className="w-5 h-5" />
           New User
@@ -91,7 +91,7 @@ export default function ManageUsers() {
 
       <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="md:col-span-2 relative group">
-          <div className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
             <Search className="w-5 h-5" />
           </div>
           <input
@@ -287,7 +287,7 @@ export default function ManageUsers() {
                 </select>
               </div>
               <div className="pt-6">
-                <button disabled={createUserMutation.isPending} type="submit" className="w-full h-12 font-black text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2 hover:-tranzinc-y-0.5 duration-300">
+                <button disabled={createUserMutation.isPending} type="submit" className="w-full h-12 font-black text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2 hover:-translate-y-0.5 duration-300">
                   {createUserMutation.isPending ? <div className="w-5 h-5 border-2 border-zinc-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Create User'}
                 </button>
               </div>

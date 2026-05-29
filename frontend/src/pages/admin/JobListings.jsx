@@ -132,7 +132,7 @@ export default function JobListings() {
         </div>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-tranzinc-y-0.5 gap-2 duration-300 whitespace-nowrap"
+          className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-translate-y-0.5 gap-2 duration-300 whitespace-nowrap"
         >
           <Plus className="w-5 h-5" />
           Post New Job
@@ -141,7 +141,7 @@ export default function JobListings() {
 
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -tranzinc-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors" />
           <input
             type="text"
             placeholder="Search jobs by title or location..."
@@ -214,7 +214,7 @@ export default function JobListings() {
                     ? 'ring-2 ring-zinc-800 dark:ring-zinc-100 shadow-xl scale-[1.02] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border-zinc-300 dark:border-zinc-700 z-10'
                     : 'border-zinc-200/60 dark:border-zinc-800/60 border-t border-r border-b'
                     } ${isActive
-                      ? 'bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:bg-white dark:hover:bg-zinc-900 hover:-tranzinc-y-1'
+                      ? 'bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-l-emerald-500 dark:border-l-emerald-500 hover:shadow-xl hover:bg-white dark:hover:bg-zinc-900 hover:-translate-y-1'
                       : 'bg-zinc-50/50 dark:bg-zinc-900/30 backdrop-blur-sm border-l-zinc-300/50 dark:border-l-zinc-700/50 hover:bg-zinc-50/80 dark:hover:bg-zinc-900/50'
                     }`}
                 >
