@@ -29,10 +29,17 @@ const getAllUsers = async () => {
     SELECT id, email, full_name, role, phone, is_active, created_at,
            EXISTS(SELECT 1 FROM applications a WHERE a.user_id = users.id AND a.status IN ('hired', 'selected')) AS is_hired
     FROM users 
+    WHERE is_deleted = FALSE
     ORDER BY created_at DESC;
   `;
   const result = await db.query(query);
   return result.rows;
+};
+
+const softDeleteUser = async (id) => {
+  const query = `UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id;`;
+  const result = await db.query(query, [id]);
+  return result.rows[0];
 };
 
 const updateUserProfile = async (id, profileData) => {
@@ -73,5 +80,6 @@ module.exports = {
   getUserById,
   getAllUsers,
   updateUserProfile,
-  updateUserPassword
+  updateUserPassword,
+  softDeleteUser
 };

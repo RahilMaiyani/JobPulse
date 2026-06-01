@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getUsers, createUser, toggleUserStatus } from '../services/userService';
+import { getUsers, createUser, toggleUserStatus, deleteUser } from '../services/userService';
 import { getProfile } from '../services/profileService';
 import toast from 'react-hot-toast';
 
@@ -50,6 +50,21 @@ export const useToggleUserStatus = () => {
     },
     onError: (err, variables) => {
       toast.error(err.response?.data?.error || `Failed to ${variables.action} user`);
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      toast.success(`User deleted successfully`);
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || `Failed to delete user`);
     },
   });
 };

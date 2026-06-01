@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-exports.getNotifications = async (req, res) => {
+exports.getNotifications = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const result = await db.query(

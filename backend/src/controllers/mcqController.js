@@ -169,14 +169,25 @@ const publishResults = async (req, res, next) => {
 const getCandidateTestInfo = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
+    const db = require('../config/db');
 
-    // We should verify the user owns this application, but let's assume middleware or candidate role handles it
+    const appResult = await db.query('SELECT status FROM applications WHERE id = $1', [applicationId]);
+    if (appResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+    const appStatus = appResult.rows[0].status;
+    const result = await mcqModel.getResultByApplicationId(applicationId);
+
+    // If candidate is not shortlisted and has not taken the test, hide quiz info
+    if (appStatus !== 'shortlisted' && !result) {
+      return res.json({ quiz: null, result: null });
+    }
+
     const quiz = await mcqModel.getQuizByApplicationId(applicationId);
     if (!quiz) {
       return res.json({ quiz: null, result: null });
     }
 
-    const result = await mcqModel.getResultByApplicationId(applicationId);
     res.json({ quiz, result });
   } catch (err) {
     next(err);
@@ -186,8 +197,18 @@ const getCandidateTestInfo = async (req, res, next) => {
 const startCandidateTest = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
-    const quiz = await mcqModel.getQuizByApplicationId(applicationId);
+    const db = require('../config/db');
 
+    const appResult = await db.query('SELECT status FROM applications WHERE id = $1', [applicationId]);
+    if (appResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+    const appStatus = appResult.rows[0].status;
+    if (appStatus !== 'shortlisted') {
+      return res.status(403).json({ error: 'You are not eligible to start this test. Status must be shortlisted.' });
+    }
+
+    const quiz = await mcqModel.getQuizByApplicationId(applicationId);
     if (!quiz) return res.status(404).json({ error: 'No quiz found' });
 
     const now = new Date();

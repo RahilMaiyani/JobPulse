@@ -2,7 +2,7 @@ const db = require('../config/db');
 const { sendInterviewScheduledEmail } = require('../services/emailService');
 const { createNotification } = require('../utils/notificationHelper');
 
-exports.scheduleInterview = async (req, res) => {
+exports.scheduleInterview = async (req, res, next) => {
   const { jobId, applicationId, candidateId, scheduledDate, scheduledTime, notes } = req.body;
   const hrId = req.user.id;
 
@@ -71,11 +71,11 @@ exports.scheduleInterview = async (req, res) => {
   } catch (error) {
     await db.query('ROLLBACK');
     console.error("Schedule interview error:", error);
-    res.status(500).json({ error: "Failed to schedule interview" });
+    next(error);
   }
 };
 
-exports.getInterviewsByJob = async (req, res) => {
+exports.getInterviewsByJob = async (req, res, next) => {
   const { jobId } = req.params;
   try {
     const result = await db.query(

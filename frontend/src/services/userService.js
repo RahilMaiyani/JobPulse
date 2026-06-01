@@ -14,3 +14,8 @@ export const toggleUserStatus = async ({ userId }) => {
   const res = await api.patch(`/users/${userId}/toggle-status`);
   return res.data;
 };
+
+export const deleteUser = async (userId) => {
+  const res = await api.delete(`/users/${userId}`);
+  return res.data;
+};

@@ -306,13 +306,17 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                       </div>
                       {testInfo.result.passed ? <CheckCircle2 className="w-6 h-6 opacity-50" /> : <XCircle className="w-6 h-6 opacity-50" />}
                     </div>
-                  ) : (
+                  ) : app.status?.toLowerCase() === 'shortlisted' ? (
                     <button
                       onClick={() => navigate(`/candidate/test/${app.id}`)}
                       className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
                       Start Aptitude Test <ArrowRight className="w-4 h-4" />
                     </button>
+                  ) : (
+                    <div className="p-3 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 rounded-xl text-center text-xs font-semibold border border-zinc-200/60 dark:border-zinc-800/60">
+                      Test is not currently active or you are not eligible.
+                    </div>
                   )}
                 </div>
               ) : null}

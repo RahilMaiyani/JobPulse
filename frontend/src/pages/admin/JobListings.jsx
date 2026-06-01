@@ -9,6 +9,7 @@ import JobListingsSkeleton from '../../components/skeletons/JobListingsSkeleton'
 import JobFormModal from '../../components/modals/JobFormModal';
 import JobApplicantsModal from '../../components/modals/JobApplicantsModal';
 import ScheduleInterviewModal from '../../components/modals/ScheduleInterviewModal';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function JobListings() {
   const queryClient = useQueryClient();
@@ -33,6 +34,7 @@ export default function JobListings() {
   const [jobToEdit, setJobToEdit] = useState(null);
   const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null);
   const [selectedJobForInterviews, setSelectedJobForInterviews] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
 
   const { data: jobs = [], isLoading: loading } = useJobs();
 
@@ -62,9 +64,17 @@ export default function JobListings() {
   const deleteJobMutation = useDeleteJob();
 
   const handleDeleteJob = (id) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
-    deleteJobMutation.mutate(id);
-    setOpenDropdownId(null);
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Job",
+      message: "Are you sure you want to delete this job? This action cannot be undone.",
+      confirmText: "Delete",
+      isDestructive: true,
+      onConfirm: () => {
+        deleteJobMutation.mutate(id);
+        setOpenDropdownId(null);
+      }
+    });
   };
 
   const toggleStatusMutation = useToggleJobStatus();
@@ -78,9 +88,17 @@ export default function JobListings() {
   const publishResultsMutation = usePublishJobResults();
 
   const handlePublishResults = (job) => {
-    if (!window.confirm("Are you sure you want to publish results? All unattempted tests will be marked as 0 and candidates rejected.")) return;
-    publishResultsMutation.mutate(job.id);
-    setOpenDropdownId(null);
+    setConfirmModal({
+      isOpen: true,
+      title: "Publish Results",
+      message: "Are you sure you want to publish results? All unattempted tests will be marked as 0 and candidates rejected.",
+      confirmText: "Publish",
+      isDestructive: false,
+      onConfirm: () => {
+        publishResultsMutation.mutate(job.id);
+        setOpenDropdownId(null);
+      }
+    });
   };
 
   const handleViewApplicants = (job) => {
@@ -634,6 +652,15 @@ export default function JobListings() {
         />
       )}
 
+      <ConfirmationModal 
+        isOpen={confirmModal.isOpen} 
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        isDestructive={confirmModal.isDestructive}
+        confirmText={confirmModal.confirmText}
+      />
     </DashboardLayout>
   );
 }

@@ -121,11 +121,32 @@ const toggleUserStatus = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Block self-deletion
+    if (req.user.id === parseInt(id)) {
+      return res.status(400).json({ error: "You cannot delete your own account." });
+    }
+    
+    const deletedUser = await userModel.softDeleteUser(id);
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserProfile,
   updateProfile,
   resetPassword,
   adminCreateUser,
-  toggleUserStatus
+  toggleUserStatus,
+  deleteUser
 };

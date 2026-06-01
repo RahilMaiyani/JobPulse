@@ -5,6 +5,7 @@ import { User, Phone, Briefcase, Lock, Save, X, Link, FileText, UploadCloud, Tra
 import ProfileSkeleton from '../../components/skeletons/ProfileSkeleton';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function CandidateProfile() {
   const { user: currentUser } = useAuth();
@@ -18,6 +19,7 @@ export default function CandidateProfile() {
     skills: []
   });
   const [skillInput, setSkillInput] = useState('');
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
 
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: '',
@@ -63,8 +65,14 @@ export default function CandidateProfile() {
   };
 
   const handleDeleteResume = (id) => {
-    if (!window.confirm("Are you sure you want to delete this resume?")) return;
-    deleteResumeMutation.mutate(id);
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Resume",
+      message: "Are you sure you want to delete this resume?",
+      confirmText: "Delete",
+      isDestructive: true,
+      onConfirm: () => deleteResumeMutation.mutate(id)
+    });
   };
 
   const handleProfileSubmit = (e) => {
@@ -308,6 +316,16 @@ export default function CandidateProfile() {
         </div>
 
       </div>
+
+      <ConfirmationModal 
+        isOpen={confirmModal.isOpen} 
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        isDestructive={confirmModal.isDestructive}
+        confirmText={confirmModal.confirmText}
+      />
     </DashboardLayout>
   );
 }

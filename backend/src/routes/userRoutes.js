@@ -14,5 +14,6 @@ router.get('/:id/profile', protect, userController.getUserProfile);
 // Admin creating and toggling users
 router.post('/', protect, authorize('admin', 'hr'), userController.adminCreateUser);
 router.patch('/:id/toggle-status', protect, authorize('admin'), userController.toggleUserStatus);
+router.delete('/:id', protect, authorize('admin'), userController.deleteUser);
 
 module.exports = router;

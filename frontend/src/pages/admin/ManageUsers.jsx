@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
-import { useUsers, useCreateUser, useToggleUserStatus } from '../../hooks/useUsers';
-import { Users, Search, Plus, Shield, UserCircle, Briefcase, X, Ban, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useUsers, useCreateUser, useToggleUserStatus, useDeleteUser } from '../../hooks/useUsers';
+import { Users, Search, Plus, Shield, UserCircle, Briefcase, X, Ban, CheckCircle2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import ManageUsersSkeleton from '../../components/skeletons/ManageUsersSkeleton';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import ViewUserProfileModal from '../../components/modals/ViewUserProfileModal';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function ManageUsers() {
   const { user: currentUser } = useAuth();
@@ -22,6 +23,7 @@ export default function ManageUsers() {
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
 
   const [userForm, setUserForm] = useState({
     fullName: '',
@@ -56,8 +58,26 @@ export default function ManageUsers() {
 
   const handleToggleUserStatus = (user) => {
     const action = user.is_active ? "deactivate" : "reactivate";
-    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
-    toggleStatusMutation.mutate({ userId: user.id, action });
+    setConfirmModal({
+      isOpen: true,
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} User`,
+      message: `Are you sure you want to ${action} ${user.full_name}?`,
+      confirmText: action === "deactivate" ? "Deactivate" : "Reactivate",
+      isDestructive: action === "deactivate",
+      onConfirm: () => toggleStatusMutation.mutate({ userId: user.id, action })
+    });
+  };
+
+  const deleteUserMutation = useDeleteUser();
+  const handleDeleteUser = (user) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete User",
+      message: `Are you sure you want to completely delete ${user.full_name}? This action cannot be undone.`,
+      confirmText: "Delete",
+      isDestructive: true,
+      onConfirm: () => deleteUserMutation.mutate(user.id)
+    });
   };
 
   const filteredUsers = users.filter(user => {
@@ -162,6 +182,11 @@ export default function ManageUsers() {
                   <button onClick={() => handleToggleUserStatus(u)} className={`w-11 h-11 flex items-center justify-center rounded-xl border transition-colors ${u.is_active ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100'}`}>
                     {u.is_active ? <Ban className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
                   </button>
+                  {!u.is_active && (
+                    <button onClick={() => handleDeleteUser(u)} className="w-11 h-11 flex items-center justify-center rounded-xl border transition-colors text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))
@@ -231,13 +256,22 @@ export default function ManageUsers() {
                               <Ban className="w-4 h-4" />
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleToggleUserStatus(u)}
-                              className="w-8 h-8 flex items-center justify-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 rounded-xl transition-all active:scale-95"
-                              title="Reactivate User"
-                            >
-                              <CheckCircle2 className="w-4 h-4" />
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleToggleUserStatus(u)}
+                                className="w-8 h-8 flex items-center justify-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 rounded-xl transition-all active:scale-95"
+                                title="Reactivate User"
+                              >
+                                <CheckCircle2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(u)}
+                                className="w-8 h-8 flex items-center justify-center text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 rounded-xl transition-all active:scale-95"
+                                title="Delete User Completely"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -342,6 +376,16 @@ export default function ManageUsers() {
         isOpen={isProfileModalOpen} 
         onClose={() => setIsProfileModalOpen(false)} 
         user={selectedUser} 
+      />
+
+      <ConfirmationModal 
+        isOpen={confirmModal.isOpen} 
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        isDestructive={confirmModal.isDestructive}
+        confirmText={confirmModal.confirmText}
       />
     </DashboardLayout>
   );

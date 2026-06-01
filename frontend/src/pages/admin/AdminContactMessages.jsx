@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useContactMessages, useMarkMessageAsRead, useArchiveMessage } from '../../hooks/useContact';
 import { Mail, Archive, CheckCircle, Search, User, Clock, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import AdminMessagesSkeleton from '../../components/skeletons/AdminMessagesSkeleton';
 
@@ -10,6 +11,7 @@ export default function AdminContactMessages() {
   const markAsReadMutation = useMarkMessageAsRead();
   const archiveMutation = useArchiveMessage();
   const [searchTerm, setSearchTerm] = useState('');
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
 
   const handleMarkAsRead = async (id, isRead) => {
     if (isRead) return;
@@ -20,14 +22,22 @@ export default function AdminContactMessages() {
     }
   };
 
-  const handleArchive = async (id) => {
-    if (!window.confirm('Are you sure you want to archive this message?')) return;
-    try {
-      await archiveMutation.mutateAsync(id);
-      toast.success('Message archived');
-    } catch (error) {
-      toast.error('Failed to archive message');
-    }
+  const handleArchive = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Archive Message",
+      message: "Are you sure you want to archive this message?",
+      confirmText: "Archive",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await archiveMutation.mutateAsync(id);
+          toast.success('Message archived');
+        } catch (error) {
+          toast.error('Failed to archive message');
+        }
+      }
+    });
   };
 
   const filteredMessages = messages?.filter(msg => 
@@ -122,6 +132,15 @@ export default function AdminContactMessages() {
       </div>
       )}
     </div>
+    <ConfirmationModal 
+      isOpen={confirmModal.isOpen} 
+      onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+      title={confirmModal.title}
+      message={confirmModal.message}
+      onConfirm={confirmModal.onConfirm}
+      isDestructive={confirmModal.isDestructive}
+      confirmText={confirmModal.confirmText}
+    />
     </DashboardLayout>
   );
 }

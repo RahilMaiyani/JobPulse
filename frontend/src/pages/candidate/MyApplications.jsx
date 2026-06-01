@@ -6,9 +6,11 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSkeleton';
 import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsModal';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function MyApplications() {
   const [selectedApp, setSelectedApp] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,9 +23,20 @@ export default function MyApplications() {
   const revokeMutation = useRevokeApplication();
 
   const handleRevoke = (appId) => {
-    if (!window.confirm("Are you sure you want to revoke this application?")) return;
-    revokeMutation.mutate(appId, {
-      onSuccess: () => setSelectedApp(null)
+    setConfirmModal({
+      isOpen: true,
+      title: "Revoke Application",
+      message: "Are you sure you want to revoke this application? This action cannot be undone.",
+      confirmText: "Revoke",
+      isDestructive: true,
+      onConfirm: () => {
+        revokeMutation.mutate(appId, {
+          onSuccess: () => {
+            setSelectedApp(null);
+            setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          }
+        });
+      }
     });
   };
 
@@ -86,7 +99,7 @@ export default function MyApplications() {
                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20'}`}>
                     Aptitude: {app.mcq_score}%
                   </span>
-                ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
+                ) : app.quiz_id && !app.result_id && app.status?.toLowerCase() === 'shortlisted' ? (
                   <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
                     Test Available
                   </span>
@@ -136,7 +149,7 @@ export default function MyApplications() {
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${app.mcq_passed ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20'}`}>
                                 Aptitude: {app.mcq_score}%
                               </span>
-                            ) : app.quiz_id && !app.result_id && new Date() < new Date(app.scheduled_end_time) && app.status === 'shortlisted' ? (
+                            ) : app.quiz_id && !app.result_id && app.status?.toLowerCase() === 'shortlisted' ? (
                               <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
                                 Test Available
                               </span>
@@ -219,6 +232,16 @@ export default function MyApplications() {
           isRevoking={revokeMutation.isPending}
         />
       )}
+
+      <ConfirmationModal 
+        isOpen={confirmModal.isOpen} 
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        isDestructive={confirmModal.isDestructive}
+        confirmText={confirmModal.confirmText}
+      />
     </DashboardLayout>
   );
 }

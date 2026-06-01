@@ -18,7 +18,7 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
     const { error } = registerSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
@@ -55,11 +55,11 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { error } = loginSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
@@ -108,7 +108,7 @@ const getMe = async (req, res, next) => {
     res.json(user);
   } catch (error) {
     console.error('GetMe error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 };
 
