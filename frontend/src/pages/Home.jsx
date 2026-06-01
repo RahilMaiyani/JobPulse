@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, LogIn, UserPlus } from 'lucide-react';
@@ -6,6 +6,24 @@ import { ArrowRight, LogIn, UserPlus } from 'lucide-react';
 export default function Home() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Fine-grain real-time animation frame clock for ultra-smooth sweeping motion
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    let animationFrameId;
+    const updateTime = () => {
+      setTime(new Date());
+      animationFrameId = requestAnimationFrame(updateTime);
+    };
+    animationFrameId = requestAnimationFrame(updateTime);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  const exactSeconds = time.getSeconds() + time.getMilliseconds() / 1000;
+  const secondsDegrees = (exactSeconds / 60) * 360;
+  const minutesDegrees = ((time.getMinutes() + exactSeconds / 60) / 60) * 360;
+  const hoursDegrees = ((time.getHours() % 12 + time.getMinutes() / 60) / 12) * 360;
 
   return (
     <div className="h-screen w-full bg-white dark:bg-zinc-950 flex relative overflow-hidden transition-colors duration-300">
@@ -67,14 +85,64 @@ export default function Home() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Simple CSS Shapes */}
+        {/* RIGHT COLUMN: CSS Illustration */}
         <div className="hidden lg:flex flex-1 items-center justify-center relative overflow-hidden animate-in fade-in slide-in-from-right-8 duration-1000 delay-150">
           <div className="relative w-full max-w-[600px] aspect-square flex items-center justify-center">
             {/* Minimalist geometric composition */}
             <div className="absolute w-[80%] h-[80%] border-[40px] border-zinc-100 dark:border-zinc-800 rounded-full animate-[spin_60s_linear_infinite]" />
             <div className="absolute w-[50%] h-[50%] bg-zinc-900 dark:bg-zinc-100 rounded-2xl rotate-12 shadow-2xl shadow-zinc-300/50 dark:shadow-none" />
-            <div className="absolute w-[30%] h-[30%] border-[20px] border-zinc-200 dark:border-zinc-700 rounded-full -translate-x-1/2 translate-y-1/2" />
+            
+            {/* Original top-right circle reverted */}
             <div className="absolute w-24 h-24 bg-emerald-500/10 dark:bg-emerald-500/20 backdrop-blur-3xl rounded-full top-1/4 right-1/4" />
+            
+            {/* Bold, light/dark-themed Simple Analog Clock (Bottom-Left Circle) */}
+            <div className="absolute w-[28%] h-[28%] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-full -translate-x-1/2 translate-y-1/2 shadow-2xl flex items-center justify-center select-none z-20 hover:scale-105 transition-transform duration-300">
+              
+              {/* Outer Ticks & Bezel Progress Ring SVG Layer */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100">
+                {/* Outer Dashed Track (Header clock style) */}
+                <circle cx="50" cy="50" r="46" className="stroke-zinc-100 dark:stroke-zinc-800 fill-none opacity-80" strokeWidth="2.5" strokeDasharray="2 4" transform="rotate(-90 50 50)"></circle>
+                
+                {/* Dynamic Indigo Seconds Progress Ring (Header clock style) */}
+                <circle 
+                  cx="50" cy="50" r="46" 
+                  className="stroke-indigo-500 fill-none" 
+                  strokeWidth="2.5" 
+                  strokeDasharray="289.026" 
+                  strokeDashoffset={289.026 - (289.026 * (exactSeconds / 60))} 
+                  strokeLinecap="round"
+                  transform="rotate(-90 50 50)"
+                ></circle>
+
+                {/* Bold Focal Numbers */}
+                <text x="50" y="24" fontSize="13" fontWeight="1000" textAnchor="middle" className="fill-zinc-900 dark:fill-zinc-100 font-sans tracking-tighter">12</text>
+                <text x="50" y="85" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">6</text>
+                <text x="83" y="53" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">3</text>
+                <text x="17" y="53" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">9</text>
+              </svg>
+
+              {/* Hands & Center Pin Container */}
+              <div className="relative w-full h-full flex items-center justify-center z-20 pointer-events-none">
+                {/* Hour Hand */}
+                <div 
+                  className="absolute w-[3px] h-[25%] bg-zinc-800 dark:bg-zinc-200 rounded-sm origin-bottom" 
+                  style={{ transform: `translateY(-50%) rotate(${hoursDegrees}deg)` }}
+                />
+                {/* Minute Hand */}
+                <div 
+                  className="absolute w-[2px] h-[35%] bg-zinc-400 dark:bg-zinc-500 rounded-sm origin-bottom" 
+                  style={{ transform: `translateY(-50%) rotate(${minutesDegrees}deg)` }}
+                />
+                {/* Second Hand (Vibrant Indigo Sweep) */}
+                <div 
+                  className="absolute w-[1.5px] h-[42%] bg-indigo-500 rounded-full origin-bottom" 
+                  style={{ transform: `translateY(-50%) rotate(${secondsDegrees}deg)` }}
+                />
+                {/* Center Dot (Matching header) */}
+                <div className="w-2.5 h-2.5 rounded-full bg-zinc-800 dark:bg-zinc-200 absolute z-10 border-[0.5px] border-white dark:border-zinc-900 shadow"></div>
+              </div>
+
+            </div>
           </div>
         </div>
 
