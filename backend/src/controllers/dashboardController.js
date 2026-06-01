@@ -94,10 +94,46 @@ const getCandidateStats = async (req, res, next) => {
     // Recent openings
     const recentOpeningsResult = await pool.query("SELECT * FROM jobs WHERE status = 'active' AND is_published = true ORDER BY created_at DESC LIMIT 3");
 
+    // Most recent active application
+    const recentApplicationResult = await pool.query(`
+      SELECT a.id, a.status, a.applied_at, j.title as job_title 
+      FROM applications a 
+      JOIN jobs j ON a.job_id = j.id 
+      WHERE a.user_id = $1 
+      ORDER BY a.applied_at DESC 
+      LIMIT 1
+    `, [userId]);
+
+    // Pending test
+    const pendingTestResult = await pool.query(`
+      SELECT q.id as quiz_id, q.title as quiz_title, q.duration_minutes, q.scheduled_end_time, a.id as application_id, j.title as job_title
+      FROM applications a
+      JOIN jobs j ON a.job_id = j.id
+      JOIN mcq_quizzes q ON j.id = q.job_id
+      LEFT JOIN mcq_results mr ON a.id = mr.application_id
+      WHERE a.user_id = $1 AND a.status = 'shortlisted' AND mr.id IS NULL AND q.scheduled_end_time > CURRENT_TIMESTAMP
+      ORDER BY q.scheduled_end_time ASC
+      LIMIT 1
+    `, [userId]);
+
+    // Upcoming interview
+    const upcomingInterviewResult = await pool.query(`
+      SELECT i.scheduled_date, i.scheduled_time, j.title as job_title
+      FROM interview_slots i
+      JOIN applications a ON i.application_id = a.id
+      JOIN jobs j ON i.job_id = j.id
+      WHERE a.user_id = $1 AND i.status = 'scheduled' AND (i.scheduled_date + i.scheduled_time) > CURRENT_TIMESTAMP
+      ORDER BY i.scheduled_date ASC, i.scheduled_time ASC
+      LIMIT 1
+    `, [userId]);
+
     res.json({
       openRolesCount: parseInt(activeJobsResult.rows[0].count),
       myApplicationsCount: parseInt(myApplicationsResult.rows[0].count),
-      recentOpenings: recentOpeningsResult.rows
+      recentOpenings: recentOpeningsResult.rows,
+      recentApplication: recentApplicationResult.rows[0] || null,
+      pendingTest: pendingTestResult.rows[0] || null,
+      upcomingInterview: upcomingInterviewResult.rows[0] || null
     });
   } catch (error) {
     next(error);
