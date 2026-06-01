@@ -31,3 +31,18 @@ exports.markAsRead = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.markAllAsRead = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    await db.query(
+      `UPDATE notifications 
+       SET is_read = TRUE 
+       WHERE user_id = $1 AND is_read = FALSE`,
+      [userId]
+    );
+    res.json({ message: "All notifications marked as read" });
+  } catch (error) {
+    next(error);
+  }
+};

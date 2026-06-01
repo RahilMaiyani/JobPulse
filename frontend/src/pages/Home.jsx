@@ -25,6 +25,55 @@ export default function Home() {
   const minutesDegrees = ((time.getMinutes() + exactSeconds / 60) / 60) * 360;
   const hoursDegrees = ((time.getHours() % 12 + time.getMinutes() / 60) / 12) * 360;
 
+  // Clock numbers and target angles (in degrees, starting from 12 o'clock / 0 degrees)
+  const clockNumbers = [
+    { value: 12, angle: 0, isBold: true },
+    { value: 1, angle: 30 },
+    { value: 2, angle: 60 },
+    { value: 3, angle: 90, isBold: true },
+    { value: 4, angle: 120 },
+    { value: 5, angle: 150 },
+    { value: 6, angle: 180, isBold: true },
+    { value: 7, angle: 210 },
+    { value: 8, angle: 240 },
+    { value: 9, angle: 270, isBold: true },
+    { value: 10, angle: 300 },
+    { value: 11, angle: 330 }
+  ];
+
+  const normalizeAngle = (deg) => {
+    let normalized = deg % 360;
+    if (normalized < 0) normalized += 360;
+    return normalized;
+  };
+
+  const getAngularDistance = (a, b) => {
+    const diff = Math.abs(normalizeAngle(a) - normalizeAngle(b));
+    return Math.min(diff, 360 - diff);
+  };
+
+  // Get active numbers directly from the Date object
+  const currentHourVal = time.getHours() % 12 === 0 ? 12 : time.getHours() % 12;
+  const nearestMinuteIndex = Math.round(time.getMinutes() / 5);
+  const currentMinuteVal = (nearestMinuteIndex === 0 || nearestMinuteIndex === 12) ? 12 : nearestMinuteIndex;
+
+  const R = 33; // Radius for number placement in the 100x100 SVG viewbox
+  const numberPositions = clockNumbers.map(num => {
+    const phi = (num.angle - 90) * Math.PI / 180;
+    const x = 50 + R * Math.cos(phi);
+    const y = 50 + R * Math.sin(phi) + 3; // Small baseline offset for vertical alignment
+    
+    // Direct matching from Date values
+    const isPointed = num.value === currentHourVal || num.value === currentMinuteVal;
+    
+    return {
+      ...num,
+      x,
+      y,
+      isPointed
+    };
+  });
+
   return (
     <div className="h-screen w-full bg-white dark:bg-zinc-950 flex relative overflow-hidden transition-colors duration-300">
       {/* Subtle grid background */}
@@ -114,11 +163,24 @@ export default function Home() {
                   transform="rotate(-90 50 50)"
                 ></circle>
 
-                {/* Bold Focal Numbers */}
-                <text x="50" y="24" fontSize="13" fontWeight="1000" textAnchor="middle" className="fill-zinc-900 dark:fill-zinc-100 font-sans tracking-tighter">12</text>
-                <text x="50" y="85" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">6</text>
-                <text x="83" y="53" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">3</text>
-                <text x="17" y="53" fontSize="8" fontWeight="900" textAnchor="middle" className="fill-zinc-600 dark:fill-zinc-400 font-sans tracking-tight">9</text>
+                {/* Dynamic focal numbers showing only where needles point */}
+                {numberPositions.map((num) => (
+                  <text
+                    key={num.value}
+                    x={num.x}
+                    y={num.y}
+                    fontSize={num.isBold ? "9" : "6.5"}
+                    fontWeight={num.isBold ? "1000" : "600"}
+                    textAnchor="middle"
+                    className="fill-zinc-900 dark:fill-zinc-100 font-sans tracking-tighter"
+                    style={{
+                      opacity: num.isPointed ? 1 : 0,
+                      transition: 'opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                  >
+                    {num.value}
+                  </text>
+                ))}
               </svg>
 
               {/* Hands & Center Pin Container */}
