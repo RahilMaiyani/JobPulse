@@ -676,9 +676,3 @@ App.jsx mounts on '/'
 ```
 
 ---
-
-<div align="center">
-
-Built with care by [Rahil Maiyani](https://github.com/RahilMaiyani)
-
-</div>
