@@ -9,7 +9,7 @@ const uploadResume = async (req, res, next) => {
     }
 
     const userId = req.user.id;
-    
+
     // Check resume limit
     const existingResumes = await resumeModel.getUserResumes(userId);
     if (existingResumes.length >= 3) {
@@ -45,10 +45,10 @@ const uploadResume = async (req, res, next) => {
     const filePath = publicUrlData.publicUrl;
 
     const newResume = await resumeModel.uploadResume(userId, fileName, filePath, parsedText);
-    
+
     // Don't send the entire parsedText back in the list view to save bandwidth
     const { parsed_text, ...resumeData } = newResume;
-    
+
     res.status(201).json({ message: 'Resume uploaded successfully', resume: resumeData });
   } catch (err) {
     next(err);
@@ -69,7 +69,7 @@ const deleteResume = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    
+
     const resume = await resumeModel.getResumeById(id, userId);
     if (!resume) {
       return res.status(404).json({ error: 'Resume not found' });

@@ -24,35 +24,35 @@ const analyzeApplication = async (req, res, next) => {
 
     // Call Gemini
     const prompt = `
-You are an expert ATS (Applicant Tracking System). 
-Analyze this candidate's resume against the job description and the candidate's profile data.
-Also, verify if the resume likely belongs to this user based on their profile data (name, skills).
+      You are an expert ATS (Applicant Tracking System). 
+      Analyze this candidate's resume against the job description and the candidate's profile data.
+      Also, verify if the resume likely belongs to this user based on their profile data (name, skills).
 
-Job Title: ${job.title}
-Job Description: ${job.description}
-Job Requirements: ${JSON.stringify(job.requirements || [])}
+      Job Title: ${job.title}
+      Job Description: ${job.description}
+      Job Requirements: ${JSON.stringify(job.requirements || [])}
 
-Candidate Profile (from DB):
-Name: ${userProfile.full_name}
-Experience: ${userProfile.experience_years} years
-Skills: ${JSON.stringify(userProfile.skills || [])}
+      Candidate Profile (from DB):
+      Name: ${userProfile.full_name}
+      Experience: ${userProfile.experience_years} years
+      Skills: ${JSON.stringify(userProfile.skills || [])}
 
-Candidate Resume Text:
-${resume.parsed_text}
+      Candidate Resume Text:
+      ${resume.parsed_text}
 
-Output EXACTLY a JSON object with this format (no markdown tags, just pure JSON).
-Limit strengths and weaknesses to a MAXIMUM of 3 short bullet points each (1 sentence max per point).
-Limit reasoning to 1-2 short sentences.
-Format:
-{
-  "ai_match_score": number (0 to 100),
-  "ai_match_details": {
-    "strengths": ["...", "..."],
-    "weaknesses": ["...", "..."],
-    "reasoning": "..."
-  },
-  "is_suspicious": boolean (true if the resume clearly belongs to someone else with a different name/background)
-}
+      Output EXACTLY a JSON object with this format (no markdown tags, just pure JSON).
+      Limit strengths and weaknesses to a MAXIMUM of 3 short bullet points each (1 sentence max per point).
+      Limit reasoning to 1-2 short sentences.
+      Format:
+      {
+        "ai_match_score": number (0 to 100),
+        "ai_match_details": {
+          "strengths": ["...", "..."],
+          "weaknesses": ["...", "..."],
+          "reasoning": "..."
+        },
+        "is_suspicious": boolean (true if the resume clearly belongs to someone else with a different name/background)
+      }
     `;
 
     const fallbackModels = ['gemini-3.1-flash-lite', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
@@ -69,7 +69,7 @@ Format:
             responseMimeType: "application/json",
           }
         });
-        break; // Success! Break out of the loop
+        break;
       } catch (err) {
         lastErr = err;
         console.warn(`Model ${model} failed: ${err.message}`);
@@ -145,7 +145,6 @@ const submitApplication = async (req, res, next) => {
 const getMyApplications = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    // We'll create this in the model
     const applications = await applicationModel.getUserApplications(userId);
     res.json({ applications });
   } catch (err) {
@@ -177,13 +176,13 @@ const revokeApplication = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    
+
     const deletedApp = await applicationModel.deleteApplication(id, userId);
-    
+
     if (!deletedApp) {
       return res.status(404).json({ error: 'Application not found or you do not have permission to revoke it' });
     }
-    
+
     res.json({ message: 'Application revoked successfully' });
   } catch (err) {
     next(err);
@@ -194,14 +193,14 @@ const updateApplicationStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     const validStatuses = ['applied', 'shortlisted', 'interview', 'selected', 'rejected', 'offer_sent'];
     if (status && !validStatuses.includes(status.toLowerCase())) {
-       return res.status(400).json({ error: 'Invalid status' });
+      return res.status(400).json({ error: 'Invalid status' });
     }
-    
+
     const updatedApp = await applicationModel.updateApplicationStatus(id, status);
-    
+
     if (!updatedApp) {
       return res.status(404).json({ error: 'Application not found' });
     }
@@ -222,7 +221,7 @@ const updateApplicationStatus = async (req, res, next) => {
     } catch (emailErr) {
       console.error("Failed to send status update email:", emailErr);
     }
-    
+
     res.json({ message: 'Status updated successfully', application: updatedApp });
   } catch (err) {
     next(err);

@@ -12,6 +12,7 @@ CREATE TABLE users (
   current_company VARCHAR(255),
   linkedin_profile VARCHAR(500),
   is_active BOOLEAN DEFAULT TRUE,
+  is_deleted BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT valid_role CHECK (role IN ('candidate', 'hr', 'admin'))
@@ -29,10 +30,12 @@ CREATE TABLE jobs (
   job_type VARCHAR(50), 
   status VARCHAR(50) DEFAULT 'draft', 
   created_by INT REFERENCES users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   application_deadline DATE,
   is_published BOOLEAN DEFAULT FALSE,
+  salary_range VARCHAR(255),
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT valid_status CHECK (status IN ('draft', 'active', 'closed'))
 );
 
@@ -54,13 +57,13 @@ CREATE TABLE applications (
   resume_id INT REFERENCES resumes(id) ON DELETE SET NULL,
   cover_letter TEXT,
   status VARCHAR(50) DEFAULT 'applied',
-  ai_match_score INT DEFAULT 0,
+  ai_match_score DECIMAL(5,2) DEFAULT 0,
   ai_match_details JSONB, 
   is_suspicious BOOLEAN DEFAULT FALSE,
   ai_screening_timestamp TIMESTAMP WITH TIME ZONE,
+  rejection_reason TEXT,
   applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  rejection_reason TEXT,
   UNIQUE(user_id, job_id),
   CONSTRAINT valid_status CHECK (status IN ('applied', 'screening_passed', 'screening_failed', 'shortlisted', 'interview', 'selected', 'rejected', 'offer_sent')),
   CONSTRAINT valid_score CHECK (ai_match_score >= 0 AND ai_match_score <= 100)
@@ -74,10 +77,11 @@ CREATE TABLE mcq_quizzes (
     description TEXT,
     duration_minutes INT NOT NULL DEFAULT 30,
     passing_score INT NOT NULL DEFAULT 50,
+    results_published BOOLEAN DEFAULT FALSE,
     scheduled_start_time TIMESTAMP WITH TIME ZONE NOT NULL,
     scheduled_end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    results_published BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- MCQ Questions Table
@@ -107,8 +111,8 @@ CREATE TABLE interview_slots (
   id SERIAL PRIMARY KEY,
   job_id INT NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
   application_id INT NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-  interviewer_id INT REFERENCES users(id), -- This will map to an HR user
-  round_name VARCHAR(255) NOT NULL,
+  interviewer_id INT REFERENCES users(id), 
+  round_name VARCHAR(255),
   scheduled_date DATE NOT NULL,
   scheduled_time TIME NOT NULL,
   end_time TIME,
@@ -121,21 +125,26 @@ CREATE TABLE interview_slots (
   CONSTRAINT valid_status CHECK (status IN ('scheduled', 'completed', 'cancelled'))
 );
 
--- Evaluations
-CREATE TABLE evaluations (
+-- Contact Messages Table
+CREATE TABLE contact_messages (
   id SERIAL PRIMARY KEY,
-  slot_id INT NOT NULL REFERENCES interview_slots(id) ON DELETE CASCADE,
-  interviewer_id INT NOT NULL REFERENCES users(id),
-  score INT NOT NULL,
-  feedback TEXT,
-  recommendation VARCHAR(50) NOT NULL, 
-  technical_skills_score INT,
-  communication_score INT,
-  problem_solving_score INT,
-  cultural_fit_score INT,
-  submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT valid_recommendation CHECK (recommendation IN ('pass', 'fail', 'maybe'))
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  is_archived BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications Table
+CREATE TABLE notifications (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(50) DEFAULT 'info',
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for performance
@@ -145,3 +154,5 @@ CREATE INDEX idx_applications_status ON applications(status);
 CREATE INDEX idx_jobs_status ON jobs(status);
 CREATE INDEX idx_jobs_created_by ON jobs(created_by);
 CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_contact_messages_user ON contact_messages(user_id);
+CREATE INDEX idx_notifications_user ON notifications(user_id);

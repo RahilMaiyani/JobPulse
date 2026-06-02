@@ -63,7 +63,7 @@ const createOrUpdateQuiz = async (req, res, next) => {
       const job = await jobModel.getJobById(jobId);
       const apps = await applicationModel.getJobApplications(jobId);
       const shortlisted = apps.filter(app => app.status === 'shortlisted');
-      
+
       const now = new Date();
       const end = new Date(quiz.scheduled_end_time);
 

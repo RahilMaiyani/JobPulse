@@ -4,7 +4,7 @@ require('dotenv').config();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Supabase requires SSL, but often this is needed locally to avoid cert errors
+    rejectUnauthorized: false
   }
 });
 
