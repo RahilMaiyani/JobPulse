@@ -7,7 +7,6 @@ export default function Home() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Fine-grain real-time animation frame clock for ultra-smooth sweeping motion
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -41,17 +40,6 @@ export default function Home() {
     { value: 11, angle: 330 }
   ];
 
-  const normalizeAngle = (deg) => {
-    let normalized = deg % 360;
-    if (normalized < 0) normalized += 360;
-    return normalized;
-  };
-
-  const getAngularDistance = (a, b) => {
-    const diff = Math.abs(normalizeAngle(a) - normalizeAngle(b));
-    return Math.min(diff, 360 - diff);
-  };
-
   // Get active numbers directly from the Date object
   const currentHourVal = time.getHours() % 12 === 0 ? 12 : time.getHours() % 12;
   const nearestMinuteIndex = Math.round(time.getMinutes() / 5);
@@ -62,10 +50,10 @@ export default function Home() {
     const phi = (num.angle - 90) * Math.PI / 180;
     const x = 50 + R * Math.cos(phi);
     const y = 50 + R * Math.sin(phi) + 3; // Small baseline offset for vertical alignment
-    
+
     // Direct matching from Date values
     const isPointed = num.value === currentHourVal || num.value === currentMinuteVal;
-    
+
     return {
       ...num,
       x,
@@ -140,25 +128,25 @@ export default function Home() {
             {/* Minimalist geometric composition */}
             <div className="absolute w-[80%] h-[80%] border-[40px] border-zinc-100 dark:border-zinc-800 rounded-full animate-[spin_60s_linear_infinite]" />
             <div className="absolute w-[50%] h-[50%] bg-zinc-900 dark:bg-zinc-100 rounded-2xl rotate-12 shadow-2xl shadow-zinc-300/50 dark:shadow-none" />
-            
+
             {/* Original top-right circle reverted */}
             <div className="absolute w-24 h-24 bg-emerald-500/10 dark:bg-emerald-500/20 backdrop-blur-3xl rounded-full top-1/4 right-1/4" />
-            
+
             {/* Bold, light/dark-themed Simple Analog Clock (Bottom-Left Circle) */}
             <div className="absolute w-[28%] h-[28%] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-full -translate-x-1/2 translate-y-1/2 shadow-2xl flex items-center justify-center select-none z-20 hover:scale-105 transition-transform duration-300">
-              
+
               {/* Outer Ticks & Bezel Progress Ring SVG Layer */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100">
                 {/* Outer Dashed Track (Header clock style) */}
                 <circle cx="50" cy="50" r="46" className="stroke-zinc-100 dark:stroke-zinc-800 fill-none opacity-80" strokeWidth="2.5" strokeDasharray="2 4" transform="rotate(-90 50 50)"></circle>
-                
+
                 {/* Dynamic Indigo Seconds Progress Ring (Header clock style) */}
-                <circle 
-                  cx="50" cy="50" r="46" 
-                  className="stroke-indigo-500 fill-none" 
-                  strokeWidth="2.5" 
-                  strokeDasharray="289.026" 
-                  strokeDashoffset={289.026 - (289.026 * (exactSeconds / 60))} 
+                <circle
+                  cx="50" cy="50" r="46"
+                  className="stroke-indigo-500 fill-none"
+                  strokeWidth="2.5"
+                  strokeDasharray="289.026"
+                  strokeDashoffset={289.026 - (289.026 * (exactSeconds / 60))}
                   strokeLinecap="round"
                   transform="rotate(-90 50 50)"
                 ></circle>
@@ -186,18 +174,18 @@ export default function Home() {
               {/* Hands & Center Pin Container */}
               <div className="relative w-full h-full flex items-center justify-center z-20 pointer-events-none">
                 {/* Hour Hand */}
-                <div 
-                  className="absolute w-[3px] h-[25%] bg-zinc-800 dark:bg-zinc-200 rounded-sm origin-bottom" 
+                <div
+                  className="absolute w-[3px] h-[25%] bg-zinc-800 dark:bg-zinc-200 rounded-sm origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${hoursDegrees}deg)` }}
                 />
                 {/* Minute Hand */}
-                <div 
-                  className="absolute w-[2px] h-[35%] bg-zinc-400 dark:bg-zinc-500 rounded-sm origin-bottom" 
+                <div
+                  className="absolute w-[2px] h-[35%] bg-zinc-400 dark:bg-zinc-500 rounded-sm origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${minutesDegrees}deg)` }}
                 />
                 {/* Second Hand (Vibrant Indigo Sweep) */}
-                <div 
-                  className="absolute w-[1.5px] h-[42%] bg-indigo-500 rounded-full origin-bottom" 
+                <div
+                  className="absolute w-[1.5px] h-[42%] bg-indigo-500 rounded-full origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${secondsDegrees}deg)` }}
                 />
                 {/* Center Dot (Matching header) */}
