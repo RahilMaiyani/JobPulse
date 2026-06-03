@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import AdminMessagesSkeleton from '../../components/skeletons/AdminMessagesSkeleton';
+import SEO from '../../components/SEO';
 
 export default function AdminContactMessages() {
   const { data: messages, isLoading } = useContactMessages();
@@ -48,6 +49,7 @@ export default function AdminContactMessages() {
 
   return (
     <DashboardLayout>
+      <SEO title="Contact Messages" />
       <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

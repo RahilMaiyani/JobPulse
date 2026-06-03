@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useJobs, useDeleteJob, useToggleJobStatus, usePublishJobResults } from '../../hooks/useJobs';
+import SEO from '../../components/SEO';
 import { useQueryClient } from '@tanstack/react-query';
 import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, FileQuestion, Calendar, LayoutGrid, List, CircleDollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -146,6 +147,7 @@ export default function JobListings() {
 
   return (
     <DashboardLayout>
+      <SEO title="Job Listings" />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Job Listings</h1>

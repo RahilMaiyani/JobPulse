@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import SEO from '../../components/SEO';
 import { useActiveJobs } from '../../hooks/useJobs';
 import { useMyApplications, useApplyForJob } from '../../hooks/useApplications';
 import ViewOpeningsSkeleton from '../../components/skeletons/ViewOpeningsSkeleton';
@@ -74,6 +75,7 @@ export default function ViewOpenings() {
 
   return (
     <DashboardLayout>
+      <SEO title="Open Roles" />
       <div className="mb-8">
         <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Open Roles</h1>
         <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-1">Discover your next opportunity within the company.</p>

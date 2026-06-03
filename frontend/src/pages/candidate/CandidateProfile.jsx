@@ -5,6 +5,7 @@ import { User, Phone, Briefcase, Lock, Save, X, Link, FileText, UploadCloud, Tra
 import ProfileSkeleton from '../../components/skeletons/ProfileSkeleton';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import SEO from '../../components/SEO';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function CandidateProfile() {
@@ -124,6 +125,7 @@ export default function CandidateProfile() {
 
   return (
     <DashboardLayout>
+      <SEO title="My Profile" />
       {/* HEADER */}
       <div className="mb-10 pb-8 border-b border-zinc-200/60 dark:border-zinc-800/60">
         <div className="inline-flex items-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-3 py-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-4 shadow-sm">

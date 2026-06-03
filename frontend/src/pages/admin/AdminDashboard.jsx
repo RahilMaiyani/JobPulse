@@ -2,6 +2,7 @@ import React from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminDashboard } from '../../hooks/useDashboard';
+import SEO from '../../components/SEO';
 import { Users, Briefcase, FileText, ArrowUpRight, Plus, UserPlus, Calendar, Activity, CheckCircle2, FileQuestion, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardStatsSkeleton from '../../components/skeletons/DashboardStatsSkeleton';
@@ -93,6 +94,7 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout>
+      <SEO title="Admin Dashboard" />
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-zinc-200/60 dark:border-zinc-800/60">
         <div>

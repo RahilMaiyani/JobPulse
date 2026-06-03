@@ -5,6 +5,7 @@ import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Tras
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSkeleton';
+import SEO from '../../components/SEO';
 import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
@@ -62,6 +63,7 @@ export default function MyApplications() {
 
   return (
     <DashboardLayout>
+      <SEO title="My Applications" />
       <div className="mb-8">
         <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">My Applications</h1>
         <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-1">Track the status of your recent job applications.</p>

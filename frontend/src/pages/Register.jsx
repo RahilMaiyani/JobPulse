@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, UserPlus, ArrowRight, EyeOff, Eye, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const registerSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -35,7 +36,9 @@ export default function Register() {
   };
 
   return (
-    <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
+    <>
+      <SEO title="Create Account" description="Join JobPulse to discover and apply for internal opportunities." />
+      <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
       
       {/* LEFT PANE: Form */}
       <div className="w-full lg:w-1/2 h-full flex flex-col justify-center p-8 sm:p-12 lg:p-24 relative overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -168,7 +171,7 @@ export default function Register() {
           </div>
         </div>
       </div>
-
     </div>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { HelmetProvider } from 'react-helmet-async';
 
 import OfflineBanner from './components/OfflineBanner';
 import PageLoader from './components/PageLoader';
@@ -46,7 +47,8 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Toaster
           position="top-center"
@@ -113,6 +115,7 @@ function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

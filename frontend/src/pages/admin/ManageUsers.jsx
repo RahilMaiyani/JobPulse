@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import SEO from '../../components/SEO';
 import api from '../../services/api';
 import { useUsers, useCreateUser, useToggleUserStatus, useDeleteUser } from '../../hooks/useUsers';
 import { Users, Search, Plus, Shield, UserCircle, Briefcase, X, Ban, CheckCircle2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
@@ -95,6 +96,7 @@ export default function ManageUsers() {
 
   return (
     <DashboardLayout>
+      <SEO title="Manage Users" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Manage Users</h1>

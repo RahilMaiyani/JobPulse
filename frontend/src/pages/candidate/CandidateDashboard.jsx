@@ -1,6 +1,7 @@
 import React from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
+import SEO from '../../components/SEO';
 import { useCandidateDashboard } from '../../hooks/useDashboard';
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '../../hooks/useNotifications';
 import { Briefcase, FileText, ArrowRight, Bell, X, Calendar, Video, Clock, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
@@ -55,6 +56,7 @@ export default function CandidateDashboard() {
 
   return (
     <DashboardLayout>
+      <SEO title="Dashboard" />
       {/* HEADER */}
       <div className="mb-10 pb-8 border-b border-zinc-200/60 dark:border-zinc-800/60">
         <div className="inline-flex items-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-3 py-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-4 shadow-sm">

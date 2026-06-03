@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import SEO from '../../components/SEO';
 import toast from 'react-hot-toast';
 import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import AptitudeTestSkeleton from '../../components/skeletons/AptitudeTestSkeleton';
@@ -175,7 +176,9 @@ export default function CandidateAptitudeTest() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100">
+    <>
+      <SEO title="Aptitude Test" />
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100">
       <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <div className="hidden sm:block">
@@ -328,5 +331,6 @@ export default function CandidateAptitudeTest() {
         confirmText={confirmModal.confirmText}
       />
     </div>
+    </>
   );
 }

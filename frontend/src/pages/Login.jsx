@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Briefcase, ArrowRight, EyeOff, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
@@ -39,7 +40,9 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
+    <>
+      <SEO title="Sign In" description="Sign in to your JobPulse account to manage applications." />
+      <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
 
       {/* LEFT PANE: Form */}
       <div className="w-full lg:w-1/2 h-full flex flex-col justify-center p-8 sm:p-12 lg:p-24 relative overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -158,5 +161,6 @@ export default function Login() {
       </div>
 
     </div>
+    </>
   );
 }
