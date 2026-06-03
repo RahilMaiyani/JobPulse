@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../hooks/useNotifications";
 import {
@@ -20,12 +21,13 @@ import { prefetchRoute } from "../utils/prefetchRoutes";
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { user } = useAuth();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const isAdminOrHr = user?.role === "admin" || user?.role === "hr";
 
   const { data: notifications = [] } = useNotifications();
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
-  const { data: unreadContactCount = 0 } = useUnreadContactCount();
+  const { data: unreadContactCount = 0 } = useUnreadContactCount(isAdminOrHr);
 
   const [showContactModal, setShowContactModal] = useState(false);
 
@@ -75,8 +77,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <>
             <Link
               to="/admin"
-              onMouseEnter={() => prefetchRoute("/admin")}
-              onTouchStart={() => prefetchRoute("/admin")}
+              onMouseEnter={() => prefetchRoute("/admin", queryClient)}
+              onTouchStart={() => prefetchRoute("/admin", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin") && location.pathname === '/admin' ? activeClass : inactiveClass}`}
             >
@@ -87,8 +89,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/jobs"
-              onMouseEnter={() => prefetchRoute("/admin/jobs")}
-              onTouchStart={() => prefetchRoute("/admin/jobs")}
+              onMouseEnter={() => prefetchRoute("/admin/jobs", queryClient)}
+              onTouchStart={() => prefetchRoute("/admin/jobs", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/jobs") ? activeClass : inactiveClass}`}
             >
@@ -99,8 +101,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/users"
-              onMouseEnter={() => prefetchRoute("/admin/users")}
-              onTouchStart={() => prefetchRoute("/admin/users")}
+              onMouseEnter={() => prefetchRoute("/admin/users", queryClient)}
+              onTouchStart={() => prefetchRoute("/admin/users", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/users") ? activeClass : inactiveClass}`}
             >
@@ -111,8 +113,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/messages"
-              onMouseEnter={() => prefetchRoute("/admin/messages")}
-              onTouchStart={() => prefetchRoute("/admin/messages")}
+              onMouseEnter={() => prefetchRoute("/admin/messages", queryClient)}
+              onTouchStart={() => prefetchRoute("/admin/messages", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/messages") ? activeClass : inactiveClass} justify-between`}
             >
@@ -135,8 +137,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <>
             <Link
               to="/candidate"
-              onMouseEnter={() => prefetchRoute("/candidate")}
-              onTouchStart={() => prefetchRoute("/candidate")}
+              onMouseEnter={() => prefetchRoute("/candidate", queryClient)}
+              onTouchStart={() => prefetchRoute("/candidate", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate") && location.pathname === '/candidate' ? activeClass : inactiveClass}`}
             >
@@ -147,8 +149,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/openings"
-              onMouseEnter={() => prefetchRoute("/candidate/openings")}
-              onTouchStart={() => prefetchRoute("/candidate/openings")}
+              onMouseEnter={() => prefetchRoute("/candidate/openings", queryClient)}
+              onTouchStart={() => prefetchRoute("/candidate/openings", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/openings") ? activeClass : inactiveClass}`}
             >
@@ -159,8 +161,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/applications"
-              onMouseEnter={() => prefetchRoute("/candidate/applications")}
-              onTouchStart={() => prefetchRoute("/candidate/applications")}
+              onMouseEnter={() => prefetchRoute("/candidate/applications", queryClient)}
+              onTouchStart={() => prefetchRoute("/candidate/applications", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/applications") ? activeClass : inactiveClass} justify-between`}
             >
@@ -178,8 +180,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/profile"
-              onMouseEnter={() => prefetchRoute("/candidate/profile")}
-              onTouchStart={() => prefetchRoute("/candidate/profile")}
+              onMouseEnter={() => prefetchRoute("/candidate/profile", queryClient)}
+              onTouchStart={() => prefetchRoute("/candidate/profile", queryClient)}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/profile") ? activeClass : inactiveClass}`}
             >

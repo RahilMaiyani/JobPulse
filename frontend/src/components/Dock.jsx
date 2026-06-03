@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../hooks/useNotifications";
 import {
@@ -16,7 +17,7 @@ import { useState, useEffect, useRef } from "react";
 import { useUnreadContactCount } from "../hooks/useContact";
 import { prefetchRoute } from "../utils/prefetchRoutes";
 
-const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hoveredIndex, setHoveredIndex }) => {
+const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hoveredIndex, setHoveredIndex, queryClient }) => {
   const Wrapper = to ? Link : 'button';
   const wrapperProps = to ? { to } : { onClick };
 
@@ -39,11 +40,11 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hovered
       {...wrapperProps}
       onMouseEnter={() => {
         setHoveredIndex(index);
-        if (to) prefetchRoute(to);
+        if (to) prefetchRoute(to, queryClient);
       }}
       onMouseLeave={() => setHoveredIndex(null)}
       onTouchStart={() => {
-        if (to) prefetchRoute(to);
+        if (to) prefetchRoute(to, queryClient);
       }}
       style={{
         zIndex: zIndexStyle,
@@ -89,12 +90,13 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hovered
 export default function Dock() {
   const { user } = useAuth();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const isAdminOrHr = user?.role === "admin" || user?.role === "hr";
 
   const { data: notifications = [] } = useNotifications();
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
-  const { data: unreadContactCount = 0 } = useUnreadContactCount();
+  const { data: unreadContactCount = 0 } = useUnreadContactCount(isAdminOrHr);
   const [showContactModal, setShowContactModal] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -240,6 +242,7 @@ export default function Dock() {
               active={isActive(item.to)}
               hoveredIndex={hoveredIndex}
               setHoveredIndex={setHoveredIndex}
+              queryClient={queryClient}
             />
           ))}
 

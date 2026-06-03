@@ -11,13 +11,14 @@ export const useContactMessages = () => {
   });
 };
 
-export const useUnreadContactCount = () => {
+export const useUnreadContactCount = (enabled = true) => {
   return useQuery({
     queryKey: ['unreadContactCount'],
     queryFn: async () => {
       const response = await api.get('/contact/unread-count');
       return response.data.count;
     },
+    enabled: enabled,
     refetchInterval: 60000 // Refetch every minute
   });
 };
