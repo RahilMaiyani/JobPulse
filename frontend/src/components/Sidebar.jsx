@@ -15,6 +15,7 @@ import {
 import ContactUsModal from "./modals/ContactUsModal";
 import { useState } from "react";
 import { useUnreadContactCount } from "../hooks/useContact";
+import { prefetchRoute } from "../utils/prefetchRoutes";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { user } = useAuth();
@@ -74,6 +75,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <>
             <Link
               to="/admin"
+              onMouseEnter={() => prefetchRoute("/admin")}
+              onTouchStart={() => prefetchRoute("/admin")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin") && location.pathname === '/admin' ? activeClass : inactiveClass}`}
             >
@@ -84,6 +87,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/jobs"
+              onMouseEnter={() => prefetchRoute("/admin/jobs")}
+              onTouchStart={() => prefetchRoute("/admin/jobs")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/jobs") ? activeClass : inactiveClass}`}
             >
@@ -94,6 +99,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/users"
+              onMouseEnter={() => prefetchRoute("/admin/users")}
+              onTouchStart={() => prefetchRoute("/admin/users")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/users") ? activeClass : inactiveClass}`}
             >
@@ -104,6 +111,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/admin/messages"
+              onMouseEnter={() => prefetchRoute("/admin/messages")}
+              onTouchStart={() => prefetchRoute("/admin/messages")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/admin/messages") ? activeClass : inactiveClass} justify-between`}
             >
@@ -126,6 +135,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <>
             <Link
               to="/candidate"
+              onMouseEnter={() => prefetchRoute("/candidate")}
+              onTouchStart={() => prefetchRoute("/candidate")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate") && location.pathname === '/candidate' ? activeClass : inactiveClass}`}
             >
@@ -136,6 +147,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/openings"
+              onMouseEnter={() => prefetchRoute("/candidate/openings")}
+              onTouchStart={() => prefetchRoute("/candidate/openings")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/openings") ? activeClass : inactiveClass}`}
             >
@@ -146,6 +159,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/applications"
+              onMouseEnter={() => prefetchRoute("/candidate/applications")}
+              onTouchStart={() => prefetchRoute("/candidate/applications")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/applications") ? activeClass : inactiveClass} justify-between`}
             >
@@ -163,6 +178,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             <Link
               to="/candidate/profile"
+              onMouseEnter={() => prefetchRoute("/candidate/profile")}
+              onTouchStart={() => prefetchRoute("/candidate/profile")}
               onClick={() => setIsOpen(false)}
               className={`${baseClass} ${isActive("/candidate/profile") ? activeClass : inactiveClass}`}
             >

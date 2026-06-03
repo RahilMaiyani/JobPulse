@@ -103,17 +103,17 @@ export default function AdminDashboard() {
           <h1 className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Overview</h1>
           <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-2 text-sm">Here is what's happening today, {user?.full_name?.split(' ')[0]}.</p>
         </div>
-        
+
         {/* Sleek, consolidated header quick actions */}
         <div className="flex items-center gap-3">
-          <Link 
+          <Link
             to="/admin/users"
             className="inline-flex items-center justify-center h-12 px-6 font-black text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-700/60 hover:border-zinc-300 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl shadow-sm transition-all active:scale-95 gap-2"
           >
             <UserPlus className="w-5 h-5" />
             <span className="hidden sm:inline">Manage Users</span>
           </Link>
-          <Link 
+          <Link
             to="/admin/jobs"
             className="inline-flex items-center justify-center h-12 px-6 font-black text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-2xl shadow-xl shadow-zinc-200 dark:shadow-none transition-all active:scale-95 hover:-translate-y-0.5 gap-2 duration-300 whitespace-nowrap"
           >
@@ -218,8 +218,8 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex items-center gap-3">
                           <span className={`text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border ${job.status === 'active'
-                              ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'
-                              : 'bg-zinc-100 dark:bg-zinc-805 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'
+                            : 'bg-zinc-100 dark:bg-zinc-805 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
                             }`}>
                             {job.status}
                           </span>
@@ -251,10 +251,10 @@ export default function AdminDashboard() {
                     stats.recentActivities.map((act, i) => (
                       <div key={i} className="p-4 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl flex items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${act.activity_type === 'applied'
-                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20'
-                            : act.activity_type === 'quiz_completed'
-                              ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20'
-                              : 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20'
+                          ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20'
+                          : act.activity_type === 'quiz_completed'
+                            ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20'
+                            : 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20'
                           }`}>
                           {act.activity_type === 'applied' && <FileText className="w-4 h-4" />}
                           {act.activity_type === 'quiz_completed' && <FileQuestion className="w-4 h-4" />}

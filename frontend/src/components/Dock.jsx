@@ -14,6 +14,7 @@ import {
 import ContactUsModal from "./modals/ContactUsModal";
 import { useState, useEffect, useRef } from "react";
 import { useUnreadContactCount } from "../hooks/useContact";
+import { prefetchRoute } from "../utils/prefetchRoutes";
 
 const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hoveredIndex, setHoveredIndex }) => {
   const Wrapper = to ? Link : 'button';
@@ -36,8 +37,14 @@ const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hovered
   return (
     <Wrapper
       {...wrapperProps}
-      onMouseEnter={() => setHoveredIndex(index)}
+      onMouseEnter={() => {
+        setHoveredIndex(index);
+        if (to) prefetchRoute(to);
+      }}
       onMouseLeave={() => setHoveredIndex(null)}
+      onTouchStart={() => {
+        if (to) prefetchRoute(to);
+      }}
       style={{
         zIndex: zIndexStyle,
       }}
