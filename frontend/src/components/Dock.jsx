@@ -15,6 +15,8 @@ import {
 import ContactUsModal from "./modals/ContactUsModal";
 import { useState, useEffect, useRef } from "react";
 import { useUnreadContactCount } from "../hooks/useContact";
+import { useActiveJobs } from "../hooks/useJobs";
+import { useMyApplications } from "../hooks/useApplications";
 import { prefetchRoute } from "../utils/prefetchRoutes";
 
 const NavItem = ({ to, icon: Icon, label, badge, onClick, index, active, hoveredIndex, setHoveredIndex, queryClient }) => {
@@ -97,6 +99,12 @@ export default function Dock() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const { data: unreadContactCount = 0 } = useUnreadContactCount(isAdminOrHr);
+  const { data: activeJobs = [] } = useActiveJobs();
+  const { data: myApplications = [] } = useMyApplications({ enabled: !isAdminOrHr });
+  
+  const appliedJobIds = new Set(myApplications.map(app => app.job_id));
+  const candidateAvailableJobsCount = activeJobs.filter(job => !appliedJobIds.has(job.id)).length;
+
   const [showContactModal, setShowContactModal] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -199,13 +207,13 @@ export default function Dock() {
   const menuItems = isAdminOrHr
     ? [
       { to: "/admin", icon: LayoutDashboard, label: "Overview" },
-      { to: "/admin/jobs", icon: Briefcase, label: "Job Listings" },
+      { to: "/admin/jobs", icon: Briefcase, label: "Job Listings", badge: activeJobs.length },
       { to: "/admin/users", icon: Users, label: "Manage Users" },
       { to: "/admin/messages", icon: MessageSquare, label: "Messages", badge: unreadContactCount },
     ]
     : [
       { to: "/candidate", icon: LayoutDashboard, label: "Dashboard" },
-      { to: "/candidate/openings", icon: Search, label: "View Openings" },
+      { to: "/candidate/openings", icon: Search, label: "View Openings", badge: candidateAvailableJobsCount },
       { to: "/candidate/applications", icon: FileText, label: "Applications", badge: unreadCount },
       { to: "/candidate/profile", icon: User, label: "My Profile" },
       { onClick: () => setShowContactModal(true), icon: MessageCircle, label: "Contact Us" },

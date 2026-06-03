@@ -29,3 +29,8 @@ export const getJobApplications = async (jobId) => {
   const res = await api.get(`/applications/job/${jobId}`);
   return res.data.applications || [];
 };
+
+export const bulkUpdateApplicationStatuses = async (jobId, updates) => {
+  const res = await api.put(`/applications/job/${jobId}/bulk-status`, { updates });
+  return res.data;
+};

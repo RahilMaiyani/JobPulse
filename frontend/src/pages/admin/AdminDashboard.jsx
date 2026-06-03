@@ -212,7 +212,7 @@ export default function AdminDashboard() {
                           <div>
                             <h4 className="text-sm font-black text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{job.title}</h4>
                             <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-0.5">
-                              {job.location || 'Remote'} <span className="mx-1.5 text-zinc-300 dark:text-zinc-700">ΓÇó</span> {job.job_type}
+                              {job.location || 'Remote'} <span className="mx-1.5 text-zinc-300 dark:text-zinc-700">&bull;</span> {job.job_type}
                             </p>
                           </div>
                         </div>

@@ -71,11 +71,21 @@ const updateApplicationStatus = async (id, status) => {
   return result.rows[0];
 };
 
+const bulkUpdateApplicationStatuses = async (updates) => {
+  // updates is an array of { id, status }
+  const queries = updates.map(u => 
+    db.query(`UPDATE applications SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`, [u.status, u.id])
+  );
+  await Promise.all(queries);
+  return true;
+};
+
 module.exports = {
   createApplication,
   getApplicationByUserAndJob,
   getUserApplications,
   getJobApplications,
   deleteApplication,
-  updateApplicationStatus
+  updateApplicationStatus,
+  bulkUpdateApplicationStatuses
 };

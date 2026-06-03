@@ -12,8 +12,8 @@ const uploadResume = async (req, res, next) => {
 
     // Check resume limit
     const existingResumes = await resumeModel.getUserResumes(userId);
-    if (existingResumes.length >= 3) {
-      return res.status(400).json({ error: 'You can only upload a maximum of 3 resumes' });
+    if (existingResumes.length >= 5) {
+      return res.status(400).json({ error: 'You can only upload a maximum of 5 resumes' });
     }
 
     const fileName = req.file.originalname;

@@ -19,11 +19,12 @@ export const useUserApplications = (userId) => {
   });
 };
 
-export const useMyApplications = () => {
+export const useMyApplications = (options = {}) => {
   return useQuery({
     queryKey: ['applications', 'my'],
     queryFn: getMyApplications,
     staleTime: 1000 * 60 * 5,
+    ...options
   });
 };
 

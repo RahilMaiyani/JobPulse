@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
-import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
+import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion, Sparkles, Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useApplicationsForJob } from '../../hooks/useApplications';
+import { bulkUpdateApplicationStatuses } from '../../services/applicationService';
+import ConfirmationModal from './ConfirmationModal';
 
 export default function JobApplicantsModal({ job, onClose }) {
   const { data: jobApplicants = [], isLoading: loadingApplicants } = useApplicationsForJob(job?.id);
@@ -17,7 +19,78 @@ export default function JobApplicantsModal({ job, onClose }) {
   const [applicantPage, setApplicantPage] = useState(1);
   const itemsPerPage = 10;
 
+  // AI Auto-Shortlist State
+  const appliedApplicants = useMemo(() => jobApplicants.filter(a => a.status === 'applied'), [jobApplicants]);
+  const alreadyShortlistedCount = useMemo(() => jobApplicants.filter(a => a.status === 'shortlisted' || a.status === 'hired').length, [jobApplicants]);
+  
+  const [shortlistCount, setShortlistCount] = useState('');
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+  const lastJobIdRef = useRef(null);
+
+  useEffect(() => {
+    if (job?.id && appliedApplicants.length > 0 && job.id !== lastJobIdRef.current) {
+      lastJobIdRef.current = job.id;
+      setShortlistCount(Math.min(appliedApplicants.length, 10));
+    }
+  }, [job?.id, appliedApplicants.length]);
+
+  const handleBulkShortlist = async () => {
+    const count = parseInt(shortlistCount) || 0;
+    if (count < 1) return toast.error("Please enter a valid number.");
+    
+    if (count > appliedApplicants.length) {
+      toast.error(`Cannot shortlist ${count} candidates. Only ${appliedApplicants.length} available.`);
+      return;
+    }
+    
+    setIsBulkUpdating(true);
+    
+    // Sort purely by AI score descending
+    const sortedApplied = [...appliedApplicants].sort((a, b) => b.ai_match_score - a.ai_match_score);
+    
+    const updates = sortedApplied.map((app, index) => ({
+      id: app.id,
+      status: index < count ? 'shortlisted' : 'rejected'
+    }));
+
+    // Optimistic UI Update directly to specific query keys
+    const updateCache = (oldData) => {
+      if (!Array.isArray(oldData)) return oldData;
+      const updatesMap = new Map(updates.map(u => [u.id, u.status]));
+      return oldData.map(app => {
+        if (updatesMap.has(app.id)) {
+          return { ...app, status: updatesMap.get(app.id) };
+        }
+        return app;
+      });
+    };
+    
+    queryClient.setQueryData(['job-applications', Number(job.id)], updateCache);
+    queryClient.setQueryData(['job-applications', String(job.id)], updateCache);
+
+    try {
+      await bulkUpdateApplicationStatuses(job.id, updates);
+      toast.success(`Successfully shortlisted top ${count} candidates!`);
+    } catch (err) {
+      toast.error("Failed to execute bulk shortlist");
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ['job-applications', job.id] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+      setIsBulkUpdating(false);
+      setShowBulkConfirm(false);
+    }
+  };
+
   const handleStatusChange = async (appId, newStatus) => {
+    // Optimistic UI Update for single dropdown
+    const updateCache = (oldData) => {
+      if (!Array.isArray(oldData)) return oldData;
+      return oldData.map(app => app.id === appId ? { ...app, status: newStatus } : app);
+    };
+    queryClient.setQueryData(['job-applications', Number(job.id)], updateCache);
+    queryClient.setQueryData(['job-applications', String(job.id)], updateCache);
+
     try {
       await api.put(`/applications/${appId}/status`, { status: newStatus });
       toast.success(`Status updated to ${newStatus}`);
@@ -98,6 +171,59 @@ export default function JobApplicantsModal({ job, onClose }) {
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* BULK SHORTLIST BAR (Only visible if >1 'applied' and NO ONE is already shortlisted) */}
+          {appliedApplicants.length > 1 && alreadyShortlistedCount === 0 && (
+            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Bulk Shortlist</h3>
+                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">{appliedApplicants.length} candidates awaiting review.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">Total</span>
+                  <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm h-10">
+                    <button 
+                      onClick={() => setShortlistCount(prev => Math.max(1, (parseInt(prev) || 0) - 1))}
+                      className="w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-r border-zinc-200 dark:border-zinc-700"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <input 
+                      type="text"
+                      value={shortlistCount}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        if (val === '') setShortlistCount('');
+                        else setShortlistCount(Math.min(appliedApplicants.length, parseInt(val)));
+                      }}
+                      onBlur={() => {
+                        if (!shortlistCount || parseInt(shortlistCount) < 1) setShortlistCount(1);
+                      }}
+                      className="w-12 h-full text-center bg-transparent text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                    />
+                    <button 
+                      onClick={() => setShortlistCount(prev => Math.min(appliedApplicants.length, (parseInt(prev) || 0) + 1))}
+                      className="w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-l border-zinc-200 dark:border-zinc-700"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowBulkConfirm(true)}
+                  className="h-10 px-4 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-black rounded-xl shadow-md transition-all active:scale-95 shrink-0"
+                >
+                  Shortlist & Reject Rest
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* SEARCH AND SORT BAR */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -276,6 +402,21 @@ export default function JobApplicantsModal({ job, onClose }) {
           </div>
         )}
       </div>
+
+      {/* BULK CONFIRMATION MODAL */}
+      <ConfirmationModal 
+        isOpen={showBulkConfirm} 
+        onClose={() => setShowBulkConfirm(false)} 
+        title="Confirm Bulk Shortlist"
+        message={
+          <>
+            You are about to shortlist <strong className="text-zinc-900 dark:text-zinc-100">{shortlistCount}</strong> candidates based on their match scores and <strong className="text-rose-600 dark:text-rose-400">reject</strong> the remaining {appliedApplicants.length - (parseInt(shortlistCount) || 0)} candidates. This action cannot be undone.
+          </>
+        }
+        onConfirm={handleBulkShortlist}
+        isDestructive={true}
+        confirmText="Confirm & Execute"
+      />
     </div>
   );
 }

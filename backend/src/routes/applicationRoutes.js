@@ -10,5 +10,6 @@ router.get('/job/:jobId', protect, authorize('admin', 'hr'), applicationControll
 router.get('/user/:userId', protect, authorize('admin', 'hr'), applicationController.getUserApplicationsAdmin);
 router.delete('/:id/revoke', protect, authorize('candidate'), applicationController.revokeApplication);
 router.put('/:id/status', protect, authorize('admin', 'hr'), applicationController.updateApplicationStatus);
+router.put('/job/:jobId/bulk-status', protect, authorize('admin', 'hr'), applicationController.bulkUpdateJobApplications);
 
 module.exports = router;

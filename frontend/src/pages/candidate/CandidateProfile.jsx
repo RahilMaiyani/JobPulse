@@ -54,7 +54,7 @@ export default function CandidateProfile() {
   const handleResumeUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (resumes.length >= 3) return toast.error("You can only upload a maximum of 3 resumes.");
+    if (resumes.length >= 5) return toast.error("You can only upload a maximum of 5 resumes.");
     if (file.type !== 'application/pdf') return toast.error("Only PDF files are allowed.");
     if (file.size > 500 * 1024) return toast.error("File is too large. Maximum size is 500KB.");
 
@@ -231,21 +231,21 @@ export default function CandidateProfile() {
                 </div>
                 <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Resume Vault</h2>
               </div>
-              <label className={`cursor-pointer ${resumes.length >= 3 ? 'opacity-50 pointer-events-none' : ''}`}>
-                <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={uploadResumeMutation.isPending || resumes.length >= 3} />
+              <label className={`cursor-pointer ${resumes.length >= 5 ? 'opacity-50 pointer-events-none' : ''}`}>
+                <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={uploadResumeMutation.isPending || resumes.length >= 5} />
                 <span className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-colors border shadow-sm ${uploadResumeMutation.isPending ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 border-zinc-200 dark:border-zinc-700' : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 hover:bg-zinc-800 dark:hover:bg-white'}`}>
                   {uploadResumeMutation.isPending ? (
                     <div className="w-4 h-4 border-2 border-zinc-400 border-t-zinc-600 rounded-full animate-spin"></div>
                   ) : (
                     <UploadCloud className="w-4 h-4" />
                   )}
-                  {resumes.length >= 3 ? 'Limit Reached' : 'Upload PDF'}
+                  {resumes.length >= 5 ? 'Limit Reached' : 'Upload PDF'}
                 </span>
               </label>
             </div>
-            {resumes.length >= 3 && (
+            {resumes.length >= 5 && (
               <div className="px-8 py-3 bg-amber-50 dark:bg-amber-500/10 border-b border-amber-100 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold">
-                You have reached the maximum limit of 3 resumes. Delete an old one to upload a new resume.
+                You have reached the maximum limit of 5 resumes. Delete an old one to upload a new resume.
               </div>
             )}
             <div className="p-8 overflow-y-auto max-h-[350px] custom-scrollbar flex-1 bg-transparent">
