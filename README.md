@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 JobPulse — Job Drive System
+# JobPulse — Job Drive System
 
 ### A Production-Grade Internal Hiring Portal & Recruitment Pipeline
 

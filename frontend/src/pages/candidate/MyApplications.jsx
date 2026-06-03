@@ -185,8 +185,8 @@ export default function MyApplications() {
 
           {/* Pagination Controls */}
           {Math.ceil(applications.length / itemsPerPage) > 1 && (
-            <div className="px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between bg-white dark:bg-zinc-950">
-              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+            <div className="px-4 sm:px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-zinc-950">
+              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-center sm:text-left">
                 Showing <span className="text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * itemsPerPage, applications.length)}</span> of <span className="text-zinc-700 dark:text-zinc-300">{applications.length}</span>
               </p>
               <div className="flex gap-2">

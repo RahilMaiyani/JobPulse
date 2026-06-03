@@ -139,7 +139,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
+        <div className="p-4 sm:p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
             <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">{app.title}</h2>
             <div className="flex items-center gap-2 mt-1">
@@ -153,7 +153,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
           </button>
         </div>
 
-        <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
+        <div className="p-4 sm:p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
 
             {/* LEFT COLUMN: TIMELINE UI */}
@@ -196,7 +196,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
                       <div className={`flex-1 pb-2 ${step.isFuture ? 'opacity-50' : ''}`}>
                         <h4 className={`text-sm font-black ${step.isRejected ? 'text-rose-600 dark:text-rose-400' : step.isCurrent ? 'text-indigo-600 dark:text-indigo-400' : 'text-zinc-900 dark:text-zinc-100'}`}>{step.label}</h4>
-                        {step.date && <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest">{step.date}</p>}
+                        {step.date && <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5 uppercase tracking-widest break-words">{step.date}</p>}
                         {step.description && <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1 leading-relaxed">{step.description}</p>}
                       </div>
                     </div>
@@ -290,11 +290,11 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                   <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 border border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Opens At</p>
-                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
+                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5 break-words">{new Date(testInfo.quiz.scheduled_start_time).toLocaleString()}</p>
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Closes At</p>
-                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
+                      <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5 break-words">{new Date(testInfo.quiz.scheduled_end_time).toLocaleString()}</p>
                     </div>
                   </div>
 
@@ -325,13 +325,13 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
         </div>
 
         {/* BOTTOM ACTIONS */}
-        <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
-          <div>
+        <div className="p-4 sm:p-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
+          <div className="w-full sm:w-auto">
             {app.status?.toLowerCase() === 'applied' && (
               <button
                 onClick={() => onRevoke(app.id)}
                 disabled={isRevoking}
-                className="px-4 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
+                className="w-full sm:w-auto justify-center px-4 py-3 sm:py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
               >
                 <Trash2 className="w-4 h-4" />
                 {isRevoking ? 'Revoking...' : 'Revoke Application'}
@@ -340,7 +340,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+            className="w-full sm:w-auto px-6 py-3 sm:py-2 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
           >
             Close
           </button>

@@ -88,12 +88,12 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-950/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/50">
+        <div className="p-4 sm:p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/50">
           <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Application: {job.title}</h2>
           <button onClick={onClose} className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"><X className="w-5 h-5" /></button>
         </div>
 
-        <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
+        <div className="p-4 sm:p-6 md:p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
           {/* STEP 1: Select Resume */}
           {analysisState === 'idle' && (
             <div className="space-y-6">
@@ -111,7 +111,7 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
                   >
                     <FileText className={`w-6 h-6 mb-2 ${selectedResumeId === r.id ? 'text-indigo-600 dark:text-indigo-400' : 'text-zinc-400 dark:text-zinc-500'}`} />
                     <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate" title={r.file_name}>{r.file_name}</p>
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">Uploaded {new Date(r.uploaded_at).toLocaleDateString()}</p>
+                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1 truncate">Uploaded {new Date(r.uploaded_at).toLocaleDateString()}</p>
                   </div>
                 ))}
 
@@ -132,7 +132,7 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
                 <button
                   onClick={handleAnalyzeFit}
                   disabled={!selectedResumeId}
-                  className="h-12 px-8 font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                  className="w-full sm:w-auto justify-center h-12 px-8 font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2"
                 >
                   <Sparkles className="w-4 h-4" />
                   Analyze AI Fit
@@ -210,20 +210,20 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
                 <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
                   {analysisResult.ai_match_score < 60 ? "Score is a bit low, but you can still shoot your shot!" : "Great match! Submit your application."}
                 </p>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                   <button
                     onClick={() => {
                       setAnalysisState('idle');
                       setAnalysisResult(null);
                     }}
-                    className="h-12 px-6 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors whitespace-nowrap"
+                    className="w-full sm:w-auto justify-center h-12 px-6 font-bold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors whitespace-nowrap"
                   >
                     Try Another Resume
                   </button>
                   <button
                     onClick={handleSubmitApplication}
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto h-12 px-8 font-bold text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-lg dark:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto justify-center h-12 px-8 font-bold text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-lg dark:shadow-none transition-all active:scale-95 flex items-center gap-2"
                   >
                     {isSubmitting ? <div className="w-4 h-4 border-2 border-zinc-400 dark:border-zinc-500 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : 'Submit Application'}
                   </button>

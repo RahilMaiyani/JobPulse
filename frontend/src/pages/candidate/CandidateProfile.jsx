@@ -210,8 +210,8 @@ export default function CandidateProfile() {
                 )}
               </div>
 
-              <div className="pt-2 flex justify-end">
-                <button type="submit" disabled={updateProfileMutation.isPending} className="h-12 px-8 font-bold text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-xl shadow-zinc-900/10 dark:shadow-none transition-all active:scale-95 flex items-center gap-2">
+              <div className="pt-2 flex sm:justify-end">
+                <button type="submit" disabled={updateProfileMutation.isPending} className="w-full sm:w-auto justify-center h-12 px-8 font-bold text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-xl shadow-zinc-900/10 dark:shadow-none transition-all active:scale-95 flex items-center gap-2">
                   {updateProfileMutation.isPending ? <div className="w-5 h-5 border-2 border-zinc-400 dark:border-zinc-400 border-t-white dark:border-t-zinc-900 rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
                   Save Profile
                 </button>
@@ -224,7 +224,7 @@ export default function CandidateProfile() {
         <div className="space-y-8">
           {/* Resume Vault */}
           <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl shadow-sm dark:shadow-none overflow-hidden flex flex-col">
-            <div className="p-8 pb-6 border-b border-zinc-100/60 dark:border-zinc-800/60 flex items-center justify-between bg-transparent">
+            <div className="p-6 sm:p-8 sm:pb-6 border-b border-zinc-100/60 dark:border-zinc-800/60 flex flex-wrap gap-4 items-center justify-between bg-transparent">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center ring-1 ring-inset ring-amber-500/20">
                   <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -270,7 +270,7 @@ export default function CandidateProfile() {
                           <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-0.5">{new Date(r.uploaded_at).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <a href={r.file_path} target="_blank" download rel="noopener noreferrer" className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-700 rounded-lg transition-colors shadow-sm bg-transparent">
                           <Download className="w-4 h-4" />
                         </a>

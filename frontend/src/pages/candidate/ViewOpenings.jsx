@@ -125,7 +125,7 @@ export default function ViewOpenings() {
                   <div
                     key={job.id}
                     onClick={() => setSelectedJob(job)}
-                    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm dark:shadow-none hover:shadow-md dark:hover:border-zinc-700 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer"
+                    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 md:p-6 shadow-sm dark:shadow-none hover:shadow-md dark:hover:border-zinc-700 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 cursor-pointer"
                   >
 
                     <div className="flex items-start gap-4">
@@ -145,8 +145,8 @@ export default function ViewOpenings() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
+                    <div className="flex items-center gap-4 w-full md:w-auto mt-2 md:mt-0">
+                      <div className="text-right hidden md:block">
                         <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
                           {job.salary_min ? `₹${(job.salary_min / 1000).toFixed(0)}k+` : 'Competitive'}
                         </p>
@@ -155,7 +155,7 @@ export default function ViewOpenings() {
                       {appliedApp ? (
                         <button
                           disabled
-                          className="h-10 px-6 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 text-sm font-bold rounded-xl whitespace-nowrap"
+                          className="h-10 px-6 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 text-sm font-bold rounded-xl whitespace-nowrap w-full md:w-auto"
                         >
                           Applied
                         </button>
@@ -165,7 +165,7 @@ export default function ViewOpenings() {
                             e.stopPropagation(); // Prevents double firing when clicking button directly
                             setSelectedJob(job);
                           }}
-                          className="h-10 px-6 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-xl shadow-md shadow-zinc-200 dark:shadow-none transition-all active:scale-95 whitespace-nowrap"
+                          className="h-10 px-6 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-xl shadow-md shadow-zinc-200 dark:shadow-none transition-all active:scale-95 whitespace-nowrap w-full md:w-auto"
                         >
                           View Details
                         </button>

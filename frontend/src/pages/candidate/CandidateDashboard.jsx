@@ -126,9 +126,9 @@ export default function CandidateDashboard() {
 
           {/* PENDING TEST ALERT */}
           {stats.pendingTest && (
-            <div className="relative overflow-hidden bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
+            <div className="relative overflow-hidden bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-rose-500/20 dark:bg-rose-500/10 blur-2xl rounded-full pointer-events-none"></div>
-              <div className="flex items-center gap-4 relative z-10 w-full">
+              <div className="flex items-start sm:items-center gap-4 relative z-10 w-full">
                 <div className="w-10 h-10 rounded-lg bg-white dark:bg-rose-500/20 flex items-center justify-center shrink-0 shadow-sm border border-rose-100 dark:border-rose-500/30">
                   <Zap className="w-5 h-5 text-rose-600 dark:text-rose-400 animate-pulse" />
                 </div>
@@ -167,7 +167,7 @@ export default function CandidateDashboard() {
                   href={stats.upcomingInterview.meeting_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 relative z-10 inline-flex items-center justify-center h-9 px-4 font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all shadow-sm active:scale-95 gap-1.5 text-sm"
+                  className="w-full sm:w-auto shrink-0 relative z-10 inline-flex items-center justify-center h-9 px-4 font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all shadow-sm active:scale-95 gap-1.5 text-sm"
                 >
                   <Video className="w-4 h-4" /> Join Call
                 </a>
@@ -215,8 +215,8 @@ export default function CandidateDashboard() {
                     : (currentStatus === 'hired' ? 3 : 0);
                     
                   return (
-                    <div className="w-full overflow-x-auto pb-10 pt-4 custom-scrollbar">
-                      <div className="flex items-center justify-between min-w-[500px] px-10">
+                    <div className="w-full overflow-x-auto pb-12 pt-4 custom-scrollbar">
+                      <div className="flex items-center justify-between min-w-[320px] sm:min-w-[500px] px-4 sm:px-10">
                         {stages.map((stage, idx) => {
                           const isCompleted = idx <= currentIndex;
                           const isLineCompleted = idx < currentIndex;
@@ -236,8 +236,8 @@ export default function CandidateDashboard() {
                                   <Icon className="w-5 h-5" />
                                 </div>
                                 {/* Absolute label prevents it from interfering with track line width math */}
-                                <div className="absolute top-[3.75rem] left-1/2 -translate-x-1/2 w-32 text-center pointer-events-none">
-                                  <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-colors ${
+                                <div className="absolute top-[3.75rem] left-1/2 -translate-x-1/2 w-20 sm:w-32 text-center pointer-events-none">
+                                  <span className={`text-[9px] sm:text-[11px] font-black uppercase tracking-widest transition-colors block leading-tight ${
                                     isActive ? 'text-emerald-600 dark:text-emerald-400' :
                                     isCompleted ? 'text-zinc-800 dark:text-zinc-200' :
                                     'text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400'
@@ -307,7 +307,7 @@ export default function CandidateDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {stats.recentOpenings.length > 0 ? (
                 stats.recentOpenings.map((job) => (
-                  <Link to="/candidate/openings" key={job.id} className="block p-6 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/80 shadow-sm dark:shadow-none hover:shadow-xl hover:shadow-zinc-200/40 hover:-translate-y-1 transition-all duration-300 group">
+                  <Link to="/candidate/openings" key={job.id} className="block p-5 sm:p-6 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/80 shadow-sm dark:shadow-none hover:shadow-xl hover:shadow-zinc-200/40 hover:-translate-y-1 transition-all duration-300 group">
                     <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 transition-transform duration-500">
                       <Briefcase className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
                     </div>
