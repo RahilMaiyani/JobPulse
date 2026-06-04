@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
+const emailService = require('../services/emailService');
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -108,13 +109,23 @@ const toggleUserStatus = async (req, res, next) => {
     const db = require('../config/db');
     
     // Toggle is_active
-    const result = await db.query('UPDATE users SET is_active = NOT is_active, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING is_active', [id]);
+    const result = await db.query('UPDATE users SET is_active = NOT is_active, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING is_active, email, full_name', [id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    const isActive = result.rows[0].is_active;
+    const user = result.rows[0];
+    const isActive = user.is_active;
+
+    // Send email notification asynchronously
+    if (isActive) {
+      emailService.sendAccountReactivatedEmail(user.email, user.full_name).catch(console.error);
+    } else {
+      const reason = req.body?.reason || 'Administrative decision';
+      emailService.sendAccountDeactivatedEmail(user.email, user.full_name, reason).catch(console.error);
+    }
+
     res.json({ message: `User ${isActive ? 'reactivated' : 'deactivated'} successfully`, is_active: isActive });
   } catch (err) {
     next(err);
@@ -133,6 +144,11 @@ const deleteUser = async (req, res, next) => {
     const deletedUser = await userModel.softDeleteUser(id);
     if (!deletedUser) {
       return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Send email notification asynchronously
+    if (deletedUser.email && deletedUser.full_name) {
+      emailService.sendAccountDeletedEmail(deletedUser.email, deletedUser.full_name).catch(console.error);
     }
     
     res.json({ message: 'User deleted successfully' });

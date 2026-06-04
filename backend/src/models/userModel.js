@@ -37,7 +37,7 @@ const getAllUsers = async () => {
 };
 
 const softDeleteUser = async (id) => {
-  const query = `UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id;`;
+  const query = `UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, email, full_name;`;
   const result = await db.query(query, [id]);
   return result.rows[0];
 };

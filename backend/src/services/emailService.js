@@ -195,6 +195,66 @@ const sendTestClosedEmail = async (email, name, jobTitle) => {
   });
 };
 
+const sendAccountDeactivatedEmail = async (email, name, reason = "Administrative decision") => {
+  const html = buildEmailTemplate({
+    title: "Account Deactivated",
+    message: `
+      <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
+      <p style="margin-bottom: 16px;">Your JobPulse account has been deactivated by an administrator.</p>
+      <div style="margin-bottom: 16px; padding: 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <p style="margin: 0;"><strong>Reason:</strong> ${reason}</p>
+      </div>
+      <p style="margin-bottom: 16px;">You will no longer be able to log in or access your dashboard. If you believe this is a mistake, please contact support.</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobPulse Team</p>
+    `,
+    color: "#f59e0b" // amber
+  });
+
+  await sendEmail({
+    to: email,
+    subject: "Notice: Account Deactivated",
+    html
+  });
+};
+
+const sendAccountReactivatedEmail = async (email, name) => {
+  const html = buildEmailTemplate({
+    title: "Account Reactivated 🎉",
+    message: `
+      <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
+      <p style="margin-bottom: 16px;">Great news! Your JobPulse account has been successfully reactivated.</p>
+      <p style="margin-bottom: 16px;">You can now log back in to access your dashboard, view job listings, and continue your journey with us.</p>
+      <p style="margin-bottom: 0;">Welcome back!<br>The JobPulse Team</p>
+    `,
+    color: "#10b981" // emerald
+  });
+
+  await sendEmail({
+    to: email,
+    subject: "Your Account has been Reactivated!",
+    html
+  });
+};
+
+const sendAccountDeletedEmail = async (email, name) => {
+  const html = buildEmailTemplate({
+    title: "Account Deleted",
+    message: `
+      <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
+      <p style="margin-bottom: 16px;">We are writing to confirm that your JobPulse account has been permanently deleted.</p>
+      <p style="margin-bottom: 16px;">All your personal data, applications, and resumes have been securely removed from our active systems in accordance with our data policies.</p>
+      <p style="margin-bottom: 0;">Thank you for using JobPulse.<br>The JobPulse Team</p>
+    `,
+    color: "#ef4444" // red
+  });
+
+  await sendEmail({
+    to: email,
+    subject: "Confirmation: Account Deleted",
+    html
+  });
+};
+
 module.exports = {
   sendApplicationReceivedEmail,
   sendStatusUpdateEmail,
@@ -202,5 +262,8 @@ module.exports = {
   sendTestResultEmail,
   sendWelcomeEmail,
   sendInterviewScheduledEmail,
-  sendTestClosedEmail
+  sendTestClosedEmail,
+  sendAccountDeactivatedEmail,
+  sendAccountReactivatedEmail,
+  sendAccountDeletedEmail
 };

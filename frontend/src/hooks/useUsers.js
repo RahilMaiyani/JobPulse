@@ -45,6 +45,15 @@ export const useToggleUserStatus = () => {
     mutationFn: toggleUserStatus,
     onSuccess: (data, variables) => {
       toast.success(`User ${variables.action}d successfully`);
+      
+      // Update cache instantly
+      queryClient.setQueryData(['admin', 'users'], (oldData) => {
+        if (!oldData) return oldData;
+        return oldData.map(user => 
+          user.id === variables.userId ? { ...user, is_active: data.is_active } : user
+        );
+      });
+
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
@@ -58,8 +67,15 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteUser,
-    onSuccess: () => {
+    onSuccess: (data, userId) => {
       toast.success(`User deleted successfully`);
+      
+      // Remove from cache instantly
+      queryClient.setQueryData(['admin', 'users'], (oldData) => {
+        if (!oldData) return oldData;
+        return oldData.filter(user => user.id !== userId);
+      });
+
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },
