@@ -103,40 +103,43 @@ export default function Header({ toggleSidebar }) {
         </div>
 
         {/* Final Clock Section */}
-        <div 
+        <div
           className={`hidden md:flex items-center gap-4 ml-4 border-l border-zinc-200 dark:border-zinc-800 pl-4 group ${['admin', 'hr'].includes(user?.role) ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default'}`}
           onClick={() => { if (['admin', 'hr'].includes(user?.role)) setIsScreensaverOpen(true); }}
           title={['admin', 'hr'].includes(user?.role) ? "Click to open screensaver" : undefined}
         >
-          
+
           <div className="flex items-center gap-3">
             {/* Indigo Chrono Analog + Ring */}
             <div className="relative w-10 h-10 flex items-center justify-center bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-full shadow-sm hover:scale-105 transition-transform duration-300">
-              <svg className="absolute inset-0 w-full h-full -rotate-90">
-                <circle cx="20" cy="20" r="18" className="stroke-zinc-100 dark:stroke-zinc-800 fill-none" strokeWidth="2" strokeDasharray="2 4"></circle>
-                <circle 
-                  cx="20" cy="20" r="18" 
-                  className="stroke-indigo-500 fill-none" 
-                  strokeWidth="2" 
-                  strokeDasharray="113.097" 
-                  strokeDashoffset={113.097 - (113.097 * (exactSeconds / 60))} 
+              <svg viewBox="0 0 40 40" className="absolute inset-0 w-full h-full -rotate-90">
+                {/* 12 Hour Ticks (Circumference 113.097 / 12 = 9.4247) */}
+                <circle cx="20" cy="20" r="18" className="stroke-zinc-200 dark:stroke-zinc-800 fill-none" strokeWidth="2" strokeDasharray="2 7.424778"></circle>
+
+                {/* Seconds Progress Ring */}
+                <circle
+                  cx="20" cy="20" r="18"
+                  className="stroke-indigo-500 fill-none"
+                  strokeWidth="2"
+                  strokeDasharray="113.0973"
+                  strokeDashoffset={113.0973 - (113.0973 * (exactSeconds / 60))}
                   strokeLinecap="round"
                 ></circle>
               </svg>
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Hour Hand */}
-                <div 
-                  className="absolute w-[2px] h-2.5 bg-zinc-800 dark:bg-zinc-200 rounded-sm origin-bottom" 
+                <div
+                  className="absolute w-[2px] h-2.5 bg-zinc-800 dark:bg-zinc-200 rounded-sm origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${hoursDegrees}deg)` }}
                 ></div>
                 {/* Minute Hand */}
-                <div 
-                  className="absolute w-[2px] h-3.5 bg-zinc-400 dark:bg-zinc-500 rounded-sm origin-bottom" 
+                <div
+                  className="absolute w-[2px] h-3.5 bg-zinc-400 dark:bg-zinc-500 rounded-sm origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${minutesDegrees}deg)` }}
                 ></div>
                 {/* Second Hand */}
-                <div 
-                  className="absolute w-[1px] h-4.5 bg-indigo-500 rounded-full origin-bottom" 
+                <div
+                  className="absolute w-[1px] h-4.5 bg-indigo-500 rounded-full origin-bottom"
                   style={{ transform: `translateY(-50%) rotate(${secondsDegrees}deg)` }}
                 ></div>
                 {/* Center Dot */}
