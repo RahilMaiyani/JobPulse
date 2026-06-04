@@ -50,7 +50,87 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/contact', contactRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Job Drive System API is running...');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>JobPulse API</title>
+      <style>
+        body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          background: #09090b;
+          color: #fafafa;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .container {
+          text-align: center;
+          padding: 3rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 1.5rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+          font-size: 2.5rem;
+          font-weight: 800;
+          margin-bottom: 0.5rem;
+          margin-top: 0;
+          background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: -0.05em;
+        }
+        p {
+          color: #a1a1aa;
+          font-size: 1.125rem;
+          margin-top: 0;
+        }
+        .status {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background: rgba(34, 197, 94, 0.1);
+          color: #4ade80;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.875rem;
+          margin-top: 1.5rem;
+          border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          background-color: #22c55e;
+          border-radius: 50%;
+          box-shadow: 0 0 10px #22c55e;
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+          0% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.2); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>JobPulse API</h1>
+        <p>Core systems and services</p>
+        <div class="status">
+          <div class="status-dot"></div>
+          All systems operational
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 app.use((err, req, res, next) => {
