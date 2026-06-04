@@ -29,7 +29,7 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
 
   useEffect(() => {
     if (!isVisible) return;
-    
+
     // Record the time it became visible to prevent immediate closing
     const visibleSince = Date.now();
 
@@ -63,6 +63,49 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
     return () => cancelAnimationFrame(animationFrameId);
   }, [isRendered]);
 
+  // Particle generation
+  const [particles, setParticles] = useState([]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setParticles([]);
+      return;
+    }
+
+    // Wait a moment before spawning particles so they "slowly come"
+    const spawnTimer = setTimeout(() => {
+      const newParticles = [];
+      for (let i = 0; i < 80; i++) {
+        let x, y, dist;
+        // Re-roll until outside the center circle (radius ~ 38% of screen)
+        do {
+          x = Math.random() * 100;
+          y = Math.random() * 100;
+          dist = Math.sqrt(Math.pow(x - 50, 2) + Math.pow(y - 50, 2));
+        } while (dist < 38);
+
+        newParticles.push({
+          id: i,
+          x,
+          y,
+          size: Math.random() * 20 + 15, // 15px to 35px
+          opacity: Math.random() * 0.4 + 0.1, // 0.1 to 0.5
+          durationX: Math.random() * 20 + 15, // 15s to 35s
+          durationY: Math.random() * 20 + 15, // Independent Y duration
+          durationR: Math.random() * 30 + 20, // Slow tumbling rotation
+          delay: Math.random() * 4, // 0 to 4s fade in delay
+          xMove: (Math.random() - 0.5) * 15, // -7.5vw to 7.5vw drift
+          yMove: (Math.random() - 0.5) * 15,
+          spinDirection: Math.random() > 0.5 ? 'normal' : 'reverse',
+          colorClass: Math.random() > 0.5 ? "text-indigo-500" : "text-indigo-300 dark:text-indigo-700",
+        });
+      }
+      setParticles(newParticles);
+    }, 800);
+
+    return () => clearTimeout(spawnTimer);
+  }, [isVisible]);
+
   if (!isRendered) return null;
 
   const exactSeconds = time.getSeconds() + time.getMilliseconds() / 1000;
@@ -90,12 +133,67 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[9999] cursor-none bg-zinc-50 dark:bg-[#09090b] flex items-center justify-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-      }`}
+      className={`fixed inset-0 z-[9999] cursor-none bg-zinc-50 dark:bg-[#09090b] flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+        }`}
     >
+      {/* Particles & Styles */}
+      <style>{`
+        @keyframes driftX {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(var(--xMove)); }
+        }
+        @keyframes driftY {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(var(--yMove)); }
+        }
+        @keyframes spinDrift {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeInParticle {
+          from { opacity: 0; }
+          to { opacity: var(--targetOpacity); }
+        }
+      `}</style>
+
+      {/* Render Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map(p => (
+          <div
+            key={p.id}
+            className="absolute"
+            style={{
+              left: `${p.x}vw`,
+              top: `${p.y}vh`,
+              opacity: 0,
+              '--xMove': `${p.xMove}vw`,
+              '--yMove': `${p.yMove}vh`,
+              '--targetOpacity': p.opacity,
+              animation: `fadeInParticle 4s ease forwards ${p.delay}s`
+            }}
+          >
+            <div style={{ animation: `driftX ${p.durationX}s ease-in-out infinite alternate ${p.delay}s` }}>
+              <div style={{ animation: `driftY ${p.durationY}s ease-in-out infinite alternate ${p.delay}s` }}>
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`${p.colorClass}`}
+                  style={{
+                    width: `${p.size}px`,
+                    height: `${p.size}px`,
+                    animation: `spinDrift ${p.durationR}s linear infinite ${p.spinDirection} ${p.delay}s`
+                  }}
+                >
+                  <path d="M 4,13 Q 12,9 20,13" stroke="currentColor" fill="none" strokeWidth="5" strokeLinecap="round" />
+                </svg>
+              </div>
+            </div >
+          </div >
+        ))
+        }
+      </div >
+
       <div className="relative w-full max-w-[800px] aspect-square flex items-center justify-center pointer-events-none">
-        
+
         {/* Subtle JobPulse Logo in background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.05]">
           <Briefcase className="w-48 h-48" />
@@ -149,7 +247,7 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
           </g>
         </svg>
       </div>
-    </div>,
+    </div >,
     document.body
   );
 }
