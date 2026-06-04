@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { LogOut, Menu, Sun, Moon, Monitor, Briefcase } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import ScreensaverOverlay from "./admin/ScreensaverOverlay";
 
 export default function Header({ toggleSidebar }) {
   const { user, logout } = useAuth();
@@ -16,6 +17,37 @@ export default function Header({ toggleSidebar }) {
   };
 
   const [time, setTime] = useState(new Date());
+  const [isScreensaverOpen, setIsScreensaverOpen] = useState(false);
+
+  useEffect(() => {
+    if (!['admin', 'hr'].includes(user?.role)) return;
+    if (isScreensaverOpen) return; // Don't track if already open
+
+    let timeout;
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setIsScreensaverOpen(true);
+      }, 60000); // 1 minute
+    };
+
+    resetTimer();
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('click', resetTimer);
+    window.addEventListener('touchstart', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      window.removeEventListener('click', resetTimer);
+      window.removeEventListener('touchstart', resetTimer);
+      window.removeEventListener('scroll', resetTimer);
+    };
+  }, [user?.role, isScreensaverOpen]);
 
   useEffect(() => {
     let animationFrameId;
@@ -71,7 +103,11 @@ export default function Header({ toggleSidebar }) {
         </div>
 
         {/* Final Clock Section */}
-        <div className="hidden md:flex items-center gap-4 ml-4 border-l border-zinc-200 dark:border-zinc-800 pl-4 group cursor-default">
+        <div 
+          className={`hidden md:flex items-center gap-4 ml-4 border-l border-zinc-200 dark:border-zinc-800 pl-4 group ${['admin', 'hr'].includes(user?.role) ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default'}`}
+          onClick={() => { if (['admin', 'hr'].includes(user?.role)) setIsScreensaverOpen(true); }}
+          title={['admin', 'hr'].includes(user?.role) ? "Click to open screensaver" : undefined}
+        >
           
           <div className="flex items-center gap-3">
             {/* Indigo Chrono Analog + Ring */}
@@ -143,6 +179,7 @@ export default function Header({ toggleSidebar }) {
           <span className="hidden sm:inline transition-transform duration-300 group-hover:translate-x-1">Logout</span>
         </button>
       </div>
+      <ScreensaverOverlay isOpen={isScreensaverOpen} onClose={() => setIsScreensaverOpen(false)} />
     </div>
   );
 }
