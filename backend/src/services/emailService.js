@@ -6,9 +6,9 @@ const sendApplicationReceivedEmail = async (email, name, jobTitle) => {
     title: "Application Received \uD83C\uDF89",
     message: `
       <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
-      <p style="margin-bottom: 16px;">Thank you for applying for the <strong>${jobTitle}</strong> position at JobDrive. We have successfully received your application!</p>
+      <p style="margin-bottom: 16px;">Thank you for applying for the <strong>${jobTitle}</strong> position at JobPulse. We have successfully received your application!</p>
       <p style="margin-bottom: 16px;">Our hiring team will review your profile and get back to you with the next steps shortly.</p>
-      <p style="margin-bottom: 0;">Best of luck!<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best of luck!<br>The JobPulse Team</p>
     `,
     color: "#4f46e5"
   });
@@ -50,7 +50,7 @@ const sendStatusUpdateEmail = async (email, name, jobTitle, newStatus) => {
     message: `
       <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
       <p style="margin-bottom: 16px;">${statusMessage}</p>
-      <p style="margin-bottom: 0;">Best regards,<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobPulse Team</p>
     `,
     color
   });
@@ -69,12 +69,12 @@ const sendTestAvailableEmail = async (email, name, jobTitle, scheduledEndTime) =
     title: "Aptitude Test Available \u23F0",
     message: `
       <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
-      <p style="margin-bottom: 16px;">Your Aptitude Test for the <strong>${jobTitle}</strong> position is now available on your JobDrive dashboard.</p>
+      <p style="margin-bottom: 16px;">Your Aptitude Test for the <strong>${jobTitle}</strong> position is now available on your JobPulse dashboard.</p>
       <p style="margin-bottom: 16px; padding: 12px; background-color: #f1f5f9; border-radius: 8px; font-weight: bold; text-align: center;">
         Deadline: ${formattedDate}
       </p>
       <p style="margin-bottom: 16px;">Please log in to your account and complete the test before the deadline.</p>
-      <p style="margin-bottom: 0;">Good luck!<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Good luck!<br>The JobPulse Team</p>
     `,
     color: "#3b82f6" // blue
   });
@@ -103,7 +103,7 @@ const sendTestResultEmail = async (email, name, jobTitle, score, passed) => {
         </span>
       </div>
       <p style="margin-bottom: 16px;">Check your dashboard for any further updates on your application status.</p>
-      <p style="margin-bottom: 0;">Best regards,<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobPulse Team</p>
     `,
     color
   });
@@ -133,20 +133,20 @@ const sendWelcomeEmail = async (email, name, activeJobs = []) => {
   }
 
   const html = buildEmailTemplate({
-    title: "Welcome to JobDrive! \uD83D\uDE80",
+    title: "Welcome to JobPulse! \uD83D\uDE80",
     message: `
       <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
-      <p style="margin-bottom: 16px;">Welcome to JobDrive! We're thrilled to have you on board. Your account has been successfully created.</p>
+      <p style="margin-bottom: 16px;">Welcome to JobPulse! We're thrilled to have you on board. Your account has been successfully created.</p>
       <p style="margin-bottom: 16px;">You can now complete your profile, upload your resume, and start applying for your dream roles.</p>
       ${jobsHtml}
-      <p style="margin-bottom: 0;">Best regards,<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobPulse Team</p>
     `,
     color: "#4f46e5"
   });
 
   await sendEmail({
     to: email,
-    subject: "Welcome to JobDrive!",
+    subject: "Welcome to JobPulse!",
     html
   });
 };
@@ -164,7 +164,7 @@ const sendInterviewScheduledEmail = async (email, name, jobTitle, scheduledDate,
         ${notes ? `<p style="margin: 0;"><strong>Notes:</strong> ${notes}</p>` : ''}
       </div>
       <p style="margin-bottom: 16px;">Our team is looking forward to speaking with you. Please prepare accordingly.</p>
-      <p style="margin-bottom: 0;">Best regards,<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best regards,<br>The JobPulse Team</p>
     `,
     color: "#4f46e5"
   });
@@ -183,7 +183,7 @@ const sendTestClosedEmail = async (email, name, jobTitle) => {
       <p style="margin-bottom: 16px;">Hi <strong>${name}</strong>,</p>
       <p style="margin-bottom: 16px;">The Aptitude Test for the <strong>${jobTitle}</strong> position is now closed.</p>
       <p style="margin-bottom: 16px;">We are currently evaluating the tests and results will be declared soon.</p>
-      <p style="margin-bottom: 0;">Best of luck!<br>The JobDrive Team</p>
+      <p style="margin-bottom: 0;">Best of luck!<br>The JobPulse Team</p>
     `,
     color: "#eab308" // yellow
   });

@@ -246,11 +246,17 @@ export default function JobListings() {
                       {/* Header Row */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 ${isActive
+                          <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 ${isActive
                             ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                             : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200/50 dark:border-zinc-700/50 text-zinc-400 dark:text-zinc-500'
                             }`}>
                             <Briefcase className="w-6 h-6" />
+                            {Number(job.new_applicant_count) > 0 && (
+                              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5" title={`${job.new_applicant_count} new applicants`}>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-indigo-500 border-2 border-white dark:border-zinc-900"></span>
+                              </span>
+                            )}
                           </div>
                           <div>
                             <h3
@@ -375,6 +381,11 @@ export default function JobListings() {
                           <span>
                             {job.applicant_count || 0} {job.applicant_count === 1 ? 'Applicant' : 'Applicants'}
                           </span>
+                          {Number(job.new_applicant_count) > 0 && (
+                            <span className="ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30">
+                              {job.new_applicant_count} New
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -458,11 +469,17 @@ export default function JobListings() {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${isActive
+                              <div className={`relative w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${isActive
                                 ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200/50 dark:border-zinc-700/50 text-zinc-600 dark:text-zinc-400'
                                 : 'bg-zinc-200/40 dark:bg-zinc-800/30 border-zinc-200/20 dark:border-zinc-700/20 text-zinc-400 dark:text-zinc-500'
                                 }`}>
                                 <Briefcase className="w-5 h-5" />
+                                {Number(job.new_applicant_count) > 0 && (
+                                  <span className="absolute -top-1 -right-1 flex h-3 w-3" title={`${job.new_applicant_count} new applicants`}>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500 border-2 border-white dark:border-zinc-800"></span>
+                                  </span>
+                                )}
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
@@ -470,6 +487,11 @@ export default function JobListings() {
                                   {job.quiz_id && isActive && (
                                     <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                                       {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
+                                    </span>
+                                  )}
+                                  {Number(job.new_applicant_count) > 0 && (
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30">
+                                      {job.new_applicant_count} New
                                     </span>
                                   )}
                                 </div>
