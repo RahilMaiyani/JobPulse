@@ -41,7 +41,8 @@ export default function Register() {
       <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
       
       {/* LEFT PANE: Form */}
-      <div className="w-full lg:w-1/2 h-full flex flex-col justify-center p-8 sm:p-12 lg:p-24 relative overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="w-full lg:w-1/2 h-full flex flex-col justify-center p-8 sm:p-12 lg:p-24 relative overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
         {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 dark:opacity-50 pointer-events-none" />
 
