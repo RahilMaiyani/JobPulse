@@ -6,23 +6,28 @@ import toast from 'react-hot-toast';
 import { useApplicationsForJob } from '../../hooks/useApplications';
 import { bulkUpdateApplicationStatuses } from '../../services/applicationService';
 import ConfirmationModal from './ConfirmationModal';
+import CandidateComparisonModal from './CandidateComparisonModal';
+
 
 export default function JobApplicantsModal({ job, onClose }) {
   const { data: jobApplicants = [], isLoading: loadingApplicants } = useApplicationsForJob(job?.id);
-  
+
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);
   const queryClient = useQueryClient();
-  
+
   // Search, Filter, Pagination
   const [applicantSearchTerm, setApplicantSearchTerm] = useState("");
-  const [applicantSortBy, setApplicantSortBy] = useState("highest_ai"); 
+  const [applicantSortBy, setApplicantSortBy] = useState("highest_ai");
   const [applicantPage, setApplicantPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [selectedForComparison, setSelectedForComparison] = useState([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
 
   // AI Auto-Shortlist State
   const appliedApplicants = useMemo(() => jobApplicants.filter(a => a.status === 'applied'), [jobApplicants]);
   const alreadyShortlistedCount = useMemo(() => jobApplicants.filter(a => a.status === 'shortlisted' || a.status === 'hired').length, [jobApplicants]);
-  
+
   const [shortlistCount, setShortlistCount] = useState('');
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
@@ -38,17 +43,17 @@ export default function JobApplicantsModal({ job, onClose }) {
   const handleBulkShortlist = async () => {
     const count = parseInt(shortlistCount) || 0;
     if (count < 1) return toast.error("Please enter a valid number.");
-    
+
     if (count > appliedApplicants.length) {
       toast.error(`Cannot shortlist ${count} candidates. Only ${appliedApplicants.length} available.`);
       return;
     }
-    
+
     setIsBulkUpdating(true);
-    
+
     // Sort purely by AI score descending
     const sortedApplied = [...appliedApplicants].sort((a, b) => b.ai_match_score - a.ai_match_score);
-    
+
     const updates = sortedApplied.map((app, index) => ({
       id: app.id,
       status: index < count ? 'shortlisted' : 'rejected'
@@ -65,7 +70,7 @@ export default function JobApplicantsModal({ job, onClose }) {
         return app;
       });
     };
-    
+
     queryClient.setQueryData(['job-applications', Number(job.id)], updateCache);
     queryClient.setQueryData(['job-applications', String(job.id)], updateCache);
 
@@ -152,6 +157,22 @@ export default function JobApplicantsModal({ job, onClose }) {
 
   if (!job) return null;
 
+  const handleToggleCompare = (applicant) => {
+    setSelectedForComparison(prev => {
+      const isSelected = prev.some(a => a.id === applicant.id);
+      if (isSelected) {
+        return prev.filter(a => a.id !== applicant.id);
+      }
+      else {
+        if (prev.length >= 3) {
+          toast.error("You can only compare up to 3 candidates at once.");
+          return prev;
+        }
+        return [...prev, applicant]
+      }
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
@@ -188,13 +209,13 @@ export default function JobApplicantsModal({ job, onClose }) {
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">Total</span>
                   <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm h-10">
-                    <button 
+                    <button
                       onClick={() => setShortlistCount(prev => Math.max(1, (parseInt(prev) || 0) - 1))}
                       className="w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-r border-zinc-200 dark:border-zinc-700"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <input 
+                    <input
                       type="text"
                       value={shortlistCount}
                       onChange={(e) => {
@@ -207,7 +228,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                       }}
                       className="w-12 h-full text-center bg-transparent text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none"
                     />
-                    <button 
+                    <button
                       onClick={() => setShortlistCount(prev => Math.min(appliedApplicants.length, (parseInt(prev) || 0) + 1))}
                       className="w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-l border-zinc-200 dark:border-zinc-700"
                     >
@@ -215,7 +236,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                     </button>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setShowBulkConfirm(true)}
                   className="h-10 px-4 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-black rounded-xl shadow-md transition-all active:scale-95 shrink-0"
                 >
@@ -273,6 +294,27 @@ export default function JobApplicantsModal({ job, onClose }) {
                   <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
 
                     <div className="flex items-center gap-4 cursor-pointer" onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}>
+                      {/* Custom Compare Checkbox */}
+                      {app.candidate_is_active && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevents opening the details accordion
+                            handleToggleCompare(app);
+                          }}
+                          disabled={!selectedForComparison.some(a => a.id === app.id) && selectedForComparison.length >= 3}
+                          className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-all border ${selectedForComparison.some(a => a.id === app.id)
+                            ? 'bg-zinc-900 border-zinc-900 dark:bg-white dark:border-white text-white dark:text-zinc-900'
+                            : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 hover:border-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed'
+                            }`}
+                        >
+                          {selectedForComparison.some(a => a.id === app.id) && (
+                            <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
+
                       <div className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center shrink-0 ${getScoreColor(app.ai_match_score)}`}>
                         <span className="text-xs font-black opacity-80 uppercase leading-none mt-1">Score</span>
                         <span className="text-lg font-black leading-none mb-1">{app.ai_match_score}</span>
@@ -403,10 +445,44 @@ export default function JobApplicantsModal({ job, onClose }) {
         )}
       </div>
 
+      {/* FLOATING ACTION BAR FOR COMPARISON */}
+      <div
+        className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform ${selectedForComparison.length >= 2
+          ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto'
+          : 'translate-y-12 opacity-0 scale-95 pointer-events-none'
+          }`}
+      >
+        <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-zinc-200/80 dark:border-zinc-700/80 p-2 flex items-center gap-4">
+          <span className="text-zinc-900 dark:text-white text-sm font-black pl-4 py-1 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs">
+              {selectedForComparison.length}
+            </span>
+            Candidates Selected
+          </span>
+
+          <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700"></div>
+
+          <button
+            onClick={() => setSelectedForComparison([])}
+            className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1"
+          >
+            Clear
+          </button>
+
+          <button
+            onClick={() => setShowComparisonModal(true)}
+            className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-sm font-black px-6 py-2.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm active:scale-95"
+          >
+            Compare
+          </button>
+        </div>
+      </div>
+
+
       {/* BULK CONFIRMATION MODAL */}
-      <ConfirmationModal 
-        isOpen={showBulkConfirm} 
-        onClose={() => setShowBulkConfirm(false)} 
+      <ConfirmationModal
+        isOpen={showBulkConfirm}
+        onClose={() => setShowBulkConfirm(false)}
         title="Confirm Bulk Shortlist"
         message={
           <>
@@ -417,6 +493,23 @@ export default function JobApplicantsModal({ job, onClose }) {
         isDestructive={true}
         confirmText="Confirm & Execute"
       />
+
+      {/* COMPARISON MODAL */}
+      {showComparisonModal && (
+        <CandidateComparisonModal
+          job={job}
+          applicants={selectedForComparison}
+          onClose={() => setShowComparisonModal(false)}
+          onStatusChange={(appId, newStatus) => {
+            // This is the magic part! It reuses your existing status change function, 
+            // so updating status in the matrix updates the cache and the main list instantly.
+            handleStatusChange(appId, newStatus);
+            // We update the local state array so the dropdown inside the matrix updates instantly too
+            setSelectedForComparison(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
+          }}
+        />
+      )}
+
     </div>
   );
 }
