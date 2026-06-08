@@ -85,7 +85,11 @@ export default function MyApplications() {
             <div 
               key={app.id}
               onClick={() => setSelectedApp(app)}
-              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4"
+              className={`rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 border ${
+                app.status?.toLowerCase() === 'selected' || app.status?.toLowerCase() === 'hired'
+                  ? 'bg-emerald-50/30 dark:bg-emerald-500/5 border-emerald-500 shadow-emerald-500/10'
+                  : 'bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800'
+              }`}
             >
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400">
@@ -136,7 +140,11 @@ export default function MyApplications() {
                 {applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((app) => (
                   <tr
                     key={app.id}
-                    className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                    className={`transition-colors cursor-pointer ${
+                      app.status?.toLowerCase() === 'selected' || app.status?.toLowerCase() === 'hired'
+                        ? 'bg-emerald-50/60 dark:bg-emerald-500/10 hover:bg-emerald-100/60 dark:hover:bg-emerald-500/20'
+                        : 'hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30'
+                    }`}
                     onClick={() => setSelectedApp(app)}
                   >
                     <td className="p-4">

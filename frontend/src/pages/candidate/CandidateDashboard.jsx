@@ -211,6 +211,25 @@ export default function CandidateDashboard() {
                       </div>
                     );
                   }
+
+                  if (currentStatus === 'selected' || currentStatus === 'hired') {
+                    return (
+                      <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
+                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
+                        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-emerald-400/20 blur-3xl rounded-full pointer-events-none"></div>
+                        <div className="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xl shadow-emerald-500/30 relative z-10 rotate-3">
+                          <CheckCircle2 className="w-8 h-8" />
+                        </div>
+                        <div className="relative z-10 text-center sm:text-left">
+                          <span className="inline-block px-2.5 py-1 bg-emerald-200/50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[10px] font-black uppercase tracking-widest rounded-md mb-2">Offer Extended</span>
+                          <h4 className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-emerald-100 tracking-tight">Congratulations! You're Hired!</h4>
+                          <p className="text-emerald-800/80 dark:text-emerald-200/80 font-medium mt-1">
+                            You've been selected for <span className="font-bold text-emerald-900 dark:text-white">{stats.recentApplication.job_title}</span>. Our team will contact you shortly with next steps.
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
                   
                   const currentIndex = stages.findIndex(s => s.id === currentStatus) !== -1 
                     ? stages.findIndex(s => s.id === currentStatus) 
