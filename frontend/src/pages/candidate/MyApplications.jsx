@@ -3,7 +3,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import { useMyApplications, useRevokeApplication } from '../../hooks/useApplications';
 import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSkeleton';
 import SEO from '../../components/SEO';
 import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsModal';
@@ -72,10 +72,20 @@ export default function MyApplications() {
       {loading ? (
         <MyApplicationsSkeleton count={5} />
       ) : applications.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm dark:shadow-none">
-          <Briefcase className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">No applications yet</h3>
-          <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1">Head over to Open Roles to find your next opportunity.</p>
+        <div className="py-20 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm dark:shadow-none">
+          <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-4 border border-zinc-100 dark:border-zinc-800">
+            <Briefcase className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+          </div>
+          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">No applications yet</h3>
+          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1 max-w-[250px] mb-6">
+            Head over to Open Roles to find your next opportunity.
+          </p>
+          <Link
+            to="/candidate"
+            className="inline-flex items-center justify-center h-10 px-5 font-bold text-sm text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 gap-2"
+          >
+            Explore Roles
+          </Link>
         </div>
       ) : (
         <>

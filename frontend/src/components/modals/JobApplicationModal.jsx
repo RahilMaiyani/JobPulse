@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
@@ -6,6 +7,8 @@ import { X, FileText, UploadCloud, Sparkles, AlertTriangle, CheckCircle2 } from 
 import { useResumes, useUploadResume } from '../../hooks/useProfile';
 
 export default function JobApplicationModal({ job, onClose, onSuccess }) {
+  useEscapeKey(onClose);
+
   const { data: resumes = [], isLoading: isLoadingResumes } = useResumes();
   const uploadResumeMutation = useUploadResume();
   const [selectedResumeId, setSelectedResumeId] = useState("");

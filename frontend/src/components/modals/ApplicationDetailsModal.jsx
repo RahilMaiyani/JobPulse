@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { X, MapPin, ChevronDown, ChevronUp, FileQuestion, ArrowRight, Trash2, Clock, CheckCircle2, XCircle, Calendar } from 'lucide-react';
@@ -6,6 +7,8 @@ import { useInterviewByApplication } from '../../hooks/useInterviews';
 import { useTestInfo } from '../../hooks/useQuizzes';
 
 export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevoking }) {
+  useEscapeKey(onClose);
+
   const [isAiMatchExpanded, setIsAiMatchExpanded] = useState(false);
   const navigate = useNavigate();
 

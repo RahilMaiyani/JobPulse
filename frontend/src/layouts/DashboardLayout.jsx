@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }) {
 
       </div>
 
-      {/* Glassmorphic Dock (Hidden on mobile) */}
+      {/* Glassmorphic Dock */}
       <Dock />
 
       {/* Screensaver overlay (triggered via Ctrl+Q for Admin/HR) */}

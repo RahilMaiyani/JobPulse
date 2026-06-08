@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Send, MessageSquare } from 'lucide-react';
@@ -5,6 +6,8 @@ import { useSendMessage } from '../../hooks/useContact';
 import toast from 'react-hot-toast';
 
 export default function ContactUsModal({ onClose }) {
+  useEscapeKey(onClose);
+
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const sendMessageMutation = useSendMessage();

@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState } from 'react';
 import { X, Calendar as CalendarIcon, Clock, Edit3, Send } from 'lucide-react';
 import { useApplicationsForJob } from '../../hooks/useApplications';
@@ -5,6 +6,8 @@ import { useScheduleInterview, useInterviewsByJob } from '../../hooks/useIntervi
 import toast from 'react-hot-toast';
 
 export default function ScheduleInterviewModal({ job, onClose }) {
+  useEscapeKey(onClose);
+
   const { data: applications = [], isLoading: loadingApps } = useApplicationsForJob(job.id);
   const { data: existingInterviews = [], isLoading: loadingInterviews } = useInterviewsByJob(job.id);
   const scheduleMutation = useScheduleInterview();

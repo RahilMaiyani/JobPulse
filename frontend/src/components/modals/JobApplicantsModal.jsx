@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
@@ -10,6 +11,8 @@ import CandidateComparisonModal from './CandidateComparisonModal';
 
 
 export default function JobApplicantsModal({ job, onClose }) {
+  useEscapeKey(onClose);
+
   const { data: jobApplicants = [], isLoading: loadingApplicants } = useApplicationsForJob(job?.id);
 
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);

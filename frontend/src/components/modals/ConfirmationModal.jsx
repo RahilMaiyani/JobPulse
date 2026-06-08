@@ -1,3 +1,4 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 
@@ -10,6 +11,8 @@ export default function ConfirmationModal({
   confirmText = "Confirm",
   isDestructive = true
 }) {
+  useEscapeKey(onClose);
+
   if (!isOpen) return null;
 
   return (

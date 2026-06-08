@@ -1,9 +1,12 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function JobFormModal({ job, onClose, onSuccess }) {
+  useEscapeKey(onClose);
+
   const isEditMode = !!job;
   const [isSubmitting, setIsSubmitting] = useState(false);
 

@@ -1,9 +1,12 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
 import { CheckCircle2, Ban, X, Mail, Phone, Calendar, Briefcase, FileText } from 'lucide-react';
 import { useUserProfile } from '../../hooks/useUsers';
 import { useUserApplications } from '../../hooks/useApplications';
 
 export default function ViewUserProfileModal({ isOpen, onClose, user }) {
+  useEscapeKey(onClose);
+
   if (!isOpen || !user) return null;
 
   const { data: selectedUserProfile, isLoading: loadingProfile } = useUserProfile(user.id);

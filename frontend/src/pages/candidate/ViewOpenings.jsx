@@ -179,10 +179,14 @@ export default function ViewOpenings() {
                 )
               })
             ) : (
-              <div className="text-center py-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm dark:shadow-none">
-                <Briefcase className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">No open roles found</h3>
-                <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1">Check back later or try adjusting your filters.</p>
+              <div className="py-20 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm dark:shadow-none">
+                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-4 border border-zinc-100 dark:border-zinc-800">
+                  <Briefcase className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+                </div>
+                <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">No open roles found</h3>
+                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1 max-w-[250px]">
+                  Check back later or try adjusting your filters to find new opportunities.
+                </p>
               </div>
             )}
           </div>

@@ -434,8 +434,21 @@ export default function JobListings() {
                 );
               })
             ) : (
-              <div className="col-span-full py-16 text-center text-zinc-500 dark:text-zinc-500 font-medium bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
-                No jobs posted yet. Click "Post New Job" to get started.
+              <div className="col-span-full py-20 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
+                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-4 border border-zinc-100 dark:border-zinc-800">
+                  <Briefcase className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+                </div>
+                <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">No jobs posted yet</h3>
+                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1 max-w-[250px] mb-6">
+                  Get started by posting your first job to find great candidates.
+                </p>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center justify-center h-10 px-5 font-bold text-sm text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Post New Job
+                </button>
               </div>
             )}
           </div>
@@ -592,8 +605,23 @@ export default function JobListings() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" className="px-6 py-12 text-center text-zinc-500 dark:text-zinc-500 font-medium">
-                        No jobs posted yet. Click "Post New Job" to get started.
+                      <td colSpan="5" className="px-6 py-20">
+                        <div className="flex flex-col items-center justify-center text-center">
+                          <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-center mb-4 border border-zinc-100 dark:border-zinc-800">
+                            <Briefcase className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
+                          </div>
+                          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">No jobs posted yet</h3>
+                          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1 max-w-[250px] mb-6">
+                            Get started by posting your first job to find great candidates.
+                          </p>
+                          <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="inline-flex items-center justify-center h-10 px-5 font-bold text-sm text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Post New Job
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )}

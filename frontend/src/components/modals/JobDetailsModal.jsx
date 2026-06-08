@@ -1,7 +1,10 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
 import { Briefcase, MapPin, X, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export default function JobDetailsModal({ job, onClose, onApply, appliedApplication }) {
+  useEscapeKey(onClose);
+
   const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
 
   return (

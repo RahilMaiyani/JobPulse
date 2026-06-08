@@ -1,7 +1,10 @@
+import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
 import { X, CheckCircle2, FileQuestion, Download, Sparkles } from 'lucide-react';
 
 export default function CandidateComparisonModal({ job, applicants, onClose, onStatusChange }) {
+  useEscapeKey(onClose);
+
     if (!applicants || applicants.length === 0) return null;
 
     // Find the highest AI match score to highlight the best candidate
