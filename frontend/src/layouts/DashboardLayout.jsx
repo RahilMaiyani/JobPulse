@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dock from "../components/Dock";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { useLocation } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
+import ScreensaverOverlay from '../components/admin/ScreensaverOverlay';
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isScreensaverOpen, setIsScreensaverOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'q') {
+        if (user?.role === 'admin' || user?.role === 'hr') {
+          e.preventDefault();
+          setIsScreensaverOpen((prev) => !prev);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [user]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300 p-2 md:p-4 gap-2 md:gap-4 relative">
@@ -37,6 +55,9 @@ export default function DashboardLayout({ children }) {
 
       {/* Glassmorphic Dock (Hidden on mobile) */}
       <Dock />
+
+      {/* Screensaver overlay (triggered via Ctrl+Q for Admin/HR) */}
+      <ScreensaverOverlay isOpen={isScreensaverOpen} onClose={() => setIsScreensaverOpen(false)} />
     </div>
   );
 }
