@@ -101,7 +101,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
       steps.push({
         label: 'Interview Round',
-        description: interviewData 
+        description: interviewData
           ? `Your interview is scheduled for ${new Date(interviewData.scheduled_date).toLocaleDateString()} at ${interviewData.scheduled_time}. ${interviewData.notes ? `\nNote: ${interviewData.notes}` : ''}`
           : 'You passed the aptitude test! HR will contact you for an interview.',
         date: interviewData ? `${new Date(interviewData.scheduled_date).toLocaleDateString()} ${interviewData.scheduled_time}` : '',
@@ -305,7 +305,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
                     <div className={`p-3 rounded-xl border flex items-center justify-between ${testInfo.result.passed ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Test Result</p>
-                        <p className="text-sm font-bold mt-0.5">{testInfo.result.passed ? 'Passed' : 'Failed'} • Score: {testInfo.result.score}/{testInfo.quiz.total_marks}</p>
+                        <p className="text-sm font-bold mt-0.5">{testInfo.result.passed ? 'Passed' : 'Failed'} • Score: {testInfo.result.score}/100</p>
                       </div>
                       {testInfo.result.passed ? <CheckCircle2 className="w-6 h-6 opacity-50" /> : <XCircle className="w-6 h-6 opacity-50" />}
                     </div>

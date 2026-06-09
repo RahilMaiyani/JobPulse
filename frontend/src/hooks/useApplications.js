@@ -44,7 +44,7 @@ export const useApplyForJob = () => {
       toast.success(data.message || 'Successfully applied for job');
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['applications', 'my'] });
-      queryClient.invalidateQueries({ queryKey: ['job-applications', variables.jobId] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'candidate'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
     },

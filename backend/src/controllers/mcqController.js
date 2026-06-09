@@ -235,7 +235,7 @@ const startCandidateTest = async (req, res, next) => {
       options: q.options
     }));
 
-    res.json({ result, questions: safeQuestions, duration_minutes: quiz.duration_minutes });
+    res.json({ result, questions: safeQuestions, duration_minutes: quiz.duration_minutes, job_id: quiz.job_id });
   } catch (err) {
     next(err);
   }

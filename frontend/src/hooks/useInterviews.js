@@ -22,8 +22,8 @@ export const useScheduleInterview = () => {
   return useMutation({
     mutationFn: interviewService.scheduleInterview,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['interviews', variables.jobId] });
-      queryClient.invalidateQueries({ queryKey: ['job-applications', variables.jobId] });
+      queryClient.invalidateQueries({ queryKey: ['interviews'] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
     },
   });
