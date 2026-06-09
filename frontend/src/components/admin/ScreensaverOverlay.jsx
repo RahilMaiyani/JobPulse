@@ -91,7 +91,7 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[9999] cursor-none bg-zinc-50 dark:bg-[#09090b] flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+      className={`fixed inset-0 z-[9999] cursor-none bg-zinc-50 dark:bg-[#09090b] hidden md:flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
         }`}
     >
 

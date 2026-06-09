@@ -198,7 +198,7 @@ export default function JobApplicantsModal({ job, onClose }) {
 
           {/* BULK SHORTLIST BAR (Only visible if >1 'applied' and NO ONE is already shortlisted) */}
           {appliedApplicants.length > 1 && alreadyShortlistedCount === 0 && (
-            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-sm flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
@@ -208,9 +208,9 @@ export default function JobApplicantsModal({ job, onClose }) {
                   <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">{appliedApplicants.length} candidates awaiting review.</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">Total</span>
+              <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">Top</span>
                   <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm h-10">
                     <button
                       onClick={() => setShortlistCount(prev => Math.max(1, (parseInt(prev) || 0) - 1))}
@@ -229,7 +229,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                       onBlur={() => {
                         if (!shortlistCount || parseInt(shortlistCount) < 1) setShortlistCount(1);
                       }}
-                      className="w-12 h-full text-center bg-transparent text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                      className="w-10 h-full text-center bg-transparent text-sm font-black text-zinc-900 dark:text-zinc-100 focus:outline-none"
                     />
                     <button
                       onClick={() => setShortlistCount(prev => Math.min(appliedApplicants.length, (parseInt(prev) || 0) + 1))}
@@ -241,9 +241,10 @@ export default function JobApplicantsModal({ job, onClose }) {
                 </div>
                 <button
                   onClick={() => setShowBulkConfirm(true)}
-                  className="h-10 px-4 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-black rounded-xl shadow-md transition-all active:scale-95 shrink-0"
+                  className="h-10 px-4 flex-1 md:flex-none bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-sm font-black rounded-xl shadow-md transition-all active:scale-95 shrink-0 flex items-center justify-center"
                 >
-                  Shortlist & Reject Rest
+                  <span className="hidden sm:inline">Shortlist & Reject Rest</span>
+                  <span className="sm:hidden">Auto Shortlist</span>
                 </button>
               </div>
             </div>
@@ -450,34 +451,37 @@ export default function JobApplicantsModal({ job, onClose }) {
 
       {/* FLOATING ACTION BAR FOR COMPARISON */}
       <div
-        className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform ${selectedForComparison.length >= 2
+        className={`fixed bottom-24 left-0 right-0 mx-auto w-[90vw] md:w-max md:absolute md:bottom-6 md:left-1/2 md:right-auto md:mx-0 md:-translate-x-1/2 z-[70] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform ${selectedForComparison.length >= 2
           ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto'
-          : 'translate-y-12 opacity-0 scale-95 pointer-events-none'
+          : 'translate-y-24 opacity-0 scale-95 pointer-events-none'
           }`}
       >
-        <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-zinc-200/80 dark:border-zinc-700/80 p-2 flex items-center gap-4">
-          <span className="text-zinc-900 dark:text-white text-sm font-black pl-4 py-1 flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs">
+        <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-[2rem] md:rounded-full shadow-[0_12px_40px_rgb(0,0,0,0.2)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.6)] border border-zinc-200/80 dark:border-zinc-700/80 p-2 md:p-2 flex items-center justify-between gap-2 md:gap-4 max-w-md mx-auto md:mx-0">
+          <span className="text-zinc-900 dark:text-white text-xs md:text-sm font-black pl-2 md:pl-4 py-1 flex items-center gap-1.5 md:gap-2 truncate">
+            <span className="w-5 h-5 md:w-5 md:h-5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] md:text-xs shrink-0">
               {selectedForComparison.length}
             </span>
-            Candidates Selected
+            <span className="hidden md:inline">Candidates Selected</span>
+            <span className="md:hidden">Selected</span>
           </span>
 
-          <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700"></div>
+          <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 shrink-0"></div>
 
-          <button
-            onClick={() => setSelectedForComparison([])}
-            className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1"
-          >
-            Clear
-          </button>
+          <div className="flex items-center gap-1 md:gap-2 shrink-0 pr-1">
+            <button
+              onClick={() => setSelectedForComparison([])}
+              className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1"
+            >
+              Clear
+            </button>
 
-          <button
-            onClick={() => setShowComparisonModal(true)}
-            className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-sm font-black px-6 py-2.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm active:scale-95"
-          >
-            Compare
-          </button>
+            <button
+              onClick={() => setShowComparisonModal(true)}
+              className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs md:text-sm font-black px-4 md:px-6 py-2 md:py-2.5 rounded-xl md:rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm active:scale-95"
+            >
+              Compare
+            </button>
+          </div>
         </div>
       </div>
 
@@ -504,10 +508,7 @@ export default function JobApplicantsModal({ job, onClose }) {
           applicants={selectedForComparison}
           onClose={() => setShowComparisonModal(false)}
           onStatusChange={(appId, newStatus) => {
-            // This is the magic part! It reuses your existing status change function, 
-            // so updating status in the matrix updates the cache and the main list instantly.
             handleStatusChange(appId, newStatus);
-            // We update the local state array so the dropdown inside the matrix updates instantly too
             setSelectedForComparison(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
           }}
         />

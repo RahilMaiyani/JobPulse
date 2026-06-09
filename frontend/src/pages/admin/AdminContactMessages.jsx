@@ -91,39 +91,45 @@ export default function AdminContactMessages() {
                 onClick={() => handleMarkAsRead(msg.id, msg.is_read)}
                 className={`p-5 transition-colors cursor-pointer group ${msg.is_read ? 'bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/50' : 'bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
               >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <div className="flex items-center gap-2 break-all">
-                        <div className={`w-2 h-2 shrink-0 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-zinc-900 dark:bg-zinc-100'}`}></div>
-                        <h3 className={`font-bold text-zinc-900 dark:text-zinc-100 ${msg.is_read ? 'text-base' : 'text-base'}`}>{msg.subject}</h3>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="flex-1 space-y-3 min-w-0">
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 mt-1.5 shrink-0 rounded-full ${msg.is_read ? 'bg-transparent' : 'bg-zinc-900 dark:bg-zinc-100'}`}></div>
+                        <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 break-words line-clamp-2">{msg.subject}</h3>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400 flex-wrap">
-                        <span className="flex items-center gap-1"><User className="w-3.5 h-3.5 shrink-0" /> <span className="line-clamp-1">{msg.sender_name} ({msg.sender_email})</span></span>
-                        <span className="text-zinc-300 dark:text-zinc-600 hidden sm:inline">•</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 shrink-0" /> {new Date(msg.created_at).toLocaleString()}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pl-4">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-400 min-w-0">
+                          <User className="w-3.5 h-3.5 shrink-0" /> 
+                          <span className="truncate">{msg.sender_name} <span className="opacity-70 font-medium">({msg.sender_email})</span></span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 dark:text-zinc-500 shrink-0">
+                          <Clock className="w-3.5 h-3.5 shrink-0" /> {new Date(msg.created_at).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' })}
+                        </div>
                       </div>
                     </div>
-                    <p className={`text-sm ${msg.is_read ? 'text-zinc-500 dark:text-zinc-400 font-medium' : 'text-zinc-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap pl-4 break-words`}>
-                      {msg.message}
-                    </p>
+                    <div className="pl-4">
+                      <p className={`text-sm ${msg.is_read ? 'text-zinc-500 dark:text-zinc-400 font-medium' : 'text-zinc-700 dark:text-zinc-300 font-semibold'} whitespace-pre-wrap break-words`}>
+                        {msg.message}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end mt-2 md:mt-0 pt-3 md:pt-0 border-t border-zinc-200/50 dark:border-zinc-800/50 md:border-none">
+                  <div className="flex sm:flex-col flex-row items-center sm:items-end gap-2 shrink-0 pl-4 sm:pl-0 mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-zinc-100 dark:border-zinc-800/60 sm:border-none">
                     {!msg.is_read && (
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleMarkAsRead(msg.id, msg.is_read); }}
-                        className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-800 rounded-xl transition-all shadow-sm"
+                        className="flex-1 sm:flex-none justify-center px-4 py-2 sm:px-3 sm:py-2 text-xs font-bold flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 rounded-xl transition-all shadow-sm"
                         title="Mark as Read"
                       >
-                        <CheckCircle className="w-4 h-4" /> <span className="md:hidden">Mark Read</span>
+                        <CheckCircle className="w-4 h-4" /> <span>Mark Read</span>
                       </button>
                     )}
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleArchive(msg.id); }}
-                      className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-zinc-200/50 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-500/20 rounded-xl transition-all shadow-sm"
+                      className="flex-1 sm:flex-none justify-center px-4 py-2 sm:px-3 sm:py-2 text-xs font-bold flex items-center gap-2 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-zinc-200/60 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-500/20 rounded-xl transition-all shadow-sm"
                       title="Archive Message"
                     >
-                      <Archive className="w-4 h-4" /> <span className="md:hidden">Archive</span>
+                      <Archive className="w-4 h-4" /> <span>Archive</span>
                     </button>
                   </div>
                 </div>

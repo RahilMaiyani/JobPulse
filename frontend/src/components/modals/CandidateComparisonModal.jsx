@@ -39,7 +39,7 @@ export default function CandidateComparisonModal({ job, applicants, onClose, onS
                 </div>
 
                 {/* Matrix Grid */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-950">
+                <div className="flex-1 overflow-auto custom-scrollbar bg-white dark:bg-zinc-950">
                     <div className="min-w-[800px]">
                         {/* Table Header Row (Sticky) */}
                         <div className="grid grid-cols-12 sticky top-0 z-20 bg-zinc-50/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
