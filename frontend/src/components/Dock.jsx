@@ -128,6 +128,8 @@ export default function Dock() {
   };
 
   const hideDockDeferred = () => {
+    if (window.matchMedia("(pointer: coarse)").matches) return; // Keep always-on for iPads/touch devices
+    
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
     }
@@ -192,7 +194,7 @@ export default function Dock() {
   // Show dock briefly on page change and keep it up for 3s if cursor is not there
   useEffect(() => {
     showDock();
-    if (!isCursorInAreaRef.current) {
+    if (!isCursorInAreaRef.current && !window.matchMedia("(pointer: coarse)").matches) {
       hideDockDeferred();
     }
   }, [location.pathname]);

@@ -45,7 +45,7 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col overflow-hidden relative gap-2 md:gap-4 w-full">
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <div className="flex-1 overflow-auto p-4 md:p-8 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl relative z-10 custom-scrollbar shadow-sm pb-28 md:pb-32">
+        <div className="flex-1 overflow-auto p-4 md:p-8 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl relative z-10 custom-scrollbar shadow-sm pb-28 md:pb-40">
           <div key={location.pathname} className="max-w-7xl mx-auto animate-page-transition">
             {children}
           </div>

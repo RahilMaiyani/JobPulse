@@ -38,12 +38,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     return location.pathname.startsWith(path);
   };
 
-  const baseClass = "group flex items-center gap-3 px-4 py-3.5 mx-3 rounded-xl transition-all duration-300 font-bold text-sm relative z-10 overflow-hidden";
-  const activeClass = "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md shadow-zinc-900/10 dark:shadow-white/10";
-  const inactiveClass = "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 hover:text-zinc-900 dark:hover:text-zinc-100";
+  const baseClass = "group flex items-center gap-3 px-4 py-3.5 mx-3 rounded-2xl transition-all duration-300 font-bold text-sm relative z-10 overflow-hidden";
+  const activeClass = "bg-gradient-to-tr from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-white/20 scale-[1.02]";
+  const inactiveClass = "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100";
 
   return (
-    <div className={`fixed md:relative top-2 bottom-2 left-2 md:top-0 md:bottom-0 md:left-0 h-[calc(100vh-1rem)] md:h-full w-72 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-3xl shrink-0 z-50 transform transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-sm ${isOpen ? 'translate-x-0' : '-translate-x-[120%] md:translate-x-0'}`}>
+    <div className={`fixed md:relative top-2 bottom-2 left-2 md:top-0 md:bottom-0 md:left-0 h-[calc(100vh-1rem)] md:h-full w-72 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl text-zinc-900 dark:text-zinc-100 flex flex-col border border-white/20 dark:border-white/10 rounded-[2rem] shrink-0 z-50 transform transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] ${isOpen ? 'translate-x-0' : '-translate-x-[120%] md:translate-x-0'}`}>
 
       {/* BRANDING */}
       <div className="p-8 mb-2 flex items-center justify-between group cursor-pointer">
