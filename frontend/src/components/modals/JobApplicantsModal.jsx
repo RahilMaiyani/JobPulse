@@ -451,7 +451,7 @@ export default function JobApplicantsModal({ job, onClose }) {
 
       {/* FLOATING ACTION BAR FOR COMPARISON */}
       <div
-        className={`fixed bottom-24 left-0 right-0 mx-auto w-[90vw] md:w-max md:absolute md:bottom-6 md:left-1/2 md:right-auto md:mx-0 md:-translate-x-1/2 z-[70] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform ${selectedForComparison.length >= 2
+        className={`fixed bottom-24 left-0 right-0 mx-auto w-[90vw] md:w-max md:absolute md:bottom-6 md:left-1/2 md:right-auto md:mx-0 md:-translate-x-1/2 z-[70] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform ${selectedForComparison.length >= 2 && showComparisonModal === false
           ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto'
           : 'translate-y-24 opacity-0 scale-95 pointer-events-none'
           }`}
@@ -469,7 +469,7 @@ export default function JobApplicantsModal({ job, onClose }) {
 
           <div className="flex items-center gap-1 md:gap-2 shrink-0 pr-1">
             <button
-              onClick={() => setSelectedForComparison([])}
+              onClick={() => { setSelectedForComparison([]); setShowComparisonModal(false); }}
               className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1"
             >
               Clear
