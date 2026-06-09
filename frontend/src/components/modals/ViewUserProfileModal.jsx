@@ -7,10 +7,10 @@ import { useUserApplications } from '../../hooks/useApplications';
 export default function ViewUserProfileModal({ isOpen, onClose, user }) {
   useEscapeKey(onClose);
 
-  if (!isOpen || !user) return null;
+  const { data: selectedUserProfile, isLoading: loadingProfile } = useUserProfile(user?.id);
+  const { data: userApplications = [], isLoading: loadingApplications } = useUserApplications(user?.role === 'candidate' ? user?.id : null);
 
-  const { data: selectedUserProfile, isLoading: loadingProfile } = useUserProfile(user.id);
-  const { data: userApplications = [], isLoading: loadingApplications } = useUserApplications(user.role === 'candidate' ? user.id : null);
+  if (!isOpen || !user) return null;
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';

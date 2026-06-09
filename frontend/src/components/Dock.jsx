@@ -101,7 +101,7 @@ export default function Dock() {
   const { data: unreadContactCount = 0 } = useUnreadContactCount(isAdminOrHr);
   const { data: activeJobs = [] } = useActiveJobs();
   const { data: myApplications = [] } = useMyApplications({ enabled: !isAdminOrHr });
-  
+
   const appliedJobIds = new Set(myApplications.map(app => app.job_id));
   const candidateAvailableJobsCount = activeJobs.filter(job => !appliedJobIds.has(job.id)).length;
 
