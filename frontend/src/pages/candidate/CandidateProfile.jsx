@@ -250,7 +250,7 @@ export default function CandidateProfile() {
                 You have reached the maximum limit of 5 resumes. Delete an old one to upload a new resume.
               </div>
             )}
-            <div className="p-8 overflow-y-auto max-h-[350px] custom-scrollbar flex-1 bg-transparent">
+            <div className="p-8 flex-1 bg-transparent">
               {resumes.length === 0 ? (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mx-auto mb-4 border border-zinc-100 dark:border-zinc-700">
