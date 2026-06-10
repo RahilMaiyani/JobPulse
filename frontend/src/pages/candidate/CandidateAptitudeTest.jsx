@@ -124,13 +124,13 @@ export default function CandidateAptitudeTest() {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['test-info'] });
       queryClient.invalidateQueries({ queryKey: ['job-quiz'] });
-      sessionStorage.setItem(`test_violations_${applicationId}`, 0);
       toast.success("Test submitted successfully!");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to submit test");
       setIsSubmitting(false);
     } finally {
       setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      sessionStorage.setItem(`test_violations_${applicationId}`, 0);
     }
   };
 
