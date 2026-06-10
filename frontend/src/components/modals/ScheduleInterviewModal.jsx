@@ -25,7 +25,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
       const initialSchedules = {};
       existingInterviews.forEach(interview => {
         const timeVal = interview.scheduled_time ? interview.scheduled_time.substring(0, 5) : '';
-        const dateVal = interview.scheduled_date ? new Date(interview.scheduled_date).toISOString().split('T')[0] : '';
+        const dateVal = interview.scheduled_date ? new Date(interview.scheduled_date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }) : '';
         
         initialSchedules[interview.application_id] = {
           date: dateVal,

@@ -16,6 +16,21 @@ exports.scheduleInterview = async (req, res, next) => {
     const existingSlotsCountRes = await db.query(`SELECT COUNT(*) FROM interview_slots WHERE job_id = $1`, [jobId]);
     const isFirstInterview = parseInt(existingSlotsCountRes.rows[0].count) === 0;
 
+    // Check if there's already an interview scheduled for this job at the exact same date and time
+    const conflictCheck = await db.query(
+      `SELECT id FROM interview_slots 
+       WHERE job_id = $1 
+         AND scheduled_date = $2 
+         AND scheduled_time = $3
+         AND application_id != $4`,
+      [jobId, scheduledDate, scheduledTime, applicationId]
+    );
+
+    if (conflictCheck.rows.length > 0) {
+      await db.query('ROLLBACK');
+      return res.status(400).json({ error: "Another interview is already scheduled for this job at this date and time." });
+    }
+
     // Insert new slot
     const slotRes = await db.query(
       `INSERT INTO interview_slots 
