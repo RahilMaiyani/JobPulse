@@ -22,7 +22,12 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.type !== 'application/pdf') return toast.error("Only PDF files are allowed.");
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const isAllowed = allowedTypes.includes(file.type) || file.name.toLowerCase().endsWith('.docx');
+    if (!isAllowed) return toast.error("Only PDF and DOCX files are allowed.");
     if (file.size > 500 * 1024) return toast.error("File is too large. Max 500KB.");
 
     const formData = new FormData();
@@ -121,14 +126,14 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
 
                 {/* Upload New Card */}
                 <label className={`p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col justify-center items-center text-center ${isUploadingResume ? 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50' : 'border-zinc-300 dark:border-zinc-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10'}`}>
-                  <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={isUploadingResume} />
+                  <input type="file" className="hidden" accept="application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleResumeUpload} disabled={isUploadingResume} />
                   {isUploadingResume ? (
                     <div className="w-6 h-6 border-2 border-indigo-400 border-t-indigo-600 rounded-full animate-spin mb-2"></div>
                   ) : (
                     <UploadCloud className="w-6 h-6 text-zinc-400 dark:text-zinc-500 mb-2" />
                   )}
                   <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Upload New Resume</p>
-                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">PDF max 500KB</p>
+                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">PDF/DOCX max 500KB</p>
                 </label>
               </div>
 

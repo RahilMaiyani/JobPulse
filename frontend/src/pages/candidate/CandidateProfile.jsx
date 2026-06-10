@@ -56,7 +56,12 @@ export default function CandidateProfile() {
     const file = e.target.files[0];
     if (!file) return;
     if (resumes.length >= 5) return toast.error("You can only upload a maximum of 5 resumes.");
-    if (file.type !== 'application/pdf') return toast.error("Only PDF files are allowed.");
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const isAllowed = allowedTypes.includes(file.type) || file.name.toLowerCase().endsWith('.docx');
+    if (!isAllowed) return toast.error("Only PDF and DOCX files are allowed.");
     if (file.size > 500 * 1024) return toast.error("File is too large. Maximum size is 500KB.");
 
     const formData = new FormData();
@@ -234,14 +239,14 @@ export default function CandidateProfile() {
                 <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Resume Vault</h2>
               </div>
               <label className={`cursor-pointer ${resumes.length >= 5 ? 'opacity-50 pointer-events-none' : ''}`}>
-                <input type="file" className="hidden" accept="application/pdf" onChange={handleResumeUpload} disabled={uploadResumeMutation.isPending || resumes.length >= 5} />
+                <input type="file" className="hidden" accept="application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleResumeUpload} disabled={uploadResumeMutation.isPending || resumes.length >= 5} />
                 <span className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-colors border shadow-sm ${uploadResumeMutation.isPending ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 border-zinc-200 dark:border-zinc-700' : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 hover:bg-zinc-800 dark:hover:bg-white'}`}>
                   {uploadResumeMutation.isPending ? (
                     <div className="w-4 h-4 border-2 border-zinc-400 border-t-zinc-600 rounded-full animate-spin"></div>
                   ) : (
                     <UploadCloud className="w-4 h-4" />
                   )}
-                  {resumes.length >= 5 ? 'Limit Reached' : 'Upload PDF'}
+                  {resumes.length >= 5 ? 'Limit Reached' : 'Upload Resume'}
                 </span>
               </label>
             </div>
@@ -257,7 +262,7 @@ export default function CandidateProfile() {
                     <FileText className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
                   </div>
                   <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400">No resumes uploaded.</p>
-                  <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mt-1">Upload a PDF up to 500KB.</p>
+                  <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mt-1">Upload a PDF or DOCX up to 500KB.</p>
                 </div>
               ) : (
                 <div className="space-y-4">

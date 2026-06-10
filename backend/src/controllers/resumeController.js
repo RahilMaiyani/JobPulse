@@ -1,11 +1,12 @@
 const resumeModel = require('../models/resumeModel');
 const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
 const supabase = require('../config/supabase');
 
 const uploadResume = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'Please upload a PDF file' });
+      return res.status(400).json({ error: 'Please upload a PDF or DOCX file' });
     }
 
     const userId = req.user.id;
@@ -18,14 +19,27 @@ const uploadResume = async (req, res, next) => {
 
     const fileName = req.file.originalname;
 
-    // Read and parse PDF text from memory buffer
+    // Read and parse text from memory buffer based on file type
     let parsedText = '';
-    try {
-      const data = await pdfParse(req.file.buffer);
-      parsedText = data.text;
-    } catch (parseErr) {
-      console.error("PDF Parsing error:", parseErr);
-      return res.status(400).json({ error: `Could not extract text from the provided PDF: ${parseErr.message || 'Unknown error'}` });
+    const isDocx = req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                   req.file.originalname.toLowerCase().endsWith('.docx');
+
+    if (isDocx) {
+      try {
+        const result = await mammoth.extractRawText({ buffer: req.file.buffer });
+        parsedText = result.value;
+      } catch (parseErr) {
+        console.error("DOCX Parsing error:", parseErr);
+        return res.status(400).json({ error: `Could not extract text from the provided DOCX: ${parseErr.message || 'Unknown error'}` });
+      }
+    } else {
+      try {
+        const data = await pdfParse(req.file.buffer);
+        parsedText = data.text;
+      } catch (parseErr) {
+        console.error("PDF Parsing error:", parseErr);
+        return res.status(400).json({ error: `Could not extract text from the provided PDF: ${parseErr.message || 'Unknown error'}` });
+      }
     }
 
     // Upload to Supabase Storage
