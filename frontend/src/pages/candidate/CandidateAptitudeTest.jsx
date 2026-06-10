@@ -146,7 +146,7 @@ export default function CandidateAptitudeTest() {
 
   if (submitted && finalResult) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center p-4">
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-zinc-950 max-w-md w-full rounded-3xl p-8 text-center shadow-xl border border-zinc-200 dark:border-zinc-800">
           <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 ${finalResult.passed ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'}`}>
             {finalResult.passed ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
@@ -182,7 +182,7 @@ export default function CandidateAptitudeTest() {
   return (
     <>
       <SEO title="Aptitude Test" />
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100">
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100">
         <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">

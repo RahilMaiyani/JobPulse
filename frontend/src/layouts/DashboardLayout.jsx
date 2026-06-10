@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }) {
   }, [user]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300 p-2 md:p-4 gap-2 md:gap-4 relative">
+    <div className="flex h-[100dvh] overflow-hidden bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300 p-2 md:p-4 gap-2 md:gap-4 relative">
 
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (

@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <>
       <SEO title="Home" />
-      <div className="h-screen w-full bg-white dark:bg-zinc-950 flex relative overflow-hidden transition-colors duration-300">
+      <div className="h-[100dvh] w-full bg-white dark:bg-zinc-950 flex relative overflow-hidden transition-colors duration-300">
         {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
 

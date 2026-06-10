@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function AptitudeTestSkeleton() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans animate-pulse">
+    <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans animate-pulse">
       {/* SKELETON HEADER */}
       <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-40 shadow-sm px-6 h-20 flex items-center justify-between">
         <div className="w-48 h-6 bg-zinc-200 dark:bg-zinc-800 rounded"></div>

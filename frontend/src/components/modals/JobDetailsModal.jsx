@@ -79,9 +79,9 @@ export default function JobDetailsModal({ job, onClose, onApply, appliedApplicat
             {appliedApplication ? (
               <button
                 disabled
-                className="px-8 h-12 font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl flex items-center gap-2 cursor-not-allowed"
+                className="px-3 sm:px-8 h-12 font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl flex items-center gap-1 sm:gap-2 cursor-not-allowed text-[11px] sm:text-sm whitespace-nowrap"
               >
-                Applied on {new Date(appliedApplication.applied_at).toLocaleDateString()} <CheckCircle2 className="w-4 h-4" />
+                Applied on {new Date(appliedApplication.applied_at).toLocaleDateString()} <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
             ) : isExpired ? (
               <button

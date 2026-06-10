@@ -42,7 +42,7 @@ export default function Login() {
   return (
     <>
       <SEO title="Sign In" description="Sign in to your JobPulse account to manage applications." />
-      <div className="h-screen w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
+      <div className="h-[100dvh] w-full flex bg-white dark:bg-zinc-950 overflow-hidden transition-colors duration-300">
 
       {/* LEFT PANE: Form */}
       <div className="w-full lg:w-1/2 h-full flex flex-col justify-center p-8 sm:p-12 lg:p-24 relative overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>

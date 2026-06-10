@@ -344,7 +344,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3 mt-3 md:mt-0 w-full md:w-auto">
                       <button
                         onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}
                         className="text-xs font-bold text-indigo-600 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"

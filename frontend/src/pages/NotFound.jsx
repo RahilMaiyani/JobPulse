@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <>
       <SEO title="Page Not Found" />
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center selection:bg-zinc-200 dark:selection:bg-zinc-800">
+      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-4 text-center selection:bg-zinc-200 dark:selection:bg-zinc-800">
         <div className="w-24 h-24 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-full flex items-center justify-center mb-8 mx-auto shadow-sm">
           <SearchX className="w-12 h-12" />
         </div>

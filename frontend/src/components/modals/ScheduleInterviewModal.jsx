@@ -112,41 +112,41 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                         <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{app.candidate_email}</p>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                          <div>
-                            <label className="block text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">Date</label>
-                            <div className="relative">
-                              <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                              <input 
-                                type="date" 
-                                value={schedule.date}
-                                onChange={(e) => handleUpdateSchedule(app.id, 'date', e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
-                              />
-                            </div>
+                          <div className="min-w-0">
+                            <label className="flex items-center gap-1.5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
+                              <CalendarIcon className="w-3.5 h-3.5 text-zinc-400" />
+                              <span>Date</span>
+                            </label>
+                            <input 
+                              type="date" 
+                              value={schedule.date}
+                              onChange={(e) => handleUpdateSchedule(app.id, 'date', e.target.value)}
+                              className="block w-full min-w-0 max-w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none box-border"
+                            />
                           </div>
-                          <div>
-                            <label className="block text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">Time</label>
-                            <div className="relative">
-                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                              <input 
-                                type="time" 
-                                value={schedule.time}
-                                onChange={(e) => handleUpdateSchedule(app.id, 'time', e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
-                              />
-                            </div>
+                          <div className="min-w-0">
+                            <label className="flex items-center gap-1.5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
+                              <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                              <span>Time</span>
+                            </label>
+                            <input 
+                              type="time" 
+                              value={schedule.time}
+                              onChange={(e) => handleUpdateSchedule(app.id, 'time', e.target.value)}
+                              className="block w-full min-w-0 max-w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none box-border"
+                            />
                           </div>
                           <div className="md:col-span-2">
-                            <label className="block text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">Interviewer Notes / Link (Optional)</label>
-                            <div className="relative">
-                              <Edit3 className="absolute left-3 top-3 w-4 h-4 text-zinc-400" />
-                              <textarea 
-                                value={schedule.notes}
-                                onChange={(e) => handleUpdateSchedule(app.id, 'notes', e.target.value)}
-                                placeholder="E.g., Google Meet link, topics to cover..."
-                                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium min-h-[60px] focus:ring-2 focus:ring-indigo-500 outline-none"
-                              />
-                            </div>
+                            <label className="flex items-center gap-1.5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
+                              <Edit3 className="w-3.5 h-3.5 text-zinc-400" />
+                              <span>Interviewer Notes / Link (Optional)</span>
+                            </label>
+                            <textarea 
+                              value={schedule.notes}
+                              onChange={(e) => handleUpdateSchedule(app.id, 'notes', e.target.value)}
+                              placeholder="E.g., Google Meet link, topics to cover..."
+                              className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium min-h-[60px] focus:ring-2 focus:ring-indigo-500 outline-none box-border"
+                            />
                           </div>
                         </div>
                       </div>
