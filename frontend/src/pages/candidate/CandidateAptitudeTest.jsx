@@ -124,6 +124,7 @@ export default function CandidateAptitudeTest() {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['test-info'] });
       queryClient.invalidateQueries({ queryKey: ['job-quiz'] });
+      sessionStorage.setItem(`test_violations_${applicationId}`, 0);
       toast.success("Test submitted successfully!");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to submit test");
@@ -142,7 +143,7 @@ export default function CandidateAptitudeTest() {
   useEffect(() => {
     if (loading || submitted || isSubmitting) return;
 
-    const maxViolations = 3;
+    const maxViolations = 2;
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         const currentCount = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
@@ -156,7 +157,7 @@ export default function CandidateAptitudeTest() {
       } else if (document.visibilityState === 'visible') {
         const count = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
         if (count > 0 && count < maxViolations) {
-           setAntiCheatWarning({ isOpen: true, count });
+          setAntiCheatWarning({ isOpen: true, count });
         }
       }
     };
@@ -235,10 +236,10 @@ export default function CandidateAptitudeTest() {
               <div className="relative flex items-center justify-center w-12 h-12">
                 <svg className="absolute inset-0 w-full h-full -rotate-90">
                   <circle cx="24" cy="24" r="20" className="stroke-zinc-200 dark:stroke-zinc-800 fill-none" strokeWidth="4"></circle>
-                  <circle 
-                    cx="24" cy="24" r="20" 
+                  <circle
+                    cx="24" cy="24" r="20"
                     className={`fill-none transition-all duration-1000 ease-linear ${timeLeft <= 60 ? 'stroke-rose-500' : 'stroke-indigo-600 dark:stroke-indigo-500'}`}
-                    strokeWidth="4" 
+                    strokeWidth="4"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 20}
                     strokeDashoffset={timeLeft !== null && quizDetails ? 2 * Math.PI * 20 * (1 - (timeLeft / (quizDetails.duration_minutes * 60))) : 0}
