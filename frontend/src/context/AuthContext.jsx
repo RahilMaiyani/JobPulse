@@ -45,13 +45,16 @@ export const AuthProvider = ({ children }) => {
     return response.data.user;
   };
 
-  const logout = async () => {
-    try {
-      if (localStorage.getItem('token')) {
-        await api.post('/auth/logout');
-      }
-    } catch (err) {
-      console.error("Logout API failed", err);
+  const logout = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.post('/auth/logout', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).catch((err) => {
+        console.error("Logout API failed", err);
+      });
     }
     localStorage.removeItem('token');
     setUser(null);
