@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, Clock } from 'lucide-react';
 
-const IDLE_TIMEOUT_MS = 1 * 10 * 1000; // 15 minutes
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
 const WARNING_DURATION_SEC = 60; // 60 seconds
 
 export default function IdleMonitor() {
