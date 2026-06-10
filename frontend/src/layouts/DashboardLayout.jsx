@@ -22,8 +22,14 @@ export default function DashboardLayout({ children }) {
       }
     };
 
+    const handleIdleWarning = () => setIsScreensaverOpen(false);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('idle-warning-started', handleIdleWarning);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('idle-warning-started', handleIdleWarning);
+    };
   }, [user]);
 
   return (

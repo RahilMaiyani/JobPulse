@@ -20,9 +20,46 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(registerSchema),
   });
+
+  const passwordValue = watch("password", "");
+
+  const calculateStrength = (pwd) => {
+    let score = 0;
+    if (!pwd) return 0;
+    if (pwd.length > 5) score += 1;
+    if (pwd.length > 8) score += 1;
+    if (/[A-Z]/.test(pwd)) score += 1;
+    if (/[0-9]/.test(pwd)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
+    return Math.min(4, score);
+  };
+  
+  const strengthScore = calculateStrength(passwordValue);
+
+  const getStrengthLabel = (score) => {
+    if (!passwordValue) return "Strength";
+    switch(score) {
+      case 1: return "Weak";
+      case 2: return "Fair";
+      case 3: return "Good";
+      case 4: return "Strong";
+      default: return "Strength";
+    }
+  };
+
+  const getStrengthColor = (index, score) => {
+    if (!passwordValue || index > score) return "bg-zinc-200 dark:bg-zinc-800";
+    switch(score) {
+      case 1: return "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]";
+      case 2: return "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]";
+      case 3: return "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]";
+      case 4: return "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.4)]";
+      default: return "bg-zinc-200 dark:bg-zinc-800";
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -117,6 +154,22 @@ export default function Register() {
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
+              </div>
+              {/* STRENGTH METER */}
+              <div className="mt-3 flex flex-col gap-1.5">
+                <div className="flex justify-between items-center px-1">
+                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                    {getStrengthLabel(strengthScore)}
+                  </span>
+                </div>
+                <div className="flex gap-1.5 h-1.5 w-full">
+                  {[1, 2, 3, 4].map((index) => (
+                    <div 
+                      key={index}
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${getStrengthColor(index, strengthScore)}`}
+                    />
+                  ))}
+                </div>
               </div>
               {errors.password && <p className="text-rose-500 text-[12px] font-bold mt-1.5 ml-1">{errors.password.message}</p>}
             </div>

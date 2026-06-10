@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 import OfflineBanner from './components/OfflineBanner';
 import PageLoader from './components/PageLoader';
+import IdleMonitor from './components/IdleMonitor';
 
 // Eagerly load the wrapper component
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -66,6 +67,7 @@ function App() {
         <OfflineBanner />
 
         <AuthProvider>
+          <IdleMonitor />
           <Router>
             <Suspense fallback={<PageLoader />}>
               <Routes>

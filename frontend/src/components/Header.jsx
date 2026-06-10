@@ -39,6 +39,9 @@ export default function Header({ toggleSidebar }) {
     window.addEventListener('touchstart', resetTimer);
     window.addEventListener('scroll', resetTimer);
 
+    const handleIdleWarning = () => setIsScreensaverOpen(false);
+    window.addEventListener('idle-warning-started', handleIdleWarning);
+
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('mousemove', resetTimer);
@@ -46,6 +49,7 @@ export default function Header({ toggleSidebar }) {
       window.removeEventListener('click', resetTimer);
       window.removeEventListener('touchstart', resetTimer);
       window.removeEventListener('scroll', resetTimer);
+      window.removeEventListener('idle-warning-started', handleIdleWarning);
     };
   }, [user?.role, isScreensaverOpen]);
 
