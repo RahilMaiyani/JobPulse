@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import SEO from '../../components/SEO';
 import toast from 'react-hot-toast';
-import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, ShieldAlert } from 'lucide-react';
 import AptitudeTestSkeleton from '../../components/skeletons/AptitudeTestSkeleton';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
@@ -17,8 +17,15 @@ export default function CandidateAptitudeTest() {
   const [questions, setQuestions] = useState([]);
   const [quizDetails, setQuizDetails] = useState(null);
   const [answers, setAnswers] = useState({}); // { questionId: selectedIndex }
+  const answersRef = useRef(answers);
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
 
   const [timeLeft, setTimeLeft] = useState(null); // in seconds
+  const [antiCheatWarning, setAntiCheatWarning] = useState({ isOpen: false, count: 0 });
+  const [forceSubmit, setForceSubmit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [finalResult, setFinalResult] = useState(null);
@@ -111,7 +118,7 @@ export default function CandidateAptitudeTest() {
     if (timerRef.current) clearInterval(timerRef.current);
 
     try {
-      const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers });
+      const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: answersRef.current });
       setFinalResult(response.data.result);
       setSubmitted(true);
       queryClient.invalidateQueries({ queryKey: ['applications'] });
@@ -125,6 +132,38 @@ export default function CandidateAptitudeTest() {
       setConfirmModal(prev => ({ ...prev, isOpen: false }));
     }
   };
+
+  useEffect(() => {
+    if (forceSubmit && !isSubmitting && !submitted) {
+      executeSubmit();
+    }
+  }, [forceSubmit, isSubmitting, submitted]);
+
+  useEffect(() => {
+    if (loading || submitted || isSubmitting) return;
+
+    const maxViolations = 3;
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        const currentCount = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
+        const newCount = currentCount + 1;
+        sessionStorage.setItem(`test_violations_${applicationId}`, newCount);
+
+        if (newCount >= maxViolations) {
+          toast.error("Test terminated due to multiple tab switches.", { icon: '🚫' });
+          setForceSubmit(true);
+        }
+      } else if (document.visibilityState === 'visible') {
+        const count = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
+        if (count > 0 && count < maxViolations) {
+           setAntiCheatWarning({ isOpen: true, count });
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [applicationId, loading, submitted, isSubmitting]);
 
   const handleSelectOption = (questionId, optionIndex) => {
     setAnswers(prev => ({
@@ -192,11 +231,28 @@ export default function CandidateAptitudeTest() {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Time Remaining</span>
-              <div className={`flex items-center gap-2 text-2xl font-black tabular-nums ${timeLeft < 300 ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-zinc-900 dark:text-zinc-100'}`}>
-                <Clock className="w-5 h-5" />
-                {formatTime(timeLeft)}
+            <div className="flex items-center gap-3">
+              <div className="relative flex items-center justify-center w-12 h-12">
+                <svg className="absolute inset-0 w-full h-full -rotate-90">
+                  <circle cx="24" cy="24" r="20" className="stroke-zinc-200 dark:stroke-zinc-800 fill-none" strokeWidth="4"></circle>
+                  <circle 
+                    cx="24" cy="24" r="20" 
+                    className={`fill-none transition-all duration-1000 ease-linear ${timeLeft <= 60 ? 'stroke-rose-500' : 'stroke-indigo-600 dark:stroke-indigo-500'}`}
+                    strokeWidth="4" 
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 20}
+                    strokeDashoffset={timeLeft !== null && quizDetails ? 2 * Math.PI * 20 * (1 - (timeLeft / (quizDetails.duration_minutes * 60))) : 0}
+                  ></circle>
+                </svg>
+                <div className={`absolute font-black tabular-nums text-xs ${timeLeft <= 60 ? 'text-rose-500 animate-pulse' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                  {formatTime(timeLeft)}
+                </div>
+              </div>
+              <div className="hidden sm:flex flex-col items-start">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Time Remaining</span>
+                <span className={`text-xs font-bold ${timeLeft <= 60 ? 'text-rose-500' : 'text-zinc-700 dark:text-zinc-300'}`}>
+                  {timeLeft <= 60 ? 'Hurry up!' : 'Keep going'}
+                </span>
               </div>
             </div>
 
@@ -334,6 +390,32 @@ export default function CandidateAptitudeTest() {
           isDestructive={confirmModal.isDestructive}
           confirmText={confirmModal.confirmText}
         />
+
+        {/* Anti-Cheat Warning Modal */}
+        {antiCheatWarning.isOpen && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/80 backdrop-blur-md"></div>
+            <div className="bg-white dark:bg-zinc-950 border-2 border-rose-500 rounded-[2rem] shadow-2xl shadow-rose-500/20 w-full max-w-md relative z-10 p-8 text-center animate-in zoom-in-95 duration-300">
+              <div className="w-20 h-20 bg-rose-100 dark:bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-600 dark:text-rose-500">
+                <ShieldAlert className="w-10 h-10" />
+              </div>
+              <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Tab Switch Detected</h2>
+              <p className="text-zinc-600 dark:text-zinc-400 font-medium mb-6">
+                You have navigated away from the test window. This violates the test rules.
+                <br /><br />
+                <span className="text-rose-600 dark:text-rose-400 font-bold">
+                  Violation {antiCheatWarning.count} of 3
+                </span>
+              </p>
+              <button
+                onClick={() => setAntiCheatWarning({ isOpen: false, count: antiCheatWarning.count })}
+                className="w-full h-14 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-2xl transition-all shadow-lg active:scale-95"
+              >
+                I Understand - Return to Test
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
