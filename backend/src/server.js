@@ -20,8 +20,27 @@ const PORT = process.env.PORT || 5000;
 // Trust Vercel's reverse proxy for rate limiting
 app.set('trust proxy', 1);
 
+const corsOrigins = [
+  process.env.CORS_ORIGIN,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*'
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or postman)
+    if (!origin) return callback(null, true);
+
+    // Check if it matches allowed origins or local IP range (192.168.x.x, 172.16.x.x-172.31.x.x, 10.x.x.x)
+    const isAllowed = corsOrigins.includes(origin) ||
+      /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin);
+
+    if (isAllowed || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  }
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

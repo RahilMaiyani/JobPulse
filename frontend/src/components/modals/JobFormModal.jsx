@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../services/api';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -49,7 +50,7 @@ export default function JobFormModal({ job, onClose, onSuccess }) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -213,5 +214,5 @@ export default function JobFormModal({ job, onClose, onSuccess }) {
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }

@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar as CalendarIcon, Clock, Edit3, Send } from 'lucide-react';
 import { useApplicationsForJob } from '../../hooks/useApplications';
 import { useScheduleInterview, useInterviewsByJob } from '../../hooks/useInterviews';
@@ -74,10 +75,10 @@ export default function ScheduleInterviewModal({ job, onClose }) {
     );
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden flex flex-col max-h-[85dvh]">
         
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start shrink-0">
           <div>
@@ -177,5 +178,5 @@ export default function ScheduleInterviewModal({ job, onClose }) {
 
       </div>
     </div>
-  );
+    , document.body);
 }

@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, CheckCircle2, FileQuestion, Download, Sparkles } from 'lucide-react';
 
 export default function CandidateComparisonModal({ job, applicants, onClose, onStatusChange }) {
@@ -20,10 +21,10 @@ export default function CandidateComparisonModal({ job, applicants, onClose, onS
         return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}></div>
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-6xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-6xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85dvh]">
 
                 {/* Header */}
                 <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex justify-between items-center shrink-0">
@@ -174,5 +175,5 @@ export default function CandidateComparisonModal({ job, applicants, onClose, onS
 
             </div>
         </div>
-    );
+    , document.body);
 }

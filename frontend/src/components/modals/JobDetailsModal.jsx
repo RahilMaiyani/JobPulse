@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Briefcase, MapPin, X, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export default function JobDetailsModal({ job, onClose, onApply, appliedApplication }) {
@@ -7,10 +8,10 @@ export default function JobDetailsModal({ job, onClose, onApply, appliedApplicat
 
   const isExpired = job.application_deadline && new Date(job.application_deadline) < new Date(new Date().setHours(0, 0, 0, 0));
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-transparent dark:border-zinc-800">
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[85dvh] flex flex-col border border-transparent dark:border-zinc-800">
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50">
           <div className="flex items-start gap-4">
             <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-indigo-100 dark:border-zinc-700">
@@ -101,5 +102,5 @@ export default function JobDetailsModal({ job, onClose, onApply, appliedApplicat
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }

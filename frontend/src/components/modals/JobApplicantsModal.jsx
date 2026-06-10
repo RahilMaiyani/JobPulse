@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion, Sparkles, Minus, Plus } from 'lucide-react';
@@ -176,10 +177,10 @@ export default function JobApplicantsModal({ job, onClose }) {
     });
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85dvh]">
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-4">
@@ -515,5 +516,5 @@ export default function JobApplicantsModal({ job, onClose }) {
       )}
 
     </div>
-  );
+    , document.body);
 }

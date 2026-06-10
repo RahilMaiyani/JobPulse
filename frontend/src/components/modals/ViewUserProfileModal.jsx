@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle2, Ban, X, Mail, Phone, Calendar, Briefcase, FileText } from 'lucide-react';
 import { useUserProfile } from '../../hooks/useUsers';
 import { useUserApplications } from '../../hooks/useApplications';
@@ -18,10 +19,10 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
     return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[85dvh] flex flex-col">
         {loadingProfile ? (
           <div className="p-12 text-center space-y-4 animate-pulse flex flex-col items-center">
             <div className="w-20 h-20 bg-zinc-200 dark:bg-zinc-800 rounded-[1.5rem]"></div>
@@ -197,5 +198,5 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
         ) : null}
       </div>
     </div>
-  );
+    , document.body);
 }

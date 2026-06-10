@@ -21,14 +21,14 @@ export default function Header({ toggleSidebar }) {
 
   useEffect(() => {
     if (!['admin', 'hr'].includes(user?.role)) return;
-    if (isScreensaverOpen) return; // Don't track if already open
+    if (isScreensaverOpen) return;
 
     let timeout;
     const resetTimer = () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         setIsScreensaverOpen(true);
-      }, 60000); // 1 minute
+      }, 120000);
     };
 
     resetTimer();

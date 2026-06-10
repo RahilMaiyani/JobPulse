@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../services/api';
 import { X, MapPin, ChevronDown, ChevronUp, FileQuestion, ArrowRight, Trash2, Clock, CheckCircle2, XCircle, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -138,10 +139,10 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
 
   if (!app) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[85dvh] flex flex-col">
         <div className="p-4 sm:p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
             <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">{app.title}</h2>
@@ -350,5 +351,5 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }

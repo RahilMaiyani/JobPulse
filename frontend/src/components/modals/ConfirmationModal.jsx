@@ -1,5 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, AlertTriangle } from 'lucide-react';
 
 export default function ConfirmationModal({ 
@@ -15,7 +16,7 @@ export default function ConfirmationModal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
       <div 
         className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity" 
@@ -68,5 +69,5 @@ export default function ConfirmationModal({
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }
