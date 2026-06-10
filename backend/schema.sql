@@ -13,6 +13,8 @@ CREATE TABLE users (
   linkedin_profile VARCHAR(500),
   is_active BOOLEAN DEFAULT TRUE,
   is_deleted BOOLEAN DEFAULT FALSE,
+  session_token VARCHAR(255),
+  session_expires_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT valid_role CHECK (role IN ('candidate', 'hr', 'admin'))

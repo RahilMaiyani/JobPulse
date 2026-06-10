@@ -10,7 +10,6 @@ export default function ScreensaverOverlay({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       setIsRendered(true);
-      // Small delay to allow display:block to apply before animating opacity
       const timer = requestAnimationFrame(() => {
         requestAnimationFrame(() => setIsVisible(true));
       });

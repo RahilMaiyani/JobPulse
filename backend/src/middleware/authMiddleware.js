@@ -15,7 +15,7 @@ const authenticateToken = (req, res, next) => {
     
     try {
       const db = require('../config/db');
-      const result = await db.query('SELECT id, email, role, is_active FROM users WHERE id = $1', [decodedUser.id]);
+      const result = await db.query('SELECT id, email, role, is_active, session_token FROM users WHERE id = $1', [decodedUser.id]);
       
       if (result.rows.length === 0) {
         return res.status(401).json({ error: 'User no longer exists' });
@@ -24,6 +24,10 @@ const authenticateToken = (req, res, next) => {
       const user = result.rows[0];
       if (!user.is_active) {
         return res.status(401).json({ error: 'Your account is deactivated. Please contact an administrator.' });
+      }
+
+      if (user.session_token !== decodedUser.sessionToken) {
+        return res.status(401).json({ error: 'Your session has expired or been invalidated by another login.' });
       }
       
       req.user = user;

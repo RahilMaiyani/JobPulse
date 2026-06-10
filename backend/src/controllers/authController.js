@@ -16,6 +16,7 @@ const registerSchema = Joi.object({
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
+  force: Joi.boolean().optional()
 });
 
 const register = async (req, res, next) => {
@@ -64,7 +65,7 @@ const login = async (req, res, next) => {
     const { error } = loginSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
-    const { email, password } = req.body;
+    const { email, password, force } = req.body;
 
     const user = await userModel.getUserByEmail(email);
     if (!user) {
@@ -81,8 +82,28 @@ const login = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // Concurrent Session Check
+    if (user.session_token && user.session_expires_at) {
+      const expiresAt = new Date(user.session_expires_at);
+      if (expiresAt > new Date() && !force) {
+        return res.status(409).json({
+          warning: 'You are already logged in on another device. Logging in here will log you out of the other device.',
+          hasActiveSession: true
+        });
+      }
+    }
+
+    const crypto = require('crypto');
+    const newSessionToken = crypto.randomUUID();
+
+    const db = require('../config/db');
+    await db.query(
+      `UPDATE users SET session_token = $1, session_expires_at = CURRENT_TIMESTAMP + interval '10 hours' WHERE id = $2`,
+      [newSessionToken, user.id]
+    );
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role, sessionToken: newSessionToken },
       process.env.JWT_SECRET,
       { expiresIn: '10h' }
     );
@@ -112,8 +133,22 @@ const getMe = async (req, res, next) => {
   }
 };
 
+const logout = async (req, res, next) => {
+  try {
+    const db = require('../config/db');
+    await db.query(
+      `UPDATE users SET session_token = NULL, session_expires_at = NULL WHERE id = $1`,
+      [req.user.id]
+    );
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  logout
 };

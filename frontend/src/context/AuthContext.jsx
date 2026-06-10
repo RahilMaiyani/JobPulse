@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
     checkUserLoggedIn();
   }, []);
 
-  const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
+  const login = async (email, password, force = false) => {
+    const response = await api.post('/auth/login', { email, password, force });
     localStorage.setItem('token', response.data.token);
     setUser(response.data.user);
     return response.data.user;
@@ -45,7 +45,14 @@ export const AuthProvider = ({ children }) => {
     return response.data.user;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      if (localStorage.getItem('token')) {
+        await api.post('/auth/logout');
+      }
+    } catch (err) {
+      console.error("Logout API failed", err);
+    }
     localStorage.removeItem('token');
     setUser(null);
     queryClient.clear(); // Clear cache to prevent data leaking between users

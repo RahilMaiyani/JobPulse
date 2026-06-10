@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { ArrowRight, LogIn, UserPlus } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -11,6 +12,18 @@ export default function Home() {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
+    if (sessionStorage.getItem('sessionExpired') === 'true') {
+      toast.error('Your session was terminated because your account was accessed from another device.', {
+        duration: 5000,
+        style: {
+          border: '1px solid #ef4444',
+          padding: '16px',
+          color: '#ef4444',
+        },
+      });
+      sessionStorage.removeItem('sessionExpired');
+    }
+
     let animationFrameId;
     const updateTime = () => {
       setTime(new Date());

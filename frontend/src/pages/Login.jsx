@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Briefcase, ArrowRight, EyeOff, Eye } from 'lucide-react';
+import { Mail, Lock, Briefcase, ArrowRight, EyeOff, Eye, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import SEO from '../components/SEO';
 
@@ -18,6 +18,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState(null);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(loginSchema),
@@ -26,7 +28,7 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       setServerError("");
-      const loggedInUser = await login(data.email, data.password);
+      const loggedInUser = await login(data.email, data.password, data.force || false);
       toast.success("Logged in successfully");
 
       if (loggedInUser.role === 'admin' || loggedInUser.role === 'hr') {
@@ -35,7 +37,19 @@ export default function Login() {
         navigate('/candidate');
       }
     } catch (err) {
-      setServerError(err.response?.data?.error || "Authentication failed");
+      if (err.response?.status === 409 && err.response?.data?.hasActiveSession) {
+        setPendingLoginData(data);
+        setShowWarningModal(true);
+      } else {
+        setServerError(err.response?.data?.error || "Authentication failed");
+      }
+    }
+  };
+
+  const confirmForceLogin = () => {
+    setShowWarningModal(false);
+    if (pendingLoginData) {
+      onSubmit({ ...pendingLoginData, force: true });
     }
   };
 
@@ -162,6 +176,51 @@ export default function Login() {
       </div>
 
     </div>
+
+      {/* WARNING MODAL */}
+      {showWarningModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+          <div 
+            className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity" 
+            onClick={() => setShowWarningModal(false)}
+          ></div>
+          
+          <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-sm relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
+            
+            <div className="p-6 md:p-8 space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+              </div>
+              
+              <div>
+                <h2 className="text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">Active Session Detected</h2>
+                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed">
+                  You are already logged in on another device. Logging in here will log you out of the other device. Do you want to continue?
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 md:p-8 pt-0 flex gap-3">
+              <button 
+                type="button"
+                onClick={() => setShowWarningModal(false)} 
+                className="flex-1 h-12 font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={confirmForceLogin} 
+                className="flex-1 h-12 font-black text-white rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 shadow-rose-500/20"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
