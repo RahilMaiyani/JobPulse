@@ -71,6 +71,7 @@ export default function CandidateDashboard() {
         </p>
       </div>
 
+      {/* Notifications */}
       {unreadNotifications.length > 0 && (
         <div className="mb-10 space-y-4">
           <div className="flex items-center justify-between mb-4">
@@ -79,7 +80,7 @@ export default function CandidateDashboard() {
               <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 text-xs font-bold px-3 py-1 rounded-full">{unreadNotifications.length} New</span>
             </div>
             {unreadNotifications.length > 1 && (
-              <button 
+              <button
                 onClick={() => markAllAsReadMutation.mutate()}
                 className="text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
@@ -103,7 +104,7 @@ export default function CandidateDashboard() {
                     <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed">{notification.message}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => markAsReadMutation.mutate(notification.id)}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-transparent text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors shrink-0 ml-4"
                 >
@@ -142,7 +143,7 @@ export default function CandidateDashboard() {
                     <h2 className="text-base font-bold text-rose-950 dark:text-rose-100 tracking-tight">Pending Aptitude Test</h2>
                   </div>
                   <p className="text-rose-700/80 dark:text-rose-300/80 text-sm">
-                    You have a mandatory quiz for <span className="font-bold text-rose-900 dark:text-rose-200">{stats.pendingTest.job_title}</span>. 
+                    You have a mandatory quiz for <span className="font-bold text-rose-900 dark:text-rose-200">{stats.pendingTest.job_title}</span>.
                     Closes at <span className="font-bold">{new Date(stats.pendingTest.scheduled_end_time).toLocaleString()}</span>.
                   </p>
                 </div>
@@ -165,7 +166,7 @@ export default function CandidateDashboard() {
                 </div>
               </div>
               {stats.upcomingInterview.meeting_link && (
-                <a 
+                <a
                   href={stats.upcomingInterview.meeting_link}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -191,7 +192,7 @@ export default function CandidateDashboard() {
                   View All Applications
                 </Link>
               </div>
-              
+
               <div className="relative">
                 {(() => {
                   const stages = [
@@ -200,9 +201,9 @@ export default function CandidateDashboard() {
                     { id: 'interview', label: 'Interview', icon: Calendar },
                     { id: 'selected', label: 'Selected', icon: Briefcase }
                   ];
-                  
+
                   const currentStatus = stats.recentApplication.status.toLowerCase();
-                  
+
                   if (currentStatus === 'rejected') {
                     return (
                       <div className="flex items-center gap-4 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-2xl">
@@ -230,11 +231,11 @@ export default function CandidateDashboard() {
                       </div>
                     );
                   }
-                  
-                  const currentIndex = stages.findIndex(s => s.id === currentStatus) !== -1 
-                    ? stages.findIndex(s => s.id === currentStatus) 
+
+                  const currentIndex = stages.findIndex(s => s.id === currentStatus) !== -1
+                    ? stages.findIndex(s => s.id === currentStatus)
                     : (currentStatus === 'hired' ? 3 : 0);
-                    
+
                   return (
                     <div className="w-full overflow-x-auto pb-12 pt-4 custom-scrollbar">
                       <div className="flex items-center justify-between min-w-[320px] sm:min-w-[500px] px-4 sm:px-10">
@@ -244,25 +245,23 @@ export default function CandidateDashboard() {
                           const isActive = idx === currentIndex;
                           const isLast = idx === stages.length - 1;
                           const Icon = stage.icon;
-                          
+
                           return (
                             <React.Fragment key={stage.id}>
                               {/* Step Node */}
                               <div className="relative flex flex-col items-center justify-center shrink-0 z-10 group">
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                                  isActive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 ring-4 ring-emerald-500/20 scale-110' :
-                                  isCompleted ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' :
-                                  'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 shadow-sm'
-                                }`}>
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 ring-4 ring-emerald-500/20 scale-110' :
+                                    isCompleted ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' :
+                                      'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 shadow-sm'
+                                  }`}>
                                   <Icon className="w-5 h-5" />
                                 </div>
                                 {/* Absolute label prevents it from interfering with track line width math */}
                                 <div className="absolute top-[3.75rem] left-1/2 -translate-x-1/2 w-20 sm:w-32 text-center pointer-events-none">
-                                  <span className={`text-[9px] sm:text-[11px] font-black uppercase tracking-widest transition-colors block leading-tight ${
-                                    isActive ? 'text-emerald-600 dark:text-emerald-400' :
-                                    isCompleted ? 'text-zinc-800 dark:text-zinc-200' :
-                                    'text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400'
-                                  }`}>
+                                  <span className={`text-[9px] sm:text-[11px] font-black uppercase tracking-widest transition-colors block leading-tight ${isActive ? 'text-emerald-600 dark:text-emerald-400' :
+                                      isCompleted ? 'text-zinc-800 dark:text-zinc-200' :
+                                        'text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400'
+                                    }`}>
                                     {stage.label}
                                   </span>
                                 </div>
@@ -271,7 +270,7 @@ export default function CandidateDashboard() {
                               {/* Connecting Line */}
                               {!isLast && (
                                 <div className="flex-1 h-[4px] bg-zinc-200 dark:bg-zinc-800 -mx-1 relative overflow-hidden z-0 rounded-full">
-                                  <div 
+                                  <div
                                     className="absolute top-0 left-0 h-full bg-emerald-500 transition-all duration-700 ease-out"
                                     style={{ width: isLineCompleted ? '100%' : '0%' }}
                                   />
@@ -294,7 +293,7 @@ export default function CandidateDashboard() {
               <div key={i} className="relative overflow-hidden bg-white dark:bg-zinc-900/50 p-6 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm dark:shadow-none group hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 transition-all duration-500">
                 {/* Subtle ambient glow */}
                 <div className={`absolute -right-8 -bottom-8 w-32 h-32 rounded-full ${stat.glow} dark:bg-white/5 blur-3xl group-hover:scale-150 transition-transform duration-700`} />
-                
+
                 <div className="relative z-10 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">{stat.label}</p>

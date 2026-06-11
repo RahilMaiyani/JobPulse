@@ -155,180 +155,180 @@ export default function ManageUsers() {
         <ManageUsersSkeleton count={5} />
       ) : (
         <>
-        {/* Mobile Grid View */}
-        <div className="grid md:hidden grid-cols-1 gap-4 mb-4">
-          {paginatedUsers.length > 0 ? (
-            paginatedUsers.map((u) => (
-              <div key={u.id} className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex flex-col gap-4 ${!u.is_active ? 'opacity-70 grayscale' : ''}`}>
-                <div className="flex items-center gap-3">
-                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`} className="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-700 object-cover" alt={u.full_name} />
-                  <div>
-                    <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{u.full_name}</h3>
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
+          {/* Mobile Grid View */}
+          <div className="grid md:hidden grid-cols-1 gap-4 mb-4">
+            {paginatedUsers.length > 0 ? (
+              paginatedUsers.map((u) => (
+                <div key={u.id} className={`bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-2xl p-5 shadow-sm flex flex-col gap-4 ${!u.is_active ? 'opacity-70 grayscale' : ''}`}>
+                  <div className="flex items-center gap-3">
+                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`} className="w-12 h-12 rounded-full border border-zinc-200 dark:border-zinc-700 object-cover" alt={u.full_name} />
+                    <div>
+                      <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{u.full_name}</h3>
+                      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center justify-between border-y border-zinc-100 dark:border-zinc-800/60 py-3">
-                  <div className="flex flex-wrap gap-2">
-                    {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
-                    {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
-                    {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                  <div className="flex items-center justify-between border-y border-zinc-100 dark:border-zinc-800/60 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
+                      {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
+                      {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                    </div>
+                    <div>
+                      {u.is_active ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deact</span>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    {u.is_active ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deact</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <button onClick={() => openProfile(u)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">Profile</button>
+                    <button onClick={() => handleToggleUserStatus(u)} className={`w-11 h-11 flex items-center justify-center rounded-xl border transition-colors ${u.is_active ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20'}`}>
+                      {u.is_active ? <Ban className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                    </button>
+                    {!u.is_active && (
+                      <button onClick={() => handleDeleteUser(u)} className="w-11 h-11 flex items-center justify-center rounded-xl border transition-colors text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <button onClick={() => openProfile(u)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">Profile</button>
-                  <button onClick={() => handleToggleUserStatus(u)} className={`w-11 h-11 flex items-center justify-center rounded-xl border transition-colors ${u.is_active ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100'}`}>
-                    {u.is_active ? <Ban className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
-                  </button>
-                  {!u.is_active && (
-                    <button onClick={() => handleDeleteUser(u)} className="w-11 h-11 flex items-center justify-center rounded-xl border transition-colors text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 font-medium bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl">No users found.</div>
-          )}
-        </div>
-        {/* Desktop Table View */}
-        <div className="hidden md:flex bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] shadow-xl shadow-zinc-200/20 dark:shadow-none overflow-hidden flex-col relative">
-          <div className="overflow-x-auto min-h-[400px] flex-1">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800/60">
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">User</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Role</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Status</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {paginatedUsers.length > 0 ? (
-                  paginatedUsers.map((u) => (
-                    <tr key={u.id} className={`hover:bg-zinc-50/80 dark:hover:bg-zinc-900/40 transition-colors group ${!u.is_active ? 'opacity-60 bg-zinc-50/50 dark:bg-zinc-900/20' : ''}`}>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`}
-                            className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700 grayscale"
-                            style={{ filter: !u.is_active ? 'grayscale(100%)' : 'none' }}
-                            alt={u.full_name}
-                          />
-                          <div>
-                            <p className="font-bold text-zinc-900 dark:text-zinc-100 line-clamp-1">{u.full_name}</p>
-                            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
+              ))
+            ) : (
+              <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 font-medium bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-3xl">No users found.</div>
+            )}
+          </div>
+          {/* Desktop Table View */}
+          <div className="hidden md:flex bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-[2rem] shadow-xl shadow-zinc-200/20 dark:shadow-none overflow-hidden flex-col relative">
+            <div className="overflow-x-auto min-h-[400px] flex-1">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50/50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
+                    <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">User</th>
+                    <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Role</th>
+                    <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Status</th>
+                    <th className="px-6 py-5 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                  {paginatedUsers.length > 0 ? (
+                    paginatedUsers.map((u) => (
+                      <tr key={u.id} className={`hover:bg-zinc-50/80 dark:hover:bg-zinc-950/40 transition-colors group ${!u.is_active ? 'opacity-60 bg-zinc-50/50 dark:bg-zinc-950/20' : ''}`}>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.full_name)}&background=f1f5f9&color=0f172a`}
+                              className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700 grayscale"
+                              style={{ filter: !u.is_active ? 'grayscale(100%)' : 'none' }}
+                              alt={u.full_name}
+                            />
+                            <div>
+                              <p className="font-bold text-zinc-900 dark:text-zinc-100 line-clamp-1">{u.full_name}</p>
+                              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{u.email}</p>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
-                          {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
-                          {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
-                          {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
-                          {u.is_hired && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20"><CheckCircle2 className="w-3 h-3" /> Hired</span>}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {u.is_active ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deactivated</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => openProfile(u)}
-                            className="px-4 py-2 text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-xl shadow-sm hover:shadow transition-all active:scale-95"
-                          >
-                            Profile
-                          </button>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-2">
+                            {u.role === 'admin' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20"><Shield className="w-3 h-3" /> Admin</span>}
+                            {u.role === 'hr' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20"><Briefcase className="w-3 h-3" /> HR</span>}
+                            {u.role === 'candidate' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"><UserCircle className="w-3 h-3" /> Candidate</span>}
+                            {u.is_hired && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20"><CheckCircle2 className="w-3 h-3" /> Hired</span>}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
                           {u.is_active ? (
-                            <button
-                              onClick={() => handleToggleUserStatus(u)}
-                              className="w-8 h-8 flex items-center justify-center text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 rounded-xl transition-all active:scale-95"
-                              title="Deactivate User"
-                            >
-                              <Ban className="w-4 h-4" />
-                            </button>
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> Active</span>
                           ) : (
-                            <>
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-500"><Ban className="w-4 h-4" /> Deactivated</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => openProfile(u)}
+                              className="px-4 py-2 text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-xl shadow-sm hover:shadow transition-all active:scale-95"
+                            >
+                              Profile
+                            </button>
+                            {u.is_active ? (
                               <button
                                 onClick={() => handleToggleUserStatus(u)}
-                                className="w-8 h-8 flex items-center justify-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 rounded-xl transition-all active:scale-95"
-                                title="Reactivate User"
-                              >
-                                <CheckCircle2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteUser(u)}
                                 className="w-8 h-8 flex items-center justify-center text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 rounded-xl transition-all active:scale-95"
-                                title="Delete User Completely"
+                                title="Deactivate User"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Ban className="w-4 h-4" />
                               </button>
-                            </>
-                          )}
-                        </div>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => handleToggleUserStatus(u)}
+                                  className="w-8 h-8 flex items-center justify-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 rounded-xl transition-all active:scale-95"
+                                  title="Reactivate User"
+                                >
+                                  <CheckCircle2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(u)}
+                                  className="w-8 h-8 flex items-center justify-center text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 rounded-xl transition-all active:scale-95"
+                                  title="Delete User Completely"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-12 text-center text-zinc-500 dark:text-zinc-500">
+                        No users found matching your filters.
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="px-6 py-12 text-center text-zinc-500 dark:text-zinc-500">
-                      No users found matching your filters.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between bg-white dark:bg-zinc-950">
-              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                Showing <span className="text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of <span className="text-zinc-700 dark:text-zinc-300">{filteredUsers.length}</span>
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <div className="flex items-center gap-1.5">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-9 h-9 rounded-xl text-xs font-black flex items-center justify-center transition-all ${currentPage === page ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 scale-110' : 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-105'
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
-        </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="px-6 py-5 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between bg-white dark:bg-zinc-900/50">
+                <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  Showing <span className="text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of <span className="text-zinc-700 dark:text-zinc-300">{filteredUsers.length}</span>
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-9 h-9 rounded-xl text-xs font-black flex items-center justify-center transition-all ${currentPage === page ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 scale-110' : 'bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-105'
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 disabled:opacity-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </>
       )}
 
@@ -336,15 +336,15 @@ export default function ManageUsers() {
       <UserFormModal isOpen={isNewUserModalOpen} onClose={() => setIsNewUserModalOpen(false)} />
 
       {/* VIEW PROFILE MODAL */}
-      <ViewUserProfileModal 
-        isOpen={isProfileModalOpen} 
-        onClose={() => setIsProfileModalOpen(false)} 
-        user={selectedUser} 
+      <ViewUserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={selectedUser}
       />
 
-      <ConfirmationModal 
-        isOpen={confirmModal.isOpen} 
-        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
         title={confirmModal.title}
         message={confirmModal.message}
         onConfirm={confirmModal.onConfirm}

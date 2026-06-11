@@ -139,7 +139,7 @@ export default function AdminDashboard() {
           {/* STATS KPI CARDS - Compact & clean */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {statCards.map((stat, i) => (
-              <div key={i} className="relative overflow-hidden bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none group hover:border-zinc-300 dark:hover:border-zinc-750 hover:shadow-md transition-all duration-350">
+              <div key={i} className="relative overflow-hidden bg-white dark:bg-zinc-900/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800/60 shadow-sm dark:shadow-none group hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md transition-all duration-350">
                 <div className={`absolute -right-8 -bottom-8 w-24 h-24 rounded-full ${stat.glow} dark:bg-white/5 blur-2xl group-hover:scale-150 transition-transform duration-700`} />
 
                 <div className="relative z-10 flex items-center justify-between">
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                   </div>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform duration-300 group-hover:scale-105">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-850 shadow-sm transition-transform duration-300 group-hover:scale-105">
                     <stat.icon className="w-5 h-5" />
                   </div>
                 </div>
@@ -161,12 +161,12 @@ export default function AdminDashboard() {
           </div>
 
           {/* DYNAMIC PIPELINE PROGRESS RIBBON - Horizontal layout saves large space */}
-          <div className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-2xl p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
               {funnelStages.map((stage, i) => (
                 <React.Fragment key={i}>
                   <div className="flex items-center gap-4 w-full lg:w-auto flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0 text-xs font-black text-zinc-400 dark:text-zinc-600">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 flex items-center justify-center shrink-0 text-xs font-black text-zinc-400 dark:text-zinc-600">
                       0{i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
 
             {/* COLUMN 1: RECENT POSTINGS (60%) */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] p-6 sm:p-8 shadow-sm">
+              <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-[2rem] p-6 sm:p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Active Postings</h3>
@@ -206,9 +206,9 @@ export default function AdminDashboard() {
                 <div className="space-y-3">
                   {stats.recentJobs.length > 0 ? (
                     stats.recentJobs.map((job) => (
-                      <Link to={`/admin/jobs`} key={job.id} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-all group shadow-sm">
+                      <Link to={`/admin/jobs`} key={job.id} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-all group shadow-sm">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-950 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-850 shadow-sm group-hover:scale-105 transition-transform">
+                          <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-800 shadow-sm group-hover:scale-105 transition-transform">
                             <Briefcase className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                           </div>
                           <div>
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-3">
                           <span className={`text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border ${job.status === 'active'
                             ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'
-                            : 'bg-zinc-100 dark:bg-zinc-805 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
                             }`}>
                             {job.status}
                           </span>
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
 
             {/* COLUMN 2: LIVE ACTIVITY FEED (40%) */}
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[2rem] p-6 sm:p-8 shadow-sm h-full flex flex-col">
+              <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 rounded-[2rem] p-6 sm:p-8 shadow-sm h-full flex flex-col">
                 <div className="mb-6">
                   <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
                     <Activity className="w-5 h-5 text-indigo-500 animate-pulse" /> Live Feed
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
                 <div className="flex-1 space-y-4">
                   {stats.recentActivities && stats.recentActivities.length > 0 ? (
                     stats.recentActivities.map((act, i) => (
-                      <div key={i} className="p-4 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl flex items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                      <div key={i} className="p-4 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl flex items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${act.activity_type === 'applied'
                           ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20'
                           : act.activity_type === 'quiz_completed'
