@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, Clock } from 'lucide-react';
@@ -11,77 +11,66 @@ export default function IdleMonitor() {
   const [showWarning, setShowWarning] = useState(false);
   const [countdown, setCountdown] = useState(WARNING_DURATION_SEC);
   const lastActivityRef = useRef(Date.now());
-  const countdownIntervalRef = useRef(null);
+  const showWarningRef = useRef(showWarning);
 
-  // Update activity timestamp
-  const updateActivity = () => {
-    if (!showWarning) {
-      lastActivityRef.current = Date.now();
-    }
+  // Keep ref in sync to avoid stale closures in event listeners
+  useEffect(() => {
+    showWarningRef.current = showWarning;
+  }, [showWarning]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    setShowWarning(false);
+  }, [logout]);
+
+  const handleExtendSession = () => {
+    setShowWarning(false);
+    setCountdown(WARNING_DURATION_SEC);
+    lastActivityRef.current = Date.now();
   };
 
+  // Trigger logout when countdown reaches zero
   useEffect(() => {
-    if (!user) return; // Only monitor when logged in
+    if (showWarning && countdown <= 0) {
+      handleLogout();
+    }
+  }, [showWarning, countdown, handleLogout]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    lastActivityRef.current = Date.now();
+
+    const updateActivity = () => {
+      if (!showWarningRef.current) {
+        lastActivityRef.current = Date.now();
+      }
+    };
 
     // Activity events
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-
     events.forEach(event => {
       document.addEventListener(event, updateActivity, { passive: true });
     });
 
-    // Check for idle time every 5 seconds
-    const checkInterval = setInterval(() => {
-      const now = Date.now();
-      if (now - lastActivityRef.current >= IDLE_TIMEOUT_MS && !showWarning) {
+    // Single interval to handle both idle checking and the countdown
+    const timerInterval = setInterval(() => {
+      if (showWarningRef.current) {
+        setCountdown(prev => (prev > 0 ? prev - 1 : 0));
+      } else if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT_MS) {
         setShowWarning(true);
         setCountdown(WARNING_DURATION_SEC);
         window.dispatchEvent(new Event('idle-warning-started'));
       }
-    }, 5000);
+    }, 1000);
 
     return () => {
       events.forEach(event => {
         document.removeEventListener(event, updateActivity);
       });
-      clearInterval(checkInterval);
+      clearInterval(timerInterval);
     };
-  }, [user, showWarning]);
-
-  // Handle countdown
-  useEffect(() => {
-    if (showWarning) {
-      countdownIntervalRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(countdownIntervalRef.current);
-            handleLogout();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, [showWarning]);
-
-  const handleLogout = () => {
-    logout();
-    setShowWarning(false);
-  };
-
-  const handleExtendSession = () => {
-    setShowWarning(false);
-    lastActivityRef.current = Date.now();
-    if (countdownIntervalRef.current) {
-      clearInterval(countdownIntervalRef.current);
-    }
-  };
+  }, [user]);
 
   if (!showWarning || !user) return null;
 

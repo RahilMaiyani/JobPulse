@@ -443,7 +443,7 @@ export default function JobListings() {
                   Get started by posting your first job to find great candidates.
                 </p>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={openCreateModal}
                   className="inline-flex items-center justify-center h-10 px-5 font-bold text-sm text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 gap-2"
                 >
                   <Plus className="w-4 h-4" />
@@ -615,7 +615,7 @@ export default function JobListings() {
                             Get started by posting your first job to find great candidates.
                           </p>
                           <button
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={openCreateModal}
                             className="inline-flex items-center justify-center h-10 px-5 font-bold text-sm text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white rounded-xl shadow-md transition-all active:scale-95 gap-2"
                           >
                             <Plus className="w-4 h-4" />
