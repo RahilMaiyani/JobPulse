@@ -20,18 +20,6 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
   const shouldFetchTest = app && ['shortlisted', 'hired', 'rejected', 'applied', 'selected'].includes(app.status?.toLowerCase());
   const { data: testInfo, isLoading: loadingTest } = useTestInfo(shouldFetchTest ? app.id : null);
 
-  const getStatusBadge = (status) => {
-    const s = (status || '').toLowerCase();
-    switch (s) {
-      case 'applied': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold text-xs rounded-full border border-blue-200 dark:border-blue-500/20"><Clock className="w-3 h-3" /> Applied</span>;
-      case 'shortlisted': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold text-xs rounded-full border border-amber-200 dark:border-amber-500/20"><CheckCircle2 className="w-3 h-3" /> Shortlisted</span>;
-      case 'hired':
-      case 'interview': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-xs rounded-full border border-purple-200 dark:border-purple-500/20"><CheckCircle2 className="w-3 h-3" /> Interview</span>;
-      case 'selected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold text-xs rounded-full border border-emerald-200 dark:border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Selected</span>;
-      case 'rejected': return <span className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-bold text-xs rounded-full border border-rose-200 dark:border-rose-500/20"><XCircle className="w-3 h-3" /> Rejected</span>;
-      default: return <span className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold text-xs rounded-full border border-zinc-200 dark:border-zinc-700 capitalize">{status}</span>;
-    }
-  };
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20';
