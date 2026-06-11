@@ -21,6 +21,7 @@ export default function CandidateProfile() {
   });
   const [skillInput, setSkillInput] = useState('');
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, isDestructive: true, confirmText: 'Confirm' });
+  const [isDragging, setIsDragging] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: '',
@@ -52,8 +53,7 @@ export default function CandidateProfile() {
 
   const passwordMutation = useResetPassword();
 
-  const handleResumeUpload = (e) => {
-    const file = e.target.files[0];
+  const processFile = (file) => {
     if (!file) return;
     if (resumes.length >= 5) return toast.error("You can only upload a maximum of 5 resumes.");
     const allowedTypes = [
@@ -67,7 +67,33 @@ export default function CandidateProfile() {
     const formData = new FormData();
     formData.append('resume', file);
     uploadResumeMutation.mutate(formData);
+  };
+
+  const handleResumeUpload = (e) => {
+    const file = e.target.files[0];
+    processFile(file);
     e.target.value = '';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (resumes.length < 5 && !uploadResumeMutation.isPending) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (resumes.length >= 5) return toast.error("You can only upload a maximum of 5 resumes.");
+    if (uploadResumeMutation.isPending) return;
+    const file = e.dataTransfer.files[0];
+    processFile(file);
   };
 
   const handleDeleteResume = (id) => {
@@ -230,7 +256,19 @@ export default function CandidateProfile() {
         {/* Security / Resume Column */}
         <div className="space-y-8">
           {/* Resume Vault */}
-          <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl shadow-sm dark:shadow-none overflow-hidden flex flex-col">
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className="bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl shadow-sm dark:shadow-none overflow-hidden flex flex-col relative"
+          >
+            {isDragging && (
+              <div className="absolute inset-0 bg-indigo-50/95 dark:bg-indigo-950/95 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center border-2 border-dashed border-indigo-500 rounded-3xl m-1 animate-in fade-in zoom-in-95 duration-200 pointer-events-none">
+                <UploadCloud className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mb-2 animate-bounce" />
+                <p className="text-base font-black text-indigo-900 dark:text-indigo-100">Drop to upload resume</p>
+                <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1 font-bold">PDF/DOCX max 500KB</p>
+              </div>
+            )}
             <div className="p-6 sm:p-8 sm:pb-6 border-b border-zinc-100/60 dark:border-zinc-800/60 flex flex-wrap gap-4 items-center justify-between bg-transparent">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center ring-1 ring-inset ring-amber-500/20">
@@ -246,7 +284,7 @@ export default function CandidateProfile() {
                   ) : (
                     <UploadCloud className="w-4 h-4" />
                   )}
-                  {resumes.length >= 5 ? 'Limit Reached' : 'Upload Resume'}
+                  {resumes.length >= 5 ? 'Limit Reached' : 'Drop Resume'}
                 </span>
               </label>
             </div>
@@ -324,9 +362,9 @@ export default function CandidateProfile() {
 
       </div>
 
-      <ConfirmationModal 
-        isOpen={confirmModal.isOpen} 
-        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
         title={confirmModal.title}
         message={confirmModal.message}
         onConfirm={confirmModal.onConfirm}

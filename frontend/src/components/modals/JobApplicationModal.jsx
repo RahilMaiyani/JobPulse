@@ -18,9 +18,9 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
   const [analysisState, setAnalysisState] = useState('idle'); // idle | analyzing | done | error
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleResumeUpload = async (e) => {
-    const file = e.target.files[0];
+  const processFile = async (file) => {
     if (!file) return;
     const allowedTypes = [
       'application/pdf',
@@ -40,13 +40,37 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
           setSelectedResumeId(data.resume.id);
         }
         setIsUploadingResume(false);
-        e.target.value = '';
       },
       onError: () => {
         setIsUploadingResume(false);
-        e.target.value = '';
       }
     });
+  };
+
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    processFile(file);
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (!isUploadingResume) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (isUploadingResume) return;
+    const file = e.dataTransfer.files[0];
+    processFile(file);
   };
 
   const handleAnalyzeFit = async () => {
@@ -125,15 +149,31 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
                 ))}
 
                 {/* Upload New Card */}
-                <label className={`p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col justify-center items-center text-center ${isUploadingResume ? 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50' : 'border-zinc-300 dark:border-zinc-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10'}`}>
+                <label
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col justify-center items-center text-center min-h-[120px] ${isUploadingResume
+                    ? 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50'
+                    : isDragging
+                      ? 'border-indigo-500 bg-indigo-50/80 dark:bg-indigo-950/40 shadow-lg shadow-indigo-500/10 dark:shadow-none scale-[1.02]'
+                      : 'border-zinc-300 dark:border-zinc-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10'
+                    }`}
+                >
                   <input type="file" className="hidden" accept="application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleResumeUpload} disabled={isUploadingResume} />
                   {isUploadingResume ? (
                     <div className="w-6 h-6 border-2 border-indigo-400 border-t-indigo-600 rounded-full animate-spin mb-2"></div>
+                  ) : isDragging ? (
+                    <UploadCloud className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mb-2 animate-bounce" />
                   ) : (
                     <UploadCloud className="w-6 h-6 text-zinc-400 dark:text-zinc-500 mb-2" />
                   )}
-                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Upload New Resume</p>
-                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">PDF/DOCX max 500KB</p>
+                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    {isDragging ? 'Drop to Upload!' : 'Drop a New Resume'}
+                  </p>
+                  <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">
+                    {isDragging ? 'PDF/DOCX up to 500KB' : 'PDF/DOCX max 500KB'}
+                  </p>
                 </label>
               </div>
 

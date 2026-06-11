@@ -28,7 +28,7 @@ export default function Header({ toggleSidebar }) {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         setIsScreensaverOpen(true);
-      }, 120000);
+      }, 5 * 60 * 1000);
     };
 
     resetTimer();
