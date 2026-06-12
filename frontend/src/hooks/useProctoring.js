@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 export default function useProctoring(onEventTriggered) {
   const [isWebcamActive, setIsWebcamActive] = useState(false);
   const [stream, setStream] = useState(null);
+  const [cameraError, setCameraError] = useState(null);
 
   const [videoElement, setVideoElement] = useState(null);
   const [canvasElement, setCanvasElement] = useState(null);
@@ -26,6 +27,7 @@ export default function useProctoring(onEventTriggered) {
   // Initialize Webcam
   const startWebcam = useCallback(async () => {
     try {
+      setCameraError(null);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false
@@ -34,6 +36,11 @@ export default function useProctoring(onEventTriggered) {
       setIsWebcamActive(true);
     } catch (err) {
       console.error("Failed to access webcam:", err);
+      setCameraError(
+        err.name === 'NotAllowedError' 
+          ? 'Camera access was denied. Please click the lock icon in your browser address bar to allow camera access, then try again.' 
+          : 'Could not access the camera. Please ensure it is connected and not used by another application.'
+      );
       setIsWebcamActive(false);
     }
   }, []);
@@ -128,6 +135,7 @@ export default function useProctoring(onEventTriggered) {
     startWebcam,
     stopWebcam,
     setVideoRef,
-    setCanvasRef
+    setCanvasRef,
+    cameraError
   };
 }

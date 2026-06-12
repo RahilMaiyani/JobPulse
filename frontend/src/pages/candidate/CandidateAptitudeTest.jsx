@@ -61,7 +61,7 @@ export default function CandidateAptitudeTest() {
     }
   }, [applicationId, questions]);
 
-  const { isWebcamActive, startWebcam, stopWebcam, setVideoRef, setCanvasRef } = useProctoring(handleProctoringEvent);
+  const { isWebcamActive, startWebcam, stopWebcam, setVideoRef, setCanvasRef, cameraError } = useProctoring(handleProctoringEvent);
 
   const timerRef = useRef(null);
 
@@ -237,11 +237,23 @@ export default function CandidateAptitudeTest() {
           <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-8">
             This test requires camera access to ensure a fair testing environment. Your camera will be active for the duration of the test. Tab switching and copy-pasting are monitored.
           </p>
+          {cameraError && (
+            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-bold text-left flex items-start gap-3">
+              <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+              <p>{cameraError}</p>
+            </div>
+          )}
           <button
             onClick={startWebcam}
             className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
           >
             <Camera className="w-5 h-5" /> Allow Camera & Start Test
+          </button>
+          <button
+            onClick={() => navigate('/candidate/applications')}
+            className="w-full mt-3 h-12 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold rounded-xl transition-all"
+          >
+            Cancel & Return
           </button>
         </div>
       </div>
@@ -290,15 +302,8 @@ export default function CandidateAptitudeTest() {
   return (
     <>
       <SEO title="Aptitude Test" />
-      <div className="fixed bottom-4 right-4 z-[100] w-32 h-24 bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-zinc-800 pointer-events-none">
-        <video ref={setVideoRef} className="w-full h-full object-cover scale-x-[-1]" muted playsInline autoPlay />
-        <canvas ref={setCanvasRef} className="hidden" />
-        <div className="absolute bottom-1 left-1 bg-black/50 backdrop-blur text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div> Rec
-        </div>
-      </div>
       <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100 select-none">
-        <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
+        <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-4 sm:px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
               <h1 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Aptitude Test</h1>
@@ -306,8 +311,16 @@ export default function CandidateAptitudeTest() {
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="w-16 h-12 sm:w-24 sm:h-16 bg-black rounded-lg overflow-hidden shadow-inner border-2 border-zinc-800 pointer-events-none relative shrink-0">
+              <video ref={setVideoRef} className="w-full h-full object-cover scale-x-[-1]" muted playsInline autoPlay />
+              <canvas ref={setCanvasRef} className="hidden" />
+              <div className="absolute bottom-0.5 left-0.5 bg-black/50 backdrop-blur text-white text-[8px] font-bold px-1 rounded flex items-center gap-0.5 uppercase">
+                <div className="w-1 h-1 rounded-full bg-rose-500 animate-pulse"></div> Rec
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <div className="relative flex items-center justify-center w-12 h-12">
                 <svg className="absolute inset-0 w-full h-full -rotate-90">
                   <circle cx="24" cy="24" r="20" className="stroke-zinc-200 dark:stroke-zinc-800 fill-none" strokeWidth="4"></circle>
