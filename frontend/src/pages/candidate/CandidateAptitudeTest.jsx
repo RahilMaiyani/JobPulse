@@ -93,6 +93,35 @@ export default function CandidateAptitudeTest() {
     };
   }, [applicationId]);
 
+  useEffect(() => {
+    const preventCopy = (e) => {
+      e.preventDefault();
+      toast.error("Copying text is disabled during the test.");
+    };
+
+    const preventKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'x')) {
+        e.preventDefault();
+        toast.error("Copying is disabled during the test.");
+      }
+    };
+
+    const preventContextMenu = (e) => {
+      e.preventDefault();
+      toast.error("Right-click is disabled during the test.");
+    };
+
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("keydown", preventKeyDown);
+    document.addEventListener("contextmenu", preventContextMenu);
+
+    return () => {
+      document.removeEventListener("copy", preventCopy);
+      document.removeEventListener("keydown", preventKeyDown);
+      document.removeEventListener("contextmenu", preventContextMenu);
+    };
+  }, []);
+
   const handleAutoSubmit = async () => {
     toast("Time's up! Auto-submitting your test...", { icon: '⏳' });
     executeSubmit();
@@ -222,7 +251,7 @@ export default function CandidateAptitudeTest() {
   return (
     <>
       <SEO title="Aptitude Test" />
-      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100">
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100 select-none">
         <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
