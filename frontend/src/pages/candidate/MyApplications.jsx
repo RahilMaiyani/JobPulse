@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useMyApplications, useRevokeApplication } from '../../hooks/useApplications';
 import { Briefcase, Calendar, CheckCircle2, XCircle, AlertCircle, Clock, X, Trash2, MapPin, FileQuestion, ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from 'lucide-react';
@@ -6,8 +6,9 @@ import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import MyApplicationsSkeleton from '../../components/skeletons/MyApplicationsSkeleton';
 import SEO from '../../components/SEO';
-import ApplicationDetailsModal from '../../components/modals/ApplicationDetailsModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
+
+const ApplicationDetailsModal = lazy(() => import('../../components/modals/ApplicationDetailsModal'));
 
 export default function MyApplications() {
   const [selectedApp, setSelectedApp] = useState(null);
@@ -243,15 +244,17 @@ export default function MyApplications() {
         </>
       )}
 
-      {/* APPLICATION DETAILS MODAL */}
-      {selectedApp && (
-        <ApplicationDetailsModal
-          app={selectedApp}
-          onClose={() => setSelectedApp(null)}
-          onRevoke={handleRevoke}
-          isRevoking={revokeMutation.isPending}
-        />
-      )}
+      <Suspense fallback={null}>
+        {/* APPLICATION DETAILS MODAL */}
+        {selectedApp && (
+          <ApplicationDetailsModal
+            app={selectedApp}
+            onClose={() => setSelectedApp(null)}
+            onRevoke={handleRevoke}
+            isRevoking={revokeMutation.isPending}
+          />
+        )}
+      </Suspense>
 
       <ConfirmationModal 
         isOpen={confirmModal.isOpen} 

@@ -1,22 +1,26 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useJobs, useDeleteJob, useToggleJobStatus, usePublishJobResults } from '../../hooks/useJobs';
 import SEO from '../../components/SEO';
 import { useQueryClient } from '@tanstack/react-query';
 import { Briefcase, Plus, MoreHorizontal, MapPin, Edit2, Trash2, PowerOff, X, Users, Download, CheckCircle2, Ban, Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, FileQuestion, Calendar, LayoutGrid, List, CircleDollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
-import ManageQuizModal from '../../components/admin/ManageQuizModal';
 import JobListingsSkeleton from '../../components/skeletons/JobListingsSkeleton';
-import JobFormModal from '../../components/modals/JobFormModal';
-import JobApplicantsModal from '../../components/modals/JobApplicantsModal';
-import ScheduleInterviewModal from '../../components/modals/ScheduleInterviewModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import useDebounce from '../../hooks/useDebounce';
+import { getJobApplications } from '../../services/applicationService';
+
+const ManageQuizModal = lazy(() => import('../../components/admin/ManageQuizModal'));
+const JobFormModal = lazy(() => import('../../components/modals/JobFormModal'));
+const JobApplicantsModal = lazy(() => import('../../components/modals/JobApplicantsModal'));
+const ScheduleInterviewModal = lazy(() => import('../../components/modals/ScheduleInterviewModal'));
 
 export default function JobListings() {
   const queryClient = useQueryClient();
 
   // Job Search & Filter State
   const [jobSearchTerm, setJobSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(jobSearchTerm, 300);
   const [jobFilterStatus, setJobFilterStatus] = useState("all"); // all, active, closed
   const [viewMode, setViewMode] = useState("grid"); // grid, list
 
@@ -110,8 +114,8 @@ export default function JobListings() {
   const filteredAndSortedJobs = useMemo(() => {
     let result = [...jobs];
 
-    if (jobSearchTerm.trim()) {
-      const q = jobSearchTerm.toLowerCase();
+    if (debouncedSearchTerm.trim()) {
+      const q = debouncedSearchTerm.toLowerCase();
       result = result.filter(j =>
         (j.title && j.title.toLowerCase().includes(q)) ||
         (j.location && j.location.toLowerCase().includes(q))
@@ -129,18 +133,13 @@ export default function JobListings() {
     });
 
     return result;
-  }, [jobs, jobSearchTerm, jobFilterStatus]);
+  }, [jobs, debouncedSearchTerm, jobFilterStatus]);
 
   const resetJobFilters = () => {
     setJobSearchTerm("");
     setJobFilterStatus("all");
     setCurrentPage(1);
   };
-
-  // Reset to page 1 when search or filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [jobSearchTerm, jobFilterStatus]);
 
   const totalPages = Math.ceil(filteredAndSortedJobs.length / itemsPerPage);
   const currentJobs = filteredAndSortedJobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -169,13 +168,19 @@ export default function JobListings() {
             type="text"
             placeholder="Search jobs by title or location..."
             value={jobSearchTerm}
-            onChange={(e) => setJobSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setJobSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full h-12 pl-12 pr-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all"
           />
         </div>
         <select
           value={jobFilterStatus}
-          onChange={(e) => setJobFilterStatus(e.target.value)}
+          onChange={(e) => {
+            setJobFilterStatus(e.target.value);
+            setCurrentPage(1);
+          }}
           className="h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
         >
           <option value="all">All Statuses</option>
@@ -234,7 +239,7 @@ export default function JobListings() {
                 return (
                   <div
                     key={job.id}
-                    className={`border-l-4 rounded-[2rem] p-6 transition-all duration-300 flex flex-col justify-between relative group h-[290px] ${isMenuOpen
+                    className={`border-l-4 rounded-[2rem] p-6 transition-all duration-300 flex flex-col justify-between relative group min-h-[300px] ${isMenuOpen
                       ? 'ring-2 ring-zinc-800 dark:ring-zinc-100 shadow-xl scale-[1.02] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border-zinc-300 dark:border-zinc-700 z-10'
                       : 'border-zinc-200/60 dark:border-zinc-800/60 border-t border-r border-b'
                       } ${isActive
@@ -289,6 +294,13 @@ export default function JobListings() {
                           <button
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
+                            onMouseEnter={() => {
+                              queryClient.prefetchQuery({
+                                queryKey: ['job-applications', job.id],
+                                queryFn: () => getJobApplications(job.id),
+                                staleTime: 1000 * 60 * 5,
+                              });
+                            }}
                             className={`p-1.5 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
                               ? 'text-zinc-900 dark:text-zinc-50 bg-zinc-100 dark:bg-zinc-800 shadow-sm border border-zinc-200/30 dark:border-zinc-700'
                               : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -302,6 +314,13 @@ export default function JobListings() {
                             <div ref={gridDropdownRef} className="absolute right-0 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left mt-1">
                               <button
                                 onClick={() => handleViewApplicants(job)}
+                                onMouseEnter={() => {
+                                  queryClient.prefetchQuery({
+                                    queryKey: ['job-applications', job.id],
+                                    queryFn: () => getJobApplications(job.id),
+                                    staleTime: 1000 * 60 * 5,
+                                  });
+                                }}
                                 className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                               >
                                 <Users className="w-4 h-4 text-indigo-400" /> View {job.results_published ? 'Results & Applicants' : 'Applicants'}
@@ -391,7 +410,7 @@ export default function JobListings() {
                     </div>
 
                     {/* Footer Row Actions */}
-                    <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-4 flex items-center justify-between gap-3">
+                    <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-4 flex flex-wrap items-center justify-between gap-2.5">
                       {job.quiz_id && job.status === 'active' ? (
                         <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border ${job.results_published ? (Number(job.unscheduled_count) > 0 ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20') : isQuizFinished ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                           {job.results_published ? (Number(job.unscheduled_count) > 0 ? 'Ready to Schedule' : 'Interviews Scheduled') : isQuizFinished ? 'Ready to Publish' : 'Quiz Set'}
@@ -402,7 +421,7 @@ export default function JobListings() {
                         </div>
                       )}
 
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex flex-wrap gap-2 shrink-0 items-center">
                         {isQuizFinished && !job.results_published && job.status === 'active' && (
                           <button
                             onClick={() => handlePublishResults(job)}
@@ -421,6 +440,13 @@ export default function JobListings() {
                         )}
                         <button
                           onClick={() => handleViewApplicants(job)}
+                          onMouseEnter={() => {
+                            queryClient.prefetchQuery({
+                              queryKey: ['job-applications', job.id],
+                              queryFn: () => getJobApplications(job.id),
+                              staleTime: 1000 * 60 * 5,
+                            });
+                          }}
                           className={`h-8 px-3 text-[11px] font-black rounded-xl shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer ${isActive
                             ? 'text-white dark:text-zinc-950 bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-white'
                             : 'text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200/50 dark:border-zinc-700/50'
@@ -533,6 +559,13 @@ export default function JobListings() {
                             <button
                               onMouseDown={(e) => e.stopPropagation()}
                               onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === job.id ? null : job.id); }}
+                              onMouseEnter={() => {
+                                queryClient.prefetchQuery({
+                                  queryKey: ['job-applications', job.id],
+                                  queryFn: () => getJobApplications(job.id),
+                                  staleTime: 1000 * 60 * 5,
+                                });
+                              }}
                               className={`p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${isMenuOpen
                                 ? 'text-zinc-900 dark:text-zinc-50 bg-zinc-200/80 dark:bg-zinc-700/80 shadow-sm border border-zinc-300/50 dark:border-zinc-650'
                                 : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -546,6 +579,13 @@ export default function JobListings() {
                               <div ref={listDropdownRef} className="absolute right-6 w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 py-2 z-[60] animate-in fade-in zoom-in-95 duration-100 text-left top-14">
                                 <button
                                   onClick={() => handleViewApplicants(job)}
+                                  onMouseEnter={() => {
+                                    queryClient.prefetchQuery({
+                                      queryKey: ['job-applications', job.id],
+                                      queryFn: () => getJobApplications(job.id),
+                                      staleTime: 1000 * 60 * 5,
+                                    });
+                                  }}
                                   className="w-full px-4 py-2 text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                                 >
                                   <Users className="w-4 h-4 text-indigo-400" /> View {job.results_published ? 'Results & Applicants' : 'Applicants'}
@@ -661,52 +701,54 @@ export default function JobListings() {
         </div>
       )}
 
-      {/* CREATE / EDIT JOB MODAL */}
-      {isJobFormOpen && (
-        <JobFormModal
-          job={jobToEdit}
-          onClose={() => setIsJobFormOpen(false)}
-          onSuccess={() => {
-            setIsJobFormOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
-            queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
-          }}
-        />
-      )}
-
-      {/* VIEW APPLICANTS MODAL */}
-      {selectedJobForApplicants && (
-        <JobApplicantsModal
-          job={selectedJobForApplicants}
-          onClose={() => setSelectedJobForApplicants(null)}
-        />
-      )}
-
-      {/* MANAGE QUIZ MODAL */}
-      {selectedJobForQuiz && (
-        <ManageQuizModal
-          job={selectedJobForQuiz}
-          onClose={(shouldRefresh) => {
-            setSelectedJobForQuiz(null);
-            if (shouldRefresh === true) {
+      <Suspense fallback={null}>
+        {/* CREATE / EDIT JOB MODAL */}
+        {isJobFormOpen && (
+          <JobFormModal
+            job={jobToEdit}
+            onClose={() => setIsJobFormOpen(false)}
+            onSuccess={() => {
+              setIsJobFormOpen(false);
               queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
-            }
-          }}
-        />
-      )}
+              queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
+              queryClient.invalidateQueries({ queryKey: ['dashboard', 'admin'] });
+            }}
+          />
+        )}
 
-      {/* SCHEDULE INTERVIEW MODAL */}
-      {selectedJobForInterviews && (
-        <ScheduleInterviewModal
-          job={selectedJobForInterviews}
-          onClose={() => setSelectedJobForInterviews(null)}
-        />
-      )}
+        {/* VIEW APPLICANTS MODAL */}
+        {selectedJobForApplicants && (
+          <JobApplicantsModal
+            job={selectedJobForApplicants}
+            onClose={() => setSelectedJobForApplicants(null)}
+          />
+        )}
 
-      <ConfirmationModal 
-        isOpen={confirmModal.isOpen} 
-        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} 
+        {/* MANAGE QUIZ MODAL */}
+        {selectedJobForQuiz && (
+          <ManageQuizModal
+            job={selectedJobForQuiz}
+            onClose={(shouldRefresh) => {
+              setSelectedJobForQuiz(null);
+              if (shouldRefresh === true) {
+                queryClient.invalidateQueries({ queryKey: ['admin', 'jobs'] });
+              }
+            }}
+          />
+        )}
+
+        {/* SCHEDULE INTERVIEW MODAL */}
+        {selectedJobForInterviews && (
+          <ScheduleInterviewModal
+            job={selectedJobForInterviews}
+            onClose={() => setSelectedJobForInterviews(null)}
+          />
+        )}
+      </Suspense>
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
         title={confirmModal.title}
         message={confirmModal.message}
         onConfirm={confirmModal.onConfirm}

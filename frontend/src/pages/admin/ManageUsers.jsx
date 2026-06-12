@@ -1,5 +1,5 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import SEO from '../../components/SEO';
 import api from '../../services/api';
@@ -8,15 +8,18 @@ import { Users, Search, Plus, Shield, UserCircle, Briefcase, X, Ban, CheckCircle
 import ManageUsersSkeleton from '../../components/skeletons/ManageUsersSkeleton';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
-import ViewUserProfileModal from '../../components/modals/ViewUserProfileModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
-import UserFormModal from '../../components/modals/UserFormModal';
+import useDebounce from '../../hooks/useDebounce';
+
+const ViewUserProfileModal = lazy(() => import('../../components/modals/ViewUserProfileModal'));
+const UserFormModal = lazy(() => import('../../components/modals/UserFormModal'));
 
 export default function ManageUsers() {
   const { user: currentUser } = useAuth();
 
   // Filters and Pagination
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,11 +39,6 @@ export default function ManageUsers() {
   });
 
   const { data: users = [], isLoading: loading } = useUsers(currentUser.id);
-
-  // Reset to page 1 if filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, roleFilter, statusFilter]);
 
   const createUserMutation = useCreateUser(() => {
     setIsNewUserModalOpen(false);
@@ -83,14 +81,16 @@ export default function ManageUsers() {
     });
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' ||
-      (statusFilter === 'active' && user.is_active) ||
-      (statusFilter === 'deactivated' && !user.is_active);
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = user.full_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || user.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+      const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+      const matchesStatus = statusFilter === 'all' ||
+        (statusFilter === 'active' && user.is_active) ||
+        (statusFilter === 'deactivated' && !user.is_active);
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [users, debouncedSearchTerm, roleFilter, statusFilter]);
 
   // Pagination Logic
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -122,14 +122,20 @@ export default function ManageUsers() {
             type="text"
             placeholder="Search users by name or email..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-12 pr-4 h-12 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all"
           />
         </div>
         <div>
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
           >
             <option value="all">All Roles</option>
@@ -141,7 +147,10 @@ export default function ManageUsers() {
         <div>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full h-12 px-4 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl text-sm font-bold text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm dark:shadow-none transition-all cursor-pointer appearance-none"
           >
             <option value="all">All Statuses</option>
@@ -332,15 +341,17 @@ export default function ManageUsers() {
         </>
       )}
 
-      {/* NEW USER MODAL */}
-      <UserFormModal isOpen={isNewUserModalOpen} onClose={() => setIsNewUserModalOpen(false)} />
+      <Suspense fallback={null}>
+        {/* NEW USER MODAL */}
+        <UserFormModal isOpen={isNewUserModalOpen} onClose={() => setIsNewUserModalOpen(false)} />
 
-      {/* VIEW PROFILE MODAL */}
-      <ViewUserProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        user={selectedUser}
-      />
+        {/* VIEW PROFILE MODAL */}
+        <ViewUserProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          user={selectedUser}
+        />
+      </Suspense>
 
       <ConfirmationModal
         isOpen={confirmModal.isOpen}

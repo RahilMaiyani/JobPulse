@@ -1,17 +1,20 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import SEO from '../../components/SEO';
 import { useActiveJobs } from '../../hooks/useJobs';
 import { useMyApplications, useApplyForJob } from '../../hooks/useApplications';
 import ViewOpeningsSkeleton from '../../components/skeletons/ViewOpeningsSkeleton';
-import JobDetailsModal from '../../components/modals/JobDetailsModal';
-import JobApplicationModal from '../../components/modals/JobApplicationModal';
 import { Search, Filter, Briefcase, MapPin, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import useDebounce from '../../hooks/useDebounce';
+
+const JobDetailsModal = lazy(() => import('../../components/modals/JobDetailsModal'));
+const JobApplicationModal = lazy(() => import('../../components/modals/JobApplicationModal'));
 
 export default function ViewOpenings() {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [filterType, setFilterType] = useState("All");
   const queryClient = useQueryClient();
 
@@ -37,17 +40,12 @@ export default function ViewOpenings() {
         return false;
       }
 
-      const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        (job.location && job.location.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
       const matchesType = filterType === "All" || job.job_type === filterType;
       return matchesSearch && matchesType;
     });
-  }, [jobs, searchTerm, filterType, myApplications]);
-
-  // Reset to page 1 when search or filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterType]);
+  }, [jobs, debouncedSearchTerm, filterType, myApplications]);
 
   const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
   const currentJobs = filteredJobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -91,7 +89,10 @@ export default function ViewOpenings() {
             type="text"
             placeholder="Search roles by title or location..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-12 pr-4 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none"
           />
         </div>
@@ -99,7 +100,10 @@ export default function ViewOpenings() {
         <div className="relative shrink-0">
           <select
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={(e) => {
+              setFilterType(e.target.value);
+              setCurrentPage(1);
+            }}
             className="appearance-none h-12 pl-12 pr-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none cursor-pointer"
           >
             <option value="All">All Types</option>
@@ -216,24 +220,26 @@ export default function ViewOpenings() {
         </div>
       )}
 
-      {/* APPLICATION DETAILS MODAL */}
-      {selectedJob && !applyModalOpen && (
-        <JobDetailsModal
-          job={selectedJob}
-          onClose={() => setSelectedJob(null)}
-          onApply={openApplyModal}
-          appliedApplication={myApplications.find(a => a.job_id === selectedJob.id)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {/* APPLICATION DETAILS MODAL */}
+        {selectedJob && !applyModalOpen && (
+          <JobDetailsModal
+            job={selectedJob}
+            onClose={() => setSelectedJob(null)}
+            onApply={openApplyModal}
+            appliedApplication={myApplications.find(a => a.job_id === selectedJob.id)}
+          />
+        )}
 
-      {/* APPLY MODAL (Pre-Screening) */}
-      {applyModalOpen && selectedJob && (
-        <JobApplicationModal
-          job={selectedJob}
-          onClose={closeApplyModal}
-          onSuccess={handleApplicationSuccess}
-        />
-      )}
+        {/* APPLY MODAL (Pre-Screening) */}
+        {applyModalOpen && selectedJob && (
+          <JobApplicationModal
+            job={selectedJob}
+            onClose={closeApplyModal}
+            onSuccess={handleApplicationSuccess}
+          />
+        )}
+      </Suspense>
 
     </DashboardLayout>
   );

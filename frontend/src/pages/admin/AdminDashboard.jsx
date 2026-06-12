@@ -1,4 +1,5 @@
 import React from 'react';
+import { useMemo } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminDashboard } from '../../hooks/useDashboard';
@@ -81,8 +82,10 @@ export default function AdminDashboard() {
     }
   ];
 
+  const nowTime = useMemo(() => Date.now(), [stats]);
+
   const formatActivityTime = (timestamp) => {
-    const diffMs = Date.now() - new Date(timestamp).getTime();
+    const diffMs = nowTime - new Date(timestamp).getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
 
