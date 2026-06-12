@@ -24,22 +24,25 @@ const corsOrigins = [
   process.env.CORS_ORIGIN,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'http://172.20.10.4:5173',
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
+    // Check if origin matches allowed list, local network IPs, or any Vercel preview/production deployment
     const isAllowed = corsOrigins.includes(origin) ||
-      /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin);
+      /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin) ||
+      (origin.startsWith('https://') && origin.endsWith('.vercel.app'));
 
     if (isAllowed || process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
+      return callback(null, origin); // Reflect the dynamic origin back
     }
 
     callback(new Error('Not allowed by CORS'));
-  }
+  },
+  credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
