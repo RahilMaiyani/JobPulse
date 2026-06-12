@@ -21,8 +21,8 @@ const uploadResume = async (req, res, next) => {
 
     // Read and parse text from memory buffer based on file type
     let parsedText = '';
-    const isDocx = req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
-                   req.file.originalname.toLowerCase().endsWith('.docx');
+    const isDocx = req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      req.file.originalname.toLowerCase().endsWith('.docx');
 
     if (isDocx) {
       try {

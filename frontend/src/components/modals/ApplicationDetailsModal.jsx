@@ -133,7 +133,7 @@ export default function ApplicationDetailsModal({ app, onClose, onRevoke, isRevo
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[85dvh] flex flex-col">
         <div className="p-4 sm:p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">{app.title}</h2>
+            <h2 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-100">{app.title}</h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">{app.company_name || 'Company'}</span>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>

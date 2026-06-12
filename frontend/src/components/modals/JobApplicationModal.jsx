@@ -122,7 +122,7 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
       <div className="absolute inset-0 bg-zinc-950/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85dvh]">
         <div className="p-4 sm:p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/50">
-          <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Application: {job.title}</h2>
+          <h2 className="text-lg md:text-xl font-black text-zinc-900 dark:text-zinc-100">Application: {job.title}</h2>
           <button onClick={onClose} className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"><X className="w-5 h-5" /></button>
         </div>
 

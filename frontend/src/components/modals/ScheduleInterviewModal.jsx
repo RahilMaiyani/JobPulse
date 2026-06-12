@@ -82,7 +82,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
         
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Schedule Interviews</h2>
+            <h2 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Schedule Interviews</h2>
             <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mt-1">{job.title}</p>
           </div>
           <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl transition-colors">

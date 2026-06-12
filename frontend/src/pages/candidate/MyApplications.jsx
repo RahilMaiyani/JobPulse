@@ -99,7 +99,7 @@ export default function MyApplications() {
               className={`rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-4 border ${
                 app.status?.toLowerCase() === 'selected' || app.status?.toLowerCase() === 'hired'
                   ? 'bg-emerald-50/30 dark:bg-emerald-500/5 border-emerald-500 shadow-emerald-500/10'
-                  : 'bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800'
+                  : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'
               }`}
             >
               <div className="flex items-start gap-4">

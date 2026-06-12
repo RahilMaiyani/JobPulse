@@ -18,13 +18,13 @@ export default function JobDetailsModal({ job, onClose, onApply, appliedApplicat
               <Briefcase className="w-7 h-7 text-indigo-600 dark:text-zinc-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">{job.title}</h2>
-              <div className="flex flex-wrap items-center gap-3 mt-3 text-sm font-bold text-zinc-500 dark:text-zinc-400">
-                <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {job.location || 'Remote'}</span>
-                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-                <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-md">{job.job_type}</span>
-                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-                <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
+              <h2 className="text-base md:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">{job.title}</h2>
+              <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-2 text-[11px] md:text-sm font-bold text-zinc-500 dark:text-zinc-400">
+                <span className="flex items-center gap-1 md:gap-1.5"><MapPin className="w-3 h-3 md:w-4 md:h-4" /> {job.location || 'Remote'}</span>
+                <span className="hidden md:block w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+                <span className="flex items-center gap-1 md:gap-1.5 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-1.5 md:px-2 py-0.5 rounded-md">{job.job_type}</span>
+                <span className="hidden md:block w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+                <span className="flex items-center gap-1 md:gap-1.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 md:px-2 py-0.5 rounded-md">
                   {job.salary_min ? `₹${(job.salary_min / 1000).toFixed(0)}k - ₹${(job.salary_max / 1000).toFixed(0)}k` : 'Competitive Salary'}
                 </span>
               </div>

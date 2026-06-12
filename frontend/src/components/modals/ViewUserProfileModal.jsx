@@ -39,7 +39,7 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                   alt={selectedUserProfile.full_name || user.full_name}
                 />
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">{selectedUserProfile.full_name || user.full_name}</h2>
+                  <h2 className="text-xl md:text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">{selectedUserProfile.full_name || user.full_name}</h2>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                       {user.role}
@@ -111,7 +111,7 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                     {selectedUserProfile.experience_years != null && (
                       <div className="md:w-1/3">
                         <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Experience</p>
-                        <p className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
+                        <p className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-100">
                           {selectedUserProfile.experience_years} <span className="text-sm font-bold text-zinc-500 dark:text-zinc-500">years</span>
                         </p>
                       </div>
@@ -168,11 +168,11 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                           {userApplications.map(app => (
                             <tr key={app.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
                               <td className="px-5 py-4">
-                                <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{app.title}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-500">{app.company_name}</p>
-                                  <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-                                  <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-600">{new Date(app.applied_at).toLocaleDateString()}</p>
+                                <p className="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 break-words line-clamp-2 md:line-clamp-none">{app.title}</p>
+                                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mt-1">
+                                  <p className="text-[10px] md:text-[11px] font-bold text-zinc-500 dark:text-zinc-500">{app.company_name}</p>
+                                  <span className="hidden md:block w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+                                  <p className="text-[10px] md:text-[11px] font-bold text-zinc-400 dark:text-zinc-600">{new Date(app.applied_at).toLocaleDateString()}</p>
                                 </div>
                               </td>
                               <td className="px-5 py-4 text-center">
@@ -180,8 +180,8 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                                   {app.ai_match_score}
                                 </span>
                               </td>
-                              <td className="px-5 py-4 text-right">
-                                <span className="text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 rounded-xl shadow-sm inline-block">
+                              <td className="px-3 md:px-5 py-4 text-right">
+                                <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl shadow-sm inline-block">
                                   {app.status}
                                 </span>
                               </td>

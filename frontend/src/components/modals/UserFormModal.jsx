@@ -32,7 +32,7 @@ export default function UserFormModal({ isOpen, onClose }) {
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col max-h-[85dvh]">
         <div className="p-6 md:p-8 flex justify-between items-start bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60 shrink-0">
           <div>
-            <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">Create New User</h2>
+            <h2 className="text-xl md:text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">Create New User</h2>
             <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">Add to directory</p>
           </div>
           <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"><X className="w-5 h-5" /></button>

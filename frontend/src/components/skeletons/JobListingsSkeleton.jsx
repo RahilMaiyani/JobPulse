@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function JobListingsSkeleton({ count = 6, viewMode = 'grid' }) {
   const gridSkeleton = (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${viewMode === 'list' ? 'md:hidden' : ''}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-32 ${viewMode === 'list' ? 'md:hidden' : ''}`}>
       {Array.from({ length: count }).map((_, n) => (
-        <div key={n} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 space-y-5 animate-pulse flex flex-col justify-between h-[280px]">
+        <div key={n} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-6 space-y-5 animate-pulse flex flex-col justify-between min-h-[300px]">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-zinc-200 dark:bg-zinc-800 shrink-0"></div>
@@ -47,7 +47,8 @@ export default function JobListingsSkeleton({ count = 6, viewMode = 'grid' }) {
     <>
       {gridSkeleton}
       <div className="hidden md:block bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <th className="px-6 py-4 text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Role</th>
@@ -76,7 +77,8 @@ export default function JobListingsSkeleton({ count = 6, viewMode = 'grid' }) {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </>
   );
