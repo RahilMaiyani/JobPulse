@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import SEO from '../../components/SEO';
 import toast from 'react-hot-toast';
-import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, ShieldAlert } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, ShieldAlert, Camera } from 'lucide-react';
+import useProctoring from '../../hooks/useProctoring';
 import AptitudeTestSkeleton from '../../components/skeletons/AptitudeTestSkeleton';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
@@ -34,10 +35,39 @@ export default function CandidateAptitudeTest() {
   const [jobId, setJobId] = useState();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
+  const handleProctoringEvent = useCallback(async (eventType, imageData) => {
+    if (questions.length === 0) return; // Ignore events before test fully loads
+
+    const currentCount = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
+    const newCount = currentCount + 1;
+    sessionStorage.setItem(`test_violations_${applicationId}`, newCount);
+
+    if (newCount >= 3) {
+      toast.error(`Test terminated due to suspicious activity (${eventType}).`, { icon: '🚫' });
+      setForceSubmit(true);
+    } else {
+      toast.error(`Suspicious activity detected: ${eventType}. Warning ${newCount}/3!`, { icon: '⚠️' });
+    }
+
+    try {
+      const qzId = questions.length > 0 ? questions[0].quiz_id : 0;
+      await api.post(`/proctoring/events/application/${applicationId}`, {
+        quiz_id: qzId,
+        event_type: eventType,
+        image_data: imageData
+      });
+    } catch (err) {
+      console.error("Failed to upload proctoring event:", err.response?.data || err.message);
+    }
+  }, [applicationId, questions]);
+
+  const { isWebcamActive, startWebcam, stopWebcam, setVideoRef, setCanvasRef } = useProctoring(handleProctoringEvent);
+
   const timerRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
+    if (!isWebcamActive) return;
 
     const startTest = async () => {
       try {
@@ -91,7 +121,7 @@ export default function CandidateAptitudeTest() {
       isMounted = false;
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [applicationId]);
+  }, [applicationId, isWebcamActive]);
 
   useEffect(() => {
     const preventCopy = (e) => {
@@ -148,6 +178,7 @@ export default function CandidateAptitudeTest() {
 
     try {
       const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: answersRef.current });
+      stopWebcam();
       setFinalResult(response.data.result);
       setSubmitted(true);
       queryClient.invalidateQueries({ queryKey: ['applications'] });
@@ -169,30 +200,16 @@ export default function CandidateAptitudeTest() {
     }
   }, [forceSubmit, isSubmitting, submitted]);
 
+  // Ensure webcam stops when component unmounts
+  useEffect(() => {
+    return () => {
+      stopWebcam();
+    };
+  }, [stopWebcam]);
+
   useEffect(() => {
     if (loading || submitted || isSubmitting) return;
-
-    const maxViolations = 2;
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        const currentCount = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
-        const newCount = currentCount + 1;
-        sessionStorage.setItem(`test_violations_${applicationId}`, newCount);
-
-        if (newCount >= maxViolations) {
-          toast.error("Test terminated due to multiple tab switches.", { icon: '🚫' });
-          setForceSubmit(true);
-        }
-      } else if (document.visibilityState === 'visible') {
-        const count = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
-        if (count > 0 && count < maxViolations) {
-          setAntiCheatWarning({ isOpen: true, count });
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    // Tab switching is now handled by useProctoring hook
   }, [applicationId, loading, submitted, isSubmitting]);
 
   const handleSelectOption = (questionId, optionIndex) => {
@@ -208,6 +225,28 @@ export default function CandidateAptitudeTest() {
     const s = seconds % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
+
+  if (!isWebcamActive && !submitted) {
+    return (
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center p-4 font-sans">
+        <div className="bg-white dark:bg-zinc-950 max-w-md w-full rounded-3xl p-8 text-center shadow-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="w-20 h-20 mx-auto rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-6">
+            <Camera className="w-10 h-10" />
+          </div>
+          <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Proctored Assessment</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-8">
+            This test requires camera access to ensure a fair testing environment. Your camera will be active for the duration of the test. Tab switching and copy-pasting are monitored.
+          </p>
+          <button
+            onClick={startWebcam}
+            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Camera className="w-5 h-5" /> Allow Camera & Start Test
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <AptitudeTestSkeleton />;
@@ -251,6 +290,13 @@ export default function CandidateAptitudeTest() {
   return (
     <>
       <SEO title="Aptitude Test" />
+      <div className="fixed bottom-4 right-4 z-[100] w-32 h-24 bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-zinc-800 pointer-events-none">
+        <video ref={setVideoRef} className="w-full h-full object-cover scale-x-[-1]" muted playsInline autoPlay />
+        <canvas ref={setCanvasRef} className="hidden" />
+        <div className="absolute bottom-1 left-1 bg-black/50 backdrop-blur text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase flex items-center gap-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div> Rec
+        </div>
+      </div>
       <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex flex-col font-sans selection:bg-indigo-100 select-none">
         <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">

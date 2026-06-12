@@ -156,5 +156,20 @@ CREATE INDEX idx_applications_status ON applications(status);
 CREATE INDEX idx_jobs_status ON jobs(status);
 CREATE INDEX idx_jobs_created_by ON jobs(created_by);
 CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_contact_messages_user ON contact_messages(user_id);
 CREATE INDEX idx_notifications_user ON notifications(user_id);
+
+-- Proctoring Events Table
+CREATE TABLE proctoring_events (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    application_id INT NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+    quiz_id INT NOT NULL REFERENCES mcq_quizzes(id) ON DELETE CASCADE,
+    event_type VARCHAR(50) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_proctoring_events_user ON proctoring_events(user_id);
+CREATE INDEX idx_proctoring_events_application ON proctoring_events(application_id);
+CREATE INDEX idx_proctoring_events_quiz ON proctoring_events(quiz_id);

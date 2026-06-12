@@ -231,6 +231,7 @@ const startCandidateTest = async (req, res, next) => {
     // Strip correct_option_index
     const safeQuestions = questions.map(q => ({
       id: q.id,
+      quiz_id: q.quiz_id,
       question_text: q.question_text,
       options: q.options
     }));
