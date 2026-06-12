@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const supabase = require('../config/supabase');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const uploadProctoringEvent = async (req, res) => {
     const { applicationId } = req.params;
@@ -30,7 +30,7 @@ const uploadProctoringEvent = async (req, res) => {
         if (image_data && image_data.startsWith('data:image/')) {
             const base64Data = image_data.replace(/^data:image\/\w+;base64,/, '');
             const buffer = Buffer.from(base64Data, 'base64');
-            const uniqueFilename = `${user.id}-${applicationId}-${Date.now()}-${uuidv4()}.jpg`;
+            const uniqueFilename = `${user.id}-${applicationId}-${Date.now()}-${crypto.randomUUID()}.jpg`;
 
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('proctoring-snapshots')
