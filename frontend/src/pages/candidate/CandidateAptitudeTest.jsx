@@ -35,8 +35,13 @@ export default function CandidateAptitudeTest() {
   const [jobId, setJobId] = useState();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  const handleProctoringEvent = useCallback(async (eventType, imageData) => {
+  const handleProctoringEvent = useCallback(async (eventType, imageData, isStrike = true) => {
     if (questions.length === 0) return; // Ignore events before test fully loads
+
+    if (!isStrike) {
+      toast.warning(`Please return to the test window immediately!`, { id: 'proctor-warning', icon: '⚠️' });
+      return;
+    }
 
     const currentCount = parseInt(sessionStorage.getItem(`test_violations_${applicationId}`) || '0', 10);
     const newCount = currentCount + 1;

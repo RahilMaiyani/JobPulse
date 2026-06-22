@@ -30,11 +30,13 @@ const uploadProctoringEvent = async (req, res) => {
         if (image_data && image_data.startsWith('data:image/')) {
             const base64Data = image_data.replace(/^data:image\/\w+;base64,/, '');
             const buffer = Buffer.from(base64Data, 'base64');
+            // Ensure we create a standalone buffer without shared memory from Node's buffer pool
+            const standaloneBuffer = Buffer.from(buffer);
             const uniqueFilename = `${user.id}-${applicationId}-${Date.now()}-${crypto.randomUUID()}.jpg`;
 
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('proctoring-snapshots')
-                .upload(uniqueFilename, new Uint8Array(buffer), {
+                .upload(uniqueFilename, standaloneBuffer, {
                     contentType: 'image/jpeg',
                     cacheControl: '3600',
                     upsert: false

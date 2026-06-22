@@ -74,20 +74,28 @@ export default function useProctoring(onEventTriggered) {
     };
   }, [isWebcamActive, videoElement, canvasElement]);
 
+  const graceTimerRef = useRef(null);
+
   // Trigger snapshot logic
-  const captureSnapshot = useCallback((eventType) => {
+  const captureSnapshot = useCallback((eventType, isStrike = true, preCapturedImage = null) => {
+    if (!isStrike) {
+      // Just trigger warning locally, don't count as strike or upload
+      onEventTriggered(eventType, null, false);
+      return;
+    }
+
     const now = Date.now();
     // 30 second cooldown
     if (now - lastSnapshotTimeRef.current < 30000) {
       // Just trigger event locally without a new snapshot if on cooldown
-      onEventTriggered(eventType, null);
+      onEventTriggered(eventType, null, true);
       return;
     }
 
     lastSnapshotTimeRef.current = now;
-    let imageData = null;
+    let imageData = preCapturedImage;
 
-    if (canvasElement && canvasElement.width > 0) {
+    if (!imageData && canvasElement && canvasElement.width > 0) {
       try {
         imageData = canvasElement.toDataURL('image/jpeg', 0.5);
       } catch (e) {
@@ -95,40 +103,77 @@ export default function useProctoring(onEventTriggered) {
       }
     }
 
-    onEventTriggered(eventType, imageData);
+    onEventTriggered(eventType, imageData, true);
   }, [onEventTriggered, canvasElement]);
 
   // Event Listeners
   useEffect(() => {
     if (!isWebcamActive) return; // Don't trigger if test hasn't started yet
 
+    const handleOut = (eventType) => {
+      // Give immediate warning
+      captureSnapshot(eventType, false);
+
+      // Pre-capture image while tab is active to prevent black screens/failures
+      let preCapturedImage = null;
+      if (canvasElement && canvasElement.width > 0) {
+        try { preCapturedImage = canvasElement.toDataURL('image/jpeg', 0.5); }
+        catch (e) {}
+      }
+
+      // Start 5s timer for actual strike
+      if (!graceTimerRef.current) {
+        graceTimerRef.current = setTimeout(() => {
+          captureSnapshot(eventType, true, preCapturedImage);
+          graceTimerRef.current = null;
+        }, 5000);
+      }
+    };
+
+    const handleIn = () => {
+      // Clear 5s timer if they return
+      if (graceTimerRef.current) {
+        clearTimeout(graceTimerRef.current);
+        graceTimerRef.current = null;
+      }
+    };
+
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        captureSnapshot('tab_switch');
+        handleOut('tab_switch');
+      } else {
+        handleIn();
       }
     };
 
     const handleMouseLeave = (e) => {
       // Detect if mouse left the document body
       if (e.clientY <= 0 || e.clientX <= 0 || (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)) {
-        captureSnapshot('mouse_exit');
+        handleOut('mouse_exit');
       }
     };
 
+    const handleMouseEnter = () => {
+      handleIn();
+    };
+
     const handleCopy = (e) => {
-      captureSnapshot('copy_attempt');
+      captureSnapshot('copy_attempt', true);
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('copy', handleCopy);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('copy', handleCopy);
+      if (graceTimerRef.current) clearTimeout(graceTimerRef.current);
     };
-  }, [isWebcamActive, captureSnapshot]);
+  }, [isWebcamActive, captureSnapshot, canvasElement]);
 
   return {
     isWebcamActive,
