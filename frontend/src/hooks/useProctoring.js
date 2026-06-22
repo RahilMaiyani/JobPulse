@@ -37,8 +37,8 @@ export default function useProctoring(onEventTriggered) {
     } catch (err) {
       console.error("Failed to access webcam:", err);
       setCameraError(
-        err.name === 'NotAllowedError' 
-          ? 'Camera access was denied. Please click the lock icon in your browser address bar to allow camera access, then try again.' 
+        err.name === 'NotAllowedError'
+          ? 'Camera access was denied. Please click the lock icon in your browser address bar to allow camera access, then try again.'
           : 'Could not access the camera. Please ensure it is connected and not used by another application.'
       );
       setIsWebcamActive(false);
@@ -118,7 +118,7 @@ export default function useProctoring(onEventTriggered) {
       let preCapturedImage = null;
       if (canvasElement && canvasElement.width > 0) {
         try { preCapturedImage = canvasElement.toDataURL('image/jpeg', 0.5); }
-        catch (e) {}
+        catch (e) { }
       }
 
       // Start 5s timer for actual strike
