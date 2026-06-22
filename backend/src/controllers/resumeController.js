@@ -46,7 +46,7 @@ const uploadResume = async (req, res, next) => {
     const uniqueFilename = `${userId}-${Date.now()}-${fileName.replace(/[^a-zA-Z0-9.]/g, '')}`;
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('resumes')
-      .upload(uniqueFilename, req.file.buffer, {
+      .upload(uniqueFilename, new Uint8Array(req.file.buffer), {
         contentType: req.file.mimetype
       });
 

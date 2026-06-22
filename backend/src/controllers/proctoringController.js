@@ -34,7 +34,7 @@ const uploadProctoringEvent = async (req, res) => {
 
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('proctoring-snapshots')
-                .upload(uniqueFilename, buffer, {
+                .upload(uniqueFilename, new Uint8Array(buffer), {
                     contentType: 'image/jpeg',
                     cacheControl: '3600',
                     upsert: false
