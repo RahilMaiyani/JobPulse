@@ -1,23 +1,22 @@
-const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+let transporter = null;
 
-transporter.verify((error) => {
-  if (error) {
-    console.log(`\n  \x1b[41m\x1b[37m ERROR \x1b[0m \x1b[31mMail engine failure:\x1b[0m ${error.message}`);
-  } else {
-    console.log(`  \x1b[38;5;208m➜\x1b[0m  \x1b[1mMail Engine:\x1b[0m \x1b[32mReady\x1b[0m \x1b[90m(gmail_verified)\x1b[0m`);
+const getTransporter = () => {
+  if (!transporter) {
+    const nodemailer = require('nodemailer');
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
   }
-});
+  return transporter;
+};
 
 const sendEmail = async ({ to, subject, html, attachments }) => {
   if (!to || to.trim() === "") {
@@ -26,7 +25,8 @@ const sendEmail = async ({ to, subject, html, attachments }) => {
   }
 
   try {
-    await transporter.sendMail({
+    const activeTransporter = getTransporter();
+    await activeTransporter.sendMail({
       from: `"JobDrive" <${process.env.EMAIL_USER}>`,
       to,
       subject,

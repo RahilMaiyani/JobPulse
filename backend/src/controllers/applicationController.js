@@ -2,16 +2,17 @@ const applicationModel = require('../models/applicationModel');
 const resumeModel = require('../models/resumeModel');
 const jobModel = require('../models/jobModel');
 const userModel = require('../models/userModel');
-const { GoogleGenAI } = require('@google/genai');
 const emailService = require('../services/emailService');
 const { createNotification } = require('../utils/notificationHelper');
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const analyzeApplication = async (req, res, next) => {
   try {
     const { jobId, resumeId } = req.body;
     const userId = req.user.id;
+
+    // Dynamically load GoogleGenAI to optimize cold starts
+    const { GoogleGenAI } = require('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     // Fetch Job, Resume, and User Profile
     const job = await jobModel.getJobById(jobId);

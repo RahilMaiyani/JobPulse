@@ -1,6 +1,4 @@
 const resumeModel = require('../models/resumeModel');
-const pdfParse = require('pdf-parse');
-const mammoth = require('mammoth');
 const supabase = require('../config/supabase');
 
 const uploadResume = async (req, res, next) => {
@@ -26,6 +24,7 @@ const uploadResume = async (req, res, next) => {
 
     if (isDocx) {
       try {
+        const mammoth = require('mammoth');
         const result = await mammoth.extractRawText({ buffer: req.file.buffer });
         parsedText = result.value;
       } catch (parseErr) {
@@ -34,6 +33,7 @@ const uploadResume = async (req, res, next) => {
       }
     } else {
       try {
+        const pdfParse = require('pdf-parse');
         const data = await pdfParse(req.file.buffer);
         parsedText = data.text;
       } catch (parseErr) {
