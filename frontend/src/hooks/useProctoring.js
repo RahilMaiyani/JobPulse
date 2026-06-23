@@ -105,6 +105,35 @@ export default function useProctoring(onEventTriggered) {
 
     onEventTriggered(eventType, imageData, true);
   }, [onEventTriggered, canvasElement]);
+  // Camera disconnect listener
+  useEffect(() => {
+    if (stream && isWebcamActive) {
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        let triggered = false;
+        const handleTrackEnded = () => {
+          if (triggered) return;
+          triggered = true;
+          captureSnapshot('camera_disconnected', true);
+          setCameraError('Camera connection lost. Please allow camera access or reconnect your device.');
+          setIsWebcamActive(false);
+        };
+        videoTrack.addEventListener('ended', handleTrackEnded);
+        
+        // Polling fallback
+        const pollInterval = setInterval(() => {
+          if (videoTrack.readyState === 'ended') {
+            handleTrackEnded();
+          }
+        }, 1000);
+
+        return () => {
+          videoTrack.removeEventListener('ended', handleTrackEnded);
+          clearInterval(pollInterval);
+        };
+      }
+    }
+  }, [stream, isWebcamActive, captureSnapshot]);
 
   // Event Listeners
   useEffect(() => {

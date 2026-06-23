@@ -39,7 +39,7 @@ export default function CandidateAptitudeTest() {
     if (questions.length === 0) return; // Ignore events before test fully loads
 
     if (!isStrike) {
-      toast.warning(`Please return to the test window immediately!`, { id: 'proctor-warning', icon: '⚠️' });
+      toast(`Please return to the test window immediately!`, { id: 'proctor-warning', icon: '⚠️' });
       return;
     }
 
@@ -183,12 +183,15 @@ export default function CandidateAptitudeTest() {
     }
   };
 
-  const executeSubmit = async () => {
+  const executeSubmit = async (isPenaltySubmit = false) => {
     setIsSubmitting(true);
     if (timerRef.current) clearInterval(timerRef.current);
 
+    // Guarantee 0 score by clearing answers if terminated by proctoring
+    const payloadAnswers = (isPenaltySubmit || forceSubmit) ? {} : answersRef.current;
+
     try {
-      const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: answersRef.current });
+      const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: payloadAnswers });
       stopWebcam();
       setFinalResult(response.data.result);
       setSubmitted(true);
@@ -207,7 +210,7 @@ export default function CandidateAptitudeTest() {
 
   useEffect(() => {
     if (forceSubmit && !isSubmitting && !submitted) {
-      executeSubmit();
+      executeSubmit(true);
     }
   }, [forceSubmit, isSubmitting, submitted]);
 
