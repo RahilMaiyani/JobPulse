@@ -60,7 +60,6 @@ const uploadResume = async (req, res, next) => {
 
     const newResume = await resumeModel.uploadResume(userId, fileName, filePath, parsedText);
 
-    // Don't send the entire parsedText back in the list view to save bandwidth
     const { parsed_text, ...resumeData } = newResume;
 
     res.status(201).json({ message: 'Resume uploaded successfully', resume: resumeData });

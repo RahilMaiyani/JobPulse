@@ -164,12 +164,18 @@ export default function CandidateAptitudeTest() {
 
   const handleSubmit = (manual = false) => {
     if (manual) {
+      const answeredCount = Object.keys(answersRef.current).length;
+      const unansweredCount = questions.length - answeredCount;
+      const warningMsg = unansweredCount > 0 
+        ? `You still have ${unansweredCount} unanswered question${unansweredCount > 1 ? 's' : ''}. Are you sure you want to submit?`
+        : "Are you sure you want to submit? You cannot change your answers after submission.";
+
       setConfirmModal({
         isOpen: true,
-        title: "Submit Test",
-        message: "Are you sure you want to submit? You cannot change your answers after submission.",
+        title: unansweredCount > 0 ? "Warning: Unanswered Questions" : "Submit Test",
+        message: warningMsg,
         confirmText: "Submit Test",
-        isDestructive: false,
+        isDestructive: unansweredCount > 0,
         onConfirm: () => executeSubmit()
       });
     } else {
@@ -223,6 +229,37 @@ export default function CandidateAptitudeTest() {
       [questionId]: optionIndex
     }));
   };
+
+  useEffect(() => {
+    if (loading || submitted || isSubmitting || questions.length === 0 || confirmModal.isOpen || antiCheatWarning.isOpen) return;
+
+    const handleKeyDown = (e) => {
+      // Prevent handling if user is somehow focused on an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentQuestionIndex(prev => Math.max(0, prev - 1));
+      }
+
+      // Numbers 1-4 for options
+      const currentQ = questions[currentQuestionIndex];
+      if (currentQ && currentQ.options) {
+        const keyMap = { '1': 0, '2': 1, '3': 2, '4': 3 };
+        const optionIndex = keyMap[e.key];
+        if (optionIndex !== undefined && optionIndex < currentQ.options.length) {
+          e.preventDefault();
+          handleSelectOption(currentQ.id, optionIndex);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [loading, submitted, isSubmitting, questions, currentQuestionIndex, confirmModal.isOpen, antiCheatWarning.isOpen]);
 
   const formatTime = (seconds) => {
     if (seconds === null) return "--:--";
@@ -404,7 +441,10 @@ export default function CandidateAptitudeTest() {
 
           <div className="flex-1 flex flex-col">
             {currentQ ? (
-              <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 sm:p-10 flex-1 rounded-3xl">
+              <div 
+                key={currentQ.id}
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 sm:p-10 flex-1 rounded-3xl animate-in fade-in slide-in-from-right-4 duration-300 fill-mode-both"
+              >
                 <div className="mb-8">
                   <span className="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-4">
                     Question {currentQuestionIndex + 1} of {totalQ}
@@ -422,7 +462,7 @@ export default function CandidateAptitudeTest() {
                         key={oIndex}
                         onClick={() => handleSelectOption(currentQ.id, oIndex)}
                         className={`
-                        w-full text-left p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group
+                        w-full text-left p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group active:scale-[0.98]
                         ${isSelected
                             ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 shadow-[0_0_0_4px_rgba(79,70,229,0.1)] dark:shadow-[0_0_0_4px_rgba(99,102,241,0.15)]'
                             : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-300 dark:hover:border-indigo-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'}

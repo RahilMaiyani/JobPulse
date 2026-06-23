@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     }
     localStorage.removeItem('token');
     setUser(null);
-    queryClient.clear(); // Clear cache to prevent data leaking between users
+    queryClient.clear();
   };
 
   const value = {
