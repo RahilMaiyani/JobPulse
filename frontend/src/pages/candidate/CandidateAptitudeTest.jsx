@@ -17,12 +17,20 @@ export default function CandidateAptitudeTest() {
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [quizDetails, setQuizDetails] = useState(null);
-  const [answers, setAnswers] = useState({}); // { questionId: selectedIndex }
+  const [answers, setAnswers] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(`test_answers_${applicationId}`);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  }); // { questionId: selectedIndex }
   const answersRef = useRef(answers);
 
   useEffect(() => {
     answersRef.current = answers;
-  }, [answers]);
+    sessionStorage.setItem(`test_answers_${applicationId}`, JSON.stringify(answers));
+  }, [answers, applicationId]);
 
   const [timeLeft, setTimeLeft] = useState(null); // in seconds
   const [antiCheatWarning, setAntiCheatWarning] = useState({ isOpen: false, count: 0 });
@@ -166,7 +174,7 @@ export default function CandidateAptitudeTest() {
     if (manual) {
       const answeredCount = Object.keys(answersRef.current).length;
       const unansweredCount = questions.length - answeredCount;
-      const warningMsg = unansweredCount > 0 
+      const warningMsg = unansweredCount > 0
         ? `You still have ${unansweredCount} unanswered question${unansweredCount > 1 ? 's' : ''}. Are you sure you want to submit?`
         : "Are you sure you want to submit? You cannot change your answers after submission.";
 
@@ -205,6 +213,7 @@ export default function CandidateAptitudeTest() {
     } finally {
       setConfirmModal(prev => ({ ...prev, isOpen: false }));
       sessionStorage.setItem(`test_violations_${applicationId}`, 0);
+      sessionStorage.removeItem(`test_answers_${applicationId}`);
     }
   };
 
@@ -352,7 +361,6 @@ export default function CandidateAptitudeTest() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
               <h1 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Aptitude Test</h1>
-              <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Do not refresh the page</p>
             </div>
           </div>
 
@@ -444,7 +452,7 @@ export default function CandidateAptitudeTest() {
 
           <div className="flex-1 flex flex-col">
             {currentQ ? (
-              <div 
+              <div
                 key={currentQ.id}
                 className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 sm:p-10 flex-1 rounded-3xl animate-in fade-in slide-in-from-right-4 duration-300 fill-mode-both"
               >
