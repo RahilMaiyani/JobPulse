@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { X, Plus, Trash2, Calendar, FileText, CheckCircle2, Clock, Users } from 'lucide-react';
+import { X, Plus, Trash2, Calendar, FileText, CheckCircle2, Clock, Users, UploadCloud } from 'lucide-react';
+import Papa from 'papaparse';
 import ManageQuizSkeleton from '../skeletons/ManageQuizSkeleton';
 import { useQuizForJob } from '../../hooks/useQuizzes';
 
 export default function ManageQuizModal({ job, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [quizForm, setQuizForm] = useState({
     title: '',
@@ -19,7 +21,7 @@ export default function ManageQuizModal({ job, onClose }) {
   });
 
   const [questions, setQuestions] = useState([]);
-  
+
   const { data: quizData, isLoading: loading } = useQuizForJob(job.id);
 
   useEffect(() => {
@@ -69,6 +71,60 @@ export default function ManageQuizModal({ job, onClose }) {
   const handleRemoveQuestion = (index) => {
     const updated = questions.filter((_, i) => i !== index);
     setQuestions(updated);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: false,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const rows = results.data;
+        if (rows.length === 0) {
+          toast.error("CSV file is empty");
+          return;
+        }
+
+        // Try to detect if first row is header by checking if it contains 'question'
+        const hasHeader = rows[0].join(',').toLowerCase().includes('question');
+        const dataRows = hasHeader ? rows.slice(1) : rows;
+
+        const newQuestions = dataRows.map((row) => {
+          // Expected format: Question, Option1, Option2, Option3, Option4, CorrectOptionIndex (0-3)
+          const qText = row[0] || '';
+          const opt1 = row[1] || '';
+          const opt2 = row[2] || '';
+          const opt3 = row[3] || '';
+          const opt4 = row[4] || '';
+          const correctIdx = parseInt(row[5], 10);
+
+          return {
+            question_text: qText,
+            options: [opt1, opt2, opt3, opt4],
+            correct_option_index: isNaN(correctIdx) ? 0 : Math.max(0, Math.min(3, correctIdx))
+          };
+        }).filter(q => q.question_text.trim() !== '');
+
+        if (newQuestions.length === 0) {
+          toast.error("No valid questions found in CSV");
+          return;
+        }
+
+        // Replace all existing questions
+        setQuestions(newQuestions);
+        toast.success(`Successfully loaded ${newQuestions.length} questions`);
+
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      },
+      error: (error) => {
+        toast.error("Error parsing CSV: " + error.message);
+      }
+    });
   };
 
   const handleSave = async () => {
@@ -188,11 +244,23 @@ export default function ManageQuizModal({ job, onClose }) {
 
               {/* Questions Builder */}
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                   <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100">Questions ({questions.length})</h3>
-                  <button onClick={handleAddQuestion} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 rounded-lg transition-colors border border-transparent dark:border-zinc-700">
-                    <Plus className="w-4 h-4" /> Add Question
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept=".csv"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                    />
+                    <button onClick={() => fileInputRef.current?.click()} className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                      <UploadCloud className="w-4 h-4" /> Upload CSV
+                    </button>
+                    <button onClick={handleAddQuestion} className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 rounded-lg transition-colors border border-transparent dark:border-zinc-700">
+                      <Plus className="w-4 h-4" /> Add Question
+                    </button>
+                  </div>
                 </div>
 
                 {questions.length === 0 ? (
