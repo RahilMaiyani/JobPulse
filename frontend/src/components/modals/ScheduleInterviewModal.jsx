@@ -26,7 +26,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
       existingInterviews.forEach(interview => {
         const timeVal = interview.scheduled_time ? interview.scheduled_time.substring(0, 5) : '';
         const dateVal = interview.scheduled_date ? new Date(interview.scheduled_date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }) : '';
-        
+
         initialSchedules[interview.application_id] = {
           date: dateVal,
           time: timeVal,
@@ -79,7 +79,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden flex flex-col max-h-[85dvh]">
-        
+
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start shrink-0">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Schedule Interviews</h2>
@@ -92,7 +92,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
 
         <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar">
           {loadingApps || loadingInterviews ? (
-              <div className="flex justify-center p-8">
+            <div className="flex justify-center p-8">
               <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
           ) : candidates.length === 0 ? (
@@ -110,15 +110,15 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                       <div className="flex-1">
                         <h4 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">{app.candidate_name}</h4>
                         <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{app.candidate_email}</p>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                           <div className="min-w-0">
                             <label className="flex items-center gap-1.5 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
                               <CalendarIcon className="w-3.5 h-3.5 text-zinc-400" />
                               <span>Date</span>
                             </label>
-                            <input 
-                              type="date" 
+                            <input
+                              type="date"
                               value={schedule.date}
                               onChange={(e) => handleUpdateSchedule(app.id, 'date', e.target.value)}
                               className="block w-full min-w-0 max-w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none box-border"
@@ -129,8 +129,8 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                               <Clock className="w-3.5 h-3.5 text-zinc-400" />
                               <span>Time</span>
                             </label>
-                            <input 
-                              type="time" 
+                            <input
+                              type="time"
                               value={schedule.time}
                               onChange={(e) => handleUpdateSchedule(app.id, 'time', e.target.value)}
                               className="block w-full min-w-0 max-w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none box-border"
@@ -141,7 +141,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                               <Edit3 className="w-3.5 h-3.5 text-zinc-400" />
                               <span>Interviewer Notes / Link (Optional)</span>
                             </label>
-                            <textarea 
+                            <textarea
                               value={schedule.notes}
                               onChange={(e) => handleUpdateSchedule(app.id, 'notes', e.target.value)}
                               placeholder="E.g., Google Meet link, topics to cover..."
@@ -159,7 +159,7 @@ export default function ScheduleInterviewModal({ job, onClose }) {
                             </span>
                           </div>
                         )}
-                        <button 
+                        <button
                           onClick={() => handleScheduleSubmit(app)}
                           disabled={scheduleMutation.isPending}
                           className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"

@@ -199,9 +199,12 @@ const startCandidateTest = async (req, res, next) => {
     const { applicationId } = req.params;
     const db = require('../config/db');
 
-    const appResult = await db.query('SELECT status FROM applications WHERE id = $1', [applicationId]);
+    const appResult = await db.query('SELECT status, user_id FROM applications WHERE id = $1', [applicationId]);
     if (appResult.rows.length === 0) {
       return res.status(404).json({ error: 'Application not found' });
+    }
+    if (appResult.rows[0].user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized: This application does not belong to you.' });
     }
     const appStatus = appResult.rows[0].status;
     if (appStatus !== 'shortlisted') {
@@ -246,6 +249,12 @@ const submitCandidateTest = async (req, res, next) => {
   try {
     const { applicationId } = req.params;
     const { answers } = req.body; // { questionId: selectedIndex }
+    const db = require('../config/db');
+
+    // 1. IDOR Check
+    const appResult = await db.query('SELECT user_id FROM applications WHERE id = $1', [applicationId]);
+    if (appResult.rows.length === 0) return res.status(404).json({ error: 'Application not found' });
+    if (appResult.rows[0].user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized: This application does not belong to you.' });
 
     const quiz = await mcqModel.getQuizByApplicationId(applicationId);
     if (!quiz) return res.status(404).json({ error: 'No quiz found' });
@@ -254,10 +263,16 @@ const submitCandidateTest = async (req, res, next) => {
     if (!result) return res.status(403).json({ error: 'Test not started' });
     if (result.completed_at) return res.status(403).json({ error: 'Test already submitted' });
 
-    // Validate time? We trust client auto-submit mostly, but could enforce duration server-side
-    // const startedAt = new Date(result.started_at);
-    // const timeElapsedMs = new Date() - startedAt;
-    // const maxAllowedMs = (quiz.duration_minutes * 60000) + 60000; // 1 min grace
+    // 2. Proctoring Penalty Check
+    const proctoringEvents = await db.query('SELECT COUNT(*) FROM proctoring_events WHERE application_id = $1', [applicationId]);
+    const strikeCount = parseInt(proctoringEvents.rows[0].count, 10);
+    const hasProctoringViolation = strikeCount >= 3;
+
+    // 3. Time Glitch Check
+    const startedAt = new Date(result.started_at);
+    const timeElapsedMs = new Date() - startedAt;
+    const maxAllowedMs = (quiz.duration_minutes * 60000) + 120000; // 2 min grace
+    const hasTimeViolation = timeElapsedMs > maxAllowedMs;
 
     const questions = await mcqModel.getQuestionsByQuizId(quiz.id);
 
@@ -270,8 +285,15 @@ const submitCandidateTest = async (req, res, next) => {
 
     const maxScore = 100;
     const totalQ = questions.length;
-    const finalScore = totalQ > 0 ? Math.round((correctCount / totalQ) * maxScore) : 0;
-    const passed = finalScore >= quiz.passing_score;
+    let finalScore = totalQ > 0 ? Math.round((correctCount / totalQ) * maxScore) : 0;
+    let passed = finalScore >= quiz.passing_score;
+
+    // Apply strict penalties
+    if (hasProctoringViolation || hasTimeViolation) {
+      finalScore = 0;
+      passed = false;
+      console.log(`Test forcefully failed for App ID ${applicationId}. Violations -> Proctoring: ${hasProctoringViolation}, Time: ${hasTimeViolation}`);
+    }
 
     const updatedResult = await mcqModel.submitTest(result.id, finalScore, passed);
 
