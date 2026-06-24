@@ -6,6 +6,7 @@ import SEO from '../../components/SEO';
 import toast from 'react-hot-toast';
 import { Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, ShieldAlert, Camera } from 'lucide-react';
 import useProctoring from '../../hooks/useProctoring';
+import { useTestInfo } from '../../hooks/useQuizzes';
 import AptitudeTestSkeleton from '../../components/skeletons/AptitudeTestSkeleton';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
@@ -13,6 +14,8 @@ export default function CandidateAptitudeTest() {
   const { applicationId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: testInfo, isLoading: testInfoLoading } = useTestInfo(applicationId);
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
@@ -288,9 +291,17 @@ export default function CandidateAptitudeTest() {
             <Camera className="w-10 h-10" />
           </div>
           <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Proctored Assessment</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-8">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-6">
             This test requires camera access to ensure a fair testing environment. Your camera will be active for the duration of the test. Tab switching and copy-pasting are monitored.
           </p>
+
+          {!testInfoLoading && testInfo?.quiz?.description && (
+            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-left">
+              <h3 className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest mb-2">Test Instructions</h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">{testInfo.quiz.description}</p>
+            </div>
+          )}
+
           {cameraError && (
             <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-bold text-left flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
