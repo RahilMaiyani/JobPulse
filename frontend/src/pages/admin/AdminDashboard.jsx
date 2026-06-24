@@ -34,7 +34,7 @@ export default function AdminDashboard() {
       value: stats.activeJobsCount,
       icon: Briefcase,
       glow: "bg-blue-500/10",
-      trend: "+2 this week",
+      trend: `+${stats.activeJobsTrend || 0} this week`,
       trendColor: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10"
     },
     {
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
       value: stats.totalCandidatesCount,
       icon: Users,
       glow: "bg-emerald-500/10",
-      trend: "+5 active today",
+      trend: `+${stats.totalCandidatesTrend || 0} joined today`,
       trendColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10"
     },
     {
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
       value: stats.totalApplicationsCount,
       icon: FileText,
       glow: "bg-purple-500/10",
-      trend: "+14 submissions",
+      trend: `+${stats.totalApplicationsTrend || 0} this week`,
       trendColor: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10"
     },
   ];

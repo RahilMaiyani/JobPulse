@@ -3,8 +3,13 @@ const pool = require('../config/db');
 const getAdminStats = async (req, res, next) => {
   try {
     const jobsCountResult = await pool.query("SELECT COUNT(*) FROM jobs WHERE status = 'active'");
+    const jobsTrendResult = await pool.query("SELECT COUNT(*) FROM jobs WHERE status = 'active' AND created_at >= NOW() - INTERVAL '7 days'");
+
     const candidatesCountResult = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'candidate'");
+    const candidatesTrendResult = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'candidate' AND created_at >= NOW() - INTERVAL '1 day'");
+
     const applicationsCountResult = await pool.query("SELECT COUNT(*) FROM applications");
+    const applicationsTrendResult = await pool.query("SELECT COUNT(*) FROM applications WHERE applied_at >= NOW() - INTERVAL '7 days'");
 
     const recentJobsResult = await pool.query("SELECT * FROM jobs ORDER BY created_at DESC LIMIT 5");
 
@@ -74,8 +79,11 @@ const getAdminStats = async (req, res, next) => {
 
     res.json({
       activeJobsCount: parseInt(jobsCountResult.rows[0].count),
+      activeJobsTrend: parseInt(jobsTrendResult.rows[0].count),
       totalCandidatesCount: parseInt(candidatesCountResult.rows[0].count),
+      totalCandidatesTrend: parseInt(candidatesTrendResult.rows[0].count),
       totalApplicationsCount: parseInt(applicationsCountResult.rows[0].count),
+      totalApplicationsTrend: parseInt(applicationsTrendResult.rows[0].count),
       recentJobs: recentJobsResult.rows,
       funnelStats,
       recentActivities
