@@ -22,7 +22,7 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
       <div className="absolute inset-0 bg-zinc-900/50 dark:bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[85dvh] flex flex-col">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl w-full max-w-3xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[85dvh] flex flex-col">
         {loadingProfile ? (
           <div className="p-12 text-center space-y-4 animate-pulse flex flex-col items-center">
             <div className="w-20 h-20 bg-zinc-200 dark:bg-zinc-800 rounded-[1.5rem]"></div>
@@ -31,7 +31,7 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
           </div>
         ) : selectedUserProfile ? (
           <>
-            <div className="relative p-6 md:p-8 flex justify-between items-start bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-900 border-b border-zinc-100 dark:border-zinc-800/60">
+            <div className="relative p-6 md:p-8 flex justify-between items-start bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900/50 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60">
               <div className="flex items-center gap-5">
                 <img
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUserProfile.full_name || user.full_name)}&background=0f172a&color=fff&size=128`}
@@ -59,33 +59,33 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
               <button onClick={onClose} className="p-2.5 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:scale-105 active:scale-95 transition-all shadow-sm"><X className="w-5 h-5" /></button>
             </div>
 
-            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-zinc-900">
+            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-zinc-950">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Contact Info Cards */}
-                <div className="bg-zinc-50/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0 shadow-sm">
-                      <Mail className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
+                      <Mail className="w-4 h-4 text-zinc-500 dark:text-zinc-300" />
                     </div>
                     <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Email Address</p>
                   </div>
                   <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 pl-13 truncate">{selectedUserProfile.email || user.email}</p>
                 </div>
 
-                <div className="bg-zinc-50/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0 shadow-sm">
-                      <Phone className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
+                      <Phone className="w-4 h-4 text-zinc-500 dark:text-zinc-300" />
                     </div>
                     <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Phone Number</p>
                   </div>
                   <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 pl-13">{selectedUserProfile.phone || 'Not provided'}</p>
                 </div>
 
-                <div className="bg-zinc-50/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0 shadow-sm">
-                      <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
+                      <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-300" />
                     </div>
                     <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Joined Date</p>
                   </div>
@@ -93,10 +93,10 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                 </div>
 
                 {selectedUserProfile.current_company && (
-                  <div className="bg-zinc-50/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                  <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0 shadow-sm">
-                        <Briefcase className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
+                        <Briefcase className="w-4 h-4 text-zinc-500 dark:text-zinc-300" />
                       </div>
                       <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Current Company</p>
                     </div>
@@ -106,22 +106,22 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
               </div>
 
               {(selectedUserProfile.skills?.length > 0 || selectedUserProfile.experience_years != null) && (
-                <div className="mt-8 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800/80 rounded-3xl p-6">
+                <div className="mt-8 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm">
                   <div className="flex flex-col md:flex-row gap-6">
                     {selectedUserProfile.experience_years != null && (
                       <div className="md:w-1/3">
-                        <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-2">Experience</p>
+                        <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-2">Experience</p>
                         <p className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-100">
-                          {selectedUserProfile.experience_years} <span className="text-sm font-bold text-zinc-500 dark:text-zinc-500">years</span>
+                          {selectedUserProfile.experience_years} <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">years</span>
                         </p>
                       </div>
                     )}
                     {selectedUserProfile.skills?.length > 0 && (
                       <div className="flex-1">
-                        <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-3">Skills & Technologies</p>
+                        <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">Skills & Technologies</p>
                         <div className="flex flex-wrap gap-2">
                           {selectedUserProfile.skills.map((s, i) => (
-                            <span key={i} className="px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold rounded-xl shadow-sm">{s}</span>
+                            <span key={i} className="px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-xl shadow-sm">{s}</span>
                           ))}
                         </div>
                       </div>
@@ -131,9 +131,9 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
               )}
 
               {selectedUserProfile.bio && (
-                <div className="mt-8 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800/80 rounded-3xl p-6 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500/20 dark:bg-indigo-500/10 rounded-l-3xl"></div>
-                  <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-3">Biography</p>
+                <div className="mt-8 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 relative overflow-hidden shadow-sm">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500/50 dark:bg-indigo-500/30 rounded-l-3xl"></div>
+                  <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">Biography</p>
                   <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{selectedUserProfile.bio}</p>
                 </div>
               )}
@@ -155,18 +155,18 @@ export default function ViewUserProfileModal({ isOpen, onClose, user }) {
                       <p className="text-zinc-500 dark:text-zinc-400 text-sm font-bold">This candidate has not applied to any jobs yet.</p>
                     </div>
                   ) : (
-                    <div className="border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden bg-white dark:bg-zinc-900">
+                    <div className="border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+                          <tr className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
                             <th className="px-5 py-4 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Job Details</th>
                             <th className="px-5 py-4 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest text-center">AI Score</th>
                             <th className="px-5 py-4 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest text-right">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                           {userApplications.map(app => (
-                            <tr key={app.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+                            <tr key={app.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
                               <td className="px-5 py-4">
                                 <p className="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 break-words line-clamp-2 md:line-clamp-none">{app.title}</p>
                                 <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mt-1">
