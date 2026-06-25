@@ -332,7 +332,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                           )}
                         </h4>
                         <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{app.candidate_email} • Applied {new Date(app.applied_at).toLocaleDateString()}</p>
-                        {app.mcq_completed_at && (
+                        {(app.mcq_completed_at || app.mcq_started_at) && (
                           <p className="text-xs font-black mt-1 flex items-center gap-1">
                             <FileQuestion className="w-3 h-3 text-indigo-500" />
                             <span className="text-zinc-500 dark:text-zinc-500">Aptitude Score:</span>

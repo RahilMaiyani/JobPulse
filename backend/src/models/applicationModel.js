@@ -47,7 +47,8 @@ const getJobApplications = async (jobId) => {
       r.file_name as resume_name,
       m.score as mcq_score,
       m.passed as mcq_passed,
-      m.completed_at as mcq_completed_at
+      m.completed_at as mcq_completed_at,
+      m.started_at as mcq_started_at
     FROM applications a
     JOIN users u ON a.user_id = u.id
     LEFT JOIN resumes r ON a.resume_id = r.id
@@ -73,7 +74,7 @@ const updateApplicationStatus = async (id, status) => {
 
 const bulkUpdateApplicationStatuses = async (updates) => {
   // updates is an array of { id, status }
-  const queries = updates.map(u => 
+  const queries = updates.map(u =>
     db.query(`UPDATE applications SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`, [u.status, u.id])
   );
   await Promise.all(queries);
