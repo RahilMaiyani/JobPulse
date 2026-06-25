@@ -264,7 +264,10 @@ const submitCandidateTest = async (req, res, next) => {
     if (result.completed_at) return res.status(403).json({ error: 'Test already submitted' });
 
     // 2. Proctoring Penalty Check
-    const proctoringEvents = await db.query('SELECT COUNT(*) FROM proctoring_events WHERE application_id = $1', [applicationId]);
+    const proctoringEvents = await db.query(
+      'SELECT COUNT(*) FROM proctoring_events WHERE application_id = $1 AND created_at >= $2',
+      [applicationId, result.started_at]
+    );
     const strikeCount = parseInt(proctoringEvents.rows[0].count, 10);
     const hasProctoringViolation = strikeCount >= 3;
 

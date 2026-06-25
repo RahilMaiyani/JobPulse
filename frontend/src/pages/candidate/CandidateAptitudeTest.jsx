@@ -77,7 +77,7 @@ export default function CandidateAptitudeTest() {
     }
   }, [applicationId, questions]);
 
-  const { isWebcamActive, startWebcam, stopWebcam, setVideoRef, setCanvasRef, cameraError } = useProctoring(handleProctoringEvent);
+  const { isWebcamActive, startProctoring, stopProctoring, setWebcamVideoRef, setScreenVideoRef, setCanvasRef, cameraError } = useProctoring(handleProctoringEvent);
 
   const timerRef = useRef(null);
 
@@ -203,7 +203,7 @@ export default function CandidateAptitudeTest() {
 
     try {
       const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: payloadAnswers });
-      stopWebcam();
+      stopProctoring();
       setFinalResult(response.data.result);
       setSubmitted(true);
       queryClient.invalidateQueries({ queryKey: ['applications'] });
@@ -225,13 +225,6 @@ export default function CandidateAptitudeTest() {
       executeSubmit(true);
     }
   }, [forceSubmit, isSubmitting, submitted]);
-
-  // Ensure webcam stops when component unmounts
-  useEffect(() => {
-    return () => {
-      stopWebcam();
-    };
-  }, [stopWebcam]);
 
   useEffect(() => {
     if (loading || submitted || isSubmitting) return;
@@ -292,7 +285,9 @@ export default function CandidateAptitudeTest() {
           </div>
           <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Proctored Assessment</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-6">
-            This test requires camera access to ensure a fair testing environment. Your camera will be active for the duration of the test. Tab switching and copy-pasting are monitored.
+            This test requires both camera access and screen sharing to ensure a fair testing environment. 
+            When prompted, you <strong className="text-zinc-900 dark:text-zinc-100">must select "Entire Screen"</strong>. 
+            Tab switching and copy-pasting are strictly monitored.
           </p>
 
           {!testInfoLoading && testInfo?.quiz?.description && (
@@ -309,10 +304,10 @@ export default function CandidateAptitudeTest() {
             </div>
           )}
           <button
-            onClick={startWebcam}
+            onClick={startProctoring}
             className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
           >
-            <Camera className="w-5 h-5" /> Allow Camera & Start Test
+            <Camera className="w-5 h-5" /> Allow Camera & Share Screen
           </button>
           <button
             onClick={() => navigate('/candidate/applications')}
@@ -377,7 +372,8 @@ export default function CandidateAptitudeTest() {
 
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="w-16 h-12 sm:w-24 sm:h-16 bg-black rounded-lg overflow-hidden shadow-inner border-2 border-zinc-800 pointer-events-none relative shrink-0">
-              <video ref={setVideoRef} className="w-full h-full object-cover scale-x-[-1]" muted playsInline autoPlay />
+              <video ref={setWebcamVideoRef} className="w-full h-full object-cover scale-x-[-1]" muted playsInline autoPlay />
+              <video ref={setScreenVideoRef} className="hidden" muted playsInline autoPlay />
               <canvas ref={setCanvasRef} className="hidden" />
               <div className="absolute bottom-0.5 left-0.5 bg-black/50 backdrop-blur text-white text-[8px] font-bold px-1 rounded flex items-center gap-0.5 uppercase">
                 <div className="w-1 h-1 rounded-full bg-rose-500 animate-pulse"></div> Rec
