@@ -10,6 +10,7 @@ import { bulkUpdateApplicationStatuses } from '../../services/applicationService
 import ConfirmationModal from './ConfirmationModal';
 import CandidateComparisonModal from './CandidateComparisonModal';
 import ProctoringReportModal from './ProctoringReportModal';
+import useDebounce from '../../hooks/useDebounce';
 
 export default function JobApplicantsModal({ job, onClose }) {
   useEscapeKey(onClose);
@@ -22,6 +23,9 @@ export default function JobApplicantsModal({ job, onClose }) {
 
   // Search, Filter, Pagination
   const [applicantSearchTerm, setApplicantSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(applicantSearchTerm, 300);
+  const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
+  const [applicantProctoringFilter, setApplicantProctoringFilter] = useState("all");
   const [applicantSortBy, setApplicantSortBy] = useState("highest_ai");
   const [applicantPage, setApplicantPage] = useState(1);
   const itemsPerPage = 10;
@@ -124,12 +128,28 @@ export default function JobApplicantsModal({ job, onClose }) {
     let result = [...jobApplicants];
 
     // Search
-    if (applicantSearchTerm.trim()) {
-      const lowerQuery = applicantSearchTerm.toLowerCase();
+    if (debouncedSearchTerm.trim()) {
+      const lowerQuery = debouncedSearchTerm.toLowerCase();
       result = result.filter(app =>
         (app.candidate_name && app.candidate_name.toLowerCase().includes(lowerQuery)) ||
         (app.candidate_email && app.candidate_email.toLowerCase().includes(lowerQuery))
       );
+    }
+
+    // Status Filter
+    if (applicantStatusFilter !== 'all') {
+      result = result.filter(app => app.status === applicantStatusFilter);
+    }
+
+    // Proctoring Filter
+    if (applicantProctoringFilter !== 'all') {
+      if (applicantProctoringFilter === 'violators') {
+        result = result.filter(app => app.has_proctoring_violation && !app.is_proctoring_forgiven);
+      } else if (applicantProctoringFilter === 'forgiven') {
+        result = result.filter(app => app.is_proctoring_forgiven);
+      } else if (applicantProctoringFilter === 'clean') {
+        result = result.filter(app => !app.has_proctoring_violation);
+      }
     }
 
     // Sort
@@ -151,11 +171,11 @@ export default function JobApplicantsModal({ job, onClose }) {
     });
 
     return result;
-  }, [jobApplicants, applicantSearchTerm, applicantSortBy]);
+  }, [jobApplicants, debouncedSearchTerm, applicantSortBy, applicantStatusFilter, applicantProctoringFilter]);
 
   useEffect(() => {
     setApplicantPage(1);
-  }, [applicantSearchTerm, applicantSortBy]);
+  }, [debouncedSearchTerm, applicantSortBy, applicantStatusFilter, applicantProctoringFilter]);
 
   const totalApplicantPages = Math.ceil(filteredAndSortedApplicants.length / itemsPerPage);
   const paginatedApplicants = filteredAndSortedApplicants.slice((applicantPage - 1) * itemsPerPage, applicantPage * itemsPerPage);
@@ -181,7 +201,7 @@ export default function JobApplicantsModal({ job, onClose }) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-7xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[95dvh]">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-6xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col h-[90dvh]">
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-4">
@@ -253,7 +273,7 @@ export default function JobApplicantsModal({ job, onClose }) {
           )}
 
           {/* SEARCH AND SORT BAR */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col xl:flex-row gap-3 xl:items-center">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
                 <Search className="w-4 h-4" />
@@ -266,17 +286,55 @@ export default function JobApplicantsModal({ job, onClose }) {
                 className="w-full pl-9 pr-4 h-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none transition-all shadow-sm dark:shadow-none"
               />
             </div>
-            <select
-              value={applicantSortBy}
-              onChange={(e) => setApplicantSortBy(e.target.value)}
-              className="h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none"
-            >
-              <option value="highest_ai">Highest AI Score</option>
-              <option value="lowest_ai">Lowest AI Score</option>
-              <option value="highest_mcq">Highest Aptitude Score</option>
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-            </select>
+            
+            <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1 xl:pb-0 w-full xl:w-auto">
+              <select
+                value={applicantStatusFilter}
+                onChange={(e) => setApplicantStatusFilter(e.target.value)}
+                className="h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none shrink-0"
+              >
+                <option value="all">All Statuses</option>
+                <option value="applied">Applied</option>
+                <option value="shortlisted">Shortlisted</option>
+                <option value="rejected">Rejected</option>
+                <option value="hired">Hired</option>
+              </select>
+              
+              <select
+                value={applicantProctoringFilter}
+                onChange={(e) => setApplicantProctoringFilter(e.target.value)}
+                className="h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none shrink-0"
+              >
+                <option value="all">Any Proctoring Status</option>
+                <option value="clean">Clean (No Violations)</option>
+                <option value="violators">Proctoring Violators</option>
+                <option value="forgiven">Forgiven</option>
+              </select>
+
+              <select
+                value={applicantSortBy}
+                onChange={(e) => setApplicantSortBy(e.target.value)}
+                className="h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none shadow-sm dark:shadow-none shrink-0"
+              >
+                <option value="highest_ai">Highest AI Score</option>
+                <option value="lowest_ai">Lowest AI Score</option>
+                <option value="highest_mcq">Highest Aptitude Score</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+
+              <button 
+                onClick={() => {
+                  setApplicantSearchTerm("");
+                  setApplicantStatusFilter("all");
+                  setApplicantProctoringFilter("all");
+                  setApplicantSortBy("highest_ai");
+                }}
+                className="h-10 px-4 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl text-sm font-bold transition-colors shrink-0 flex items-center gap-2"
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </div>
 
@@ -346,13 +404,14 @@ export default function JobApplicantsModal({ job, onClose }) {
                             {app.has_proctoring_violation && (
                               <div className="flex items-center gap-2">
                                 <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1 ${app.is_proctoring_forgiven ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
-                                  <AlertTriangle className="w-2.5 h-2.5" /> {app.is_proctoring_forgiven ? 'Forgiven' : 'Proctoring Violation'}
+                                  {app.is_proctoring_forgiven ? <ShieldCheck className="w-2.5 h-2.5" /> : <AlertTriangle className="w-2.5 h-2.5" />} 
+                                  {app.is_proctoring_forgiven ? 'Forgiven' : 'Proctoring Violation'}
                                 </span>
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); setSelectedAppForProctoring(app); }}
-                                  className="ml-2 px-2 py-1 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded shadow-sm hover:scale-105 transition-all"
+                                  className="text-[10px] font-bold text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline decoration-dashed underline-offset-4"
                                 >
-                                  {app.is_proctoring_forgiven ? 'View Report' : 'View Proctoring Report'}
+                                  View Report &rarr;
                                 </button>
                               </div>
                             )}
@@ -362,9 +421,10 @@ export default function JobApplicantsModal({ job, onClose }) {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 mt-3 md:mt-0 w-full md:w-auto">
+
                       <button
                         onClick={() => setExpandedApplicantId(expandedApplicantId === app.id ? null : app.id)}
-                        className="text-xs font-bold text-indigo-600 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                        className="text-xs font-bold text-indigo-600 dark:text-zinc-300 bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 border border-indigo-100 dark:border-zinc-700"
                       >
                         {expandedApplicantId === app.id ? (
                           <>Hide Details <ChevronUp className="w-3.5 h-3.5" /></>

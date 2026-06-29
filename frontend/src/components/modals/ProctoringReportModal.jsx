@@ -4,6 +4,7 @@ import { AlertTriangle, Clock, MousePointer2, Copy, MonitorOff, ShieldCheck, X }
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import useEscapeKey from '../../hooks/useEscapeKey';
+import ConfirmationModal from './ConfirmationModal';
 
 const EVENT_ICONS = {
   tab_switch: <MonitorOff className="w-4 h-4 text-amber-500" />,
@@ -18,15 +19,20 @@ export default function ProctoringReportModal({ application, onClose }) {
   const { data: events = [], isLoading } = useProctoringEvents(application.id);
   const forgiveMutation = useForgiveProctoring();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(false);
 
   const handleForgive = () => {
-    if (window.confirm("Are you sure you want to forgive these violations? This will restore the candidate's original score.")) {
-      forgiveMutation.mutate(application.id, {
-        onSuccess: () => {
-          toast.success("Violations forgiven and score restored.");
-        }
-      });
-    }
+    setConfirmModal(true);
+  };
+
+  const executeForgive = () => {
+    forgiveMutation.mutate(application.id, {
+      onSuccess: () => {
+        toast.success("Violations forgiven and score restored.");
+        setConfirmModal(false);
+      },
+      onError: () => setConfirmModal(false)
+    });
   };
 
   const hasViolations = events.length > 0;
@@ -149,6 +155,16 @@ export default function ProctoringReportModal({ application, onClose }) {
         </div>,
         document.body
       )}
+
+      <ConfirmationModal
+        isOpen={confirmModal}
+        onClose={() => setConfirmModal(false)}
+        onConfirm={executeForgive}
+        title="Forgive Proctoring Violations"
+        message="Are you sure you want to forgive these violations? This will restore the candidate's original score."
+        confirmText={forgiveMutation.isPending ? "Processing..." : "Forgive & Restore Score"}
+        isDestructive={false}
+      />
     </div>,
     document.body
   );
