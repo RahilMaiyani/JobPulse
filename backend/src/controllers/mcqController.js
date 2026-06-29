@@ -289,6 +289,7 @@ const submitCandidateTest = async (req, res, next) => {
     const maxScore = 100;
     const totalQ = questions.length;
     let finalScore = totalQ > 0 ? Math.round((correctCount / totalQ) * maxScore) : 0;
+    let originalScore = finalScore;
     let passed = finalScore >= quiz.passing_score;
 
     // Apply strict penalties
@@ -298,7 +299,7 @@ const submitCandidateTest = async (req, res, next) => {
       console.log(`Test forcefully failed for App ID ${applicationId}. Violations -> Proctoring: ${hasProctoringViolation}, Time: ${hasTimeViolation}`);
     }
 
-    const updatedResult = await mcqModel.submitTest(result.id, finalScore, passed);
+    const updatedResult = await mcqModel.submitTest(result.id, finalScore, passed, originalScore, answers, hasProctoringViolation);
 
     res.json({ message: 'Test submitted', result: updatedResult });
   } catch (err) {

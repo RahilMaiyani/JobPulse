@@ -58,13 +58,6 @@ export default function CandidateAptitudeTest() {
     const newCount = currentCount + 1;
     sessionStorage.setItem(`test_violations_${applicationId}`, newCount);
 
-    if (newCount >= 3) {
-      toast.error(`Test terminated due to suspicious activity (${eventType}).`, { icon: '🚫' });
-      setForceSubmit(true);
-    } else {
-      toast.error(`Suspicious activity detected: ${eventType}. Warning ${newCount}/3!`, { icon: '⚠️' });
-    }
-
     try {
       const qzId = questions.length > 0 ? questions[0].quiz_id : 0;
       await api.post(`/proctoring/events/application/${applicationId}`, {
@@ -74,6 +67,13 @@ export default function CandidateAptitudeTest() {
       });
     } catch (err) {
       console.error("Failed to upload proctoring event:", err.response?.data || err.message);
+    } finally {
+      if (newCount >= 3) {
+        toast.error(`Test terminated due to suspicious activity (${eventType}).`, { icon: '🚫' });
+        setForceSubmit(true);
+      } else {
+        toast.error(`Suspicious activity detected: ${eventType}. Warning ${newCount}/3!`, { icon: '⚠️' });
+      }
     }
   }, [applicationId, questions]);
 
@@ -198,8 +198,9 @@ export default function CandidateAptitudeTest() {
     setIsSubmitting(true);
     if (timerRef.current) clearInterval(timerRef.current);
 
-    // Guarantee 0 score by clearing answers if terminated by proctoring
-    const payloadAnswers = (isPenaltySubmit || forceSubmit) ? {} : answersRef.current;
+    // Always send current answers to save progress, even if terminating. 
+    // The backend will handle zeroing out the final score based on the proctoring logs.
+    const payloadAnswers = answersRef.current;
 
     try {
       const response = await api.post(`/quizzes/application/${applicationId}/submit`, { answers: payloadAnswers });
@@ -285,8 +286,8 @@ export default function CandidateAptitudeTest() {
           </div>
           <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Proctored Assessment</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-6">
-            This test requires both camera access and screen sharing to ensure a fair testing environment. 
-            When prompted, you <strong className="text-zinc-900 dark:text-zinc-100">must select "Entire Screen"</strong>. 
+            This test requires both camera access and screen sharing to ensure a fair testing environment.
+            When prompted, you <strong className="text-zinc-900 dark:text-zinc-100">must select "Entire Screen"</strong>.
             Tab switching and copy-pasting are strictly monitored.
           </p>
 

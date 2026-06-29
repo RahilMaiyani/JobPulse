@@ -67,6 +67,54 @@ const uploadProctoringEvent = async (req, res) => {
     }
 };
 
+const getProctoringEventsForApplication = async (req, res) => {
+    const { applicationId } = req.params;
+    try {
+        const events = await pool.query(
+            'SELECT * FROM proctoring_events WHERE application_id = $1 ORDER BY created_at DESC',
+            [applicationId]
+        );
+        res.json({ events: events.rows });
+    } catch (error) {
+        console.error('Error fetching proctoring events:', error);
+        res.status(500).json({ error: 'Failed to fetch proctoring events' });
+    }
+};
+
+const forgiveProctoringViolations = async (req, res) => {
+    const { applicationId } = req.params;
+    try {
+        const resultQuery = await pool.query('SELECT * FROM mcq_results WHERE application_id = $1', [applicationId]);
+        if (resultQuery.rows.length === 0) {
+            return res.status(404).json({ error: 'Test result not found' });
+        }
+        
+        const mcqResult = resultQuery.rows[0];
+        
+        const quizQuery = await pool.query('SELECT passing_score FROM mcq_quizzes WHERE id = $1', [mcqResult.quiz_id]);
+        if (quizQuery.rows.length === 0) {
+             return res.status(404).json({ error: 'Quiz not found' });
+        }
+        const passingScore = quizQuery.rows[0].passing_score;
+        
+        const newPassed = mcqResult.original_score >= passingScore;
+        
+        const updateQuery = await pool.query(
+            `UPDATE mcq_results 
+             SET score = original_score, passed = $1, is_proctoring_forgiven = true 
+             WHERE id = $2 RETURNING *`,
+            [newPassed, mcqResult.id]
+        );
+        
+        res.json({ success: true, message: 'Violations forgiven and score restored', result: updateQuery.rows[0] });
+    } catch (error) {
+        console.error('Error forgiving proctoring violations:', error);
+        res.status(500).json({ error: 'Failed to forgive violations' });
+    }
+};
+
 module.exports = {
-    uploadProctoringEvent
+    uploadProctoringEvent,
+    getProctoringEventsForApplication,
+    forgiveProctoringViolations
 };

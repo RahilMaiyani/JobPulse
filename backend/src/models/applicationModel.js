@@ -48,7 +48,11 @@ const getJobApplications = async (jobId) => {
       m.score as mcq_score,
       m.passed as mcq_passed,
       m.completed_at as mcq_completed_at,
-      m.started_at as mcq_started_at
+      m.started_at as mcq_started_at,
+      m.original_score,
+      m.is_proctoring_forgiven,
+      m.candidate_answers,
+      m.has_proctoring_violation
     FROM applications a
     JOIN users u ON a.user_id = u.id
     LEFT JOIN resumes r ON a.resume_id = r.id

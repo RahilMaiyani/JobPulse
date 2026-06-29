@@ -105,14 +105,14 @@ const startTest = async (quizId, applicationId) => {
   return result.rows[0];
 };
 
-const submitTest = async (resultId, score, passed) => {
+const submitTest = async (resultId, score, passed, originalScore = 0, candidateAnswers = {}, hasProctoringViolation = false) => {
   const query = `
     UPDATE mcq_results
-    SET score = $1, passed = $2, completed_at = CURRENT_TIMESTAMP
-    WHERE id = $3
+    SET score = $1, passed = $2, original_score = $3, candidate_answers = $4, has_proctoring_violation = $5, completed_at = CURRENT_TIMESTAMP
+    WHERE id = $6
     RETURNING *;
   `;
-  const result = await db.query(query, [score, passed, resultId]);
+  const result = await db.query(query, [score, passed, originalScore, JSON.stringify(candidateAnswers), hasProctoringViolation, resultId]);
   return result.rows[0];
 };
 

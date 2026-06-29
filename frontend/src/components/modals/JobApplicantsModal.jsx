@@ -3,13 +3,13 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
-import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion, Sparkles, Minus, Plus } from 'lucide-react';
+import { X, Users, Search, Download, CheckCircle2, Ban, ChevronDown, ChevronUp, FileQuestion, Sparkles, Minus, Plus, AlertTriangle, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useApplicationsForJob } from '../../hooks/useApplications';
 import { bulkUpdateApplicationStatuses } from '../../services/applicationService';
 import ConfirmationModal from './ConfirmationModal';
 import CandidateComparisonModal from './CandidateComparisonModal';
-
+import ProctoringReportModal from './ProctoringReportModal';
 
 export default function JobApplicantsModal({ job, onClose }) {
   useEscapeKey(onClose);
@@ -17,6 +17,7 @@ export default function JobApplicantsModal({ job, onClose }) {
   const { data: jobApplicants = [], isLoading: loadingApplicants } = useApplicationsForJob(job?.id);
 
   const [expandedApplicantId, setExpandedApplicantId] = useState(null);
+  const [selectedAppForProctoring, setSelectedAppForProctoring] = useState(null);
   const queryClient = useQueryClient();
 
   // Search, Filter, Pagination
@@ -180,7 +181,7 @@ export default function JobApplicantsModal({ job, onClose }) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85dvh]">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-7xl relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[95dvh]">
         <div className="p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-4">
@@ -333,13 +334,29 @@ export default function JobApplicantsModal({ job, onClose }) {
                         </h4>
                         <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{app.candidate_email} • Applied {new Date(app.applied_at).toLocaleDateString()}</p>
                         {(app.mcq_completed_at || app.mcq_started_at) && (
-                          <p className="text-xs font-black mt-1 flex items-center gap-1">
-                            <FileQuestion className="w-3 h-3 text-indigo-500" />
-                            <span className="text-zinc-500 dark:text-zinc-500">Aptitude Score:</span>
-                            <span className={app.mcq_passed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
-                              {app.mcq_score}% ({app.mcq_passed ? 'Passed' : 'Failed'})
-                            </span>
-                          </p>
+                          <div className="mt-1 flex items-center flex-wrap gap-2">
+                            <p className="text-xs font-black flex items-center gap-1">
+                              <FileQuestion className="w-3 h-3 text-indigo-500" />
+                              <span className="text-zinc-500 dark:text-zinc-500">Aptitude Score:</span>
+                              <span className={app.mcq_passed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
+                                {app.mcq_score}% ({app.mcq_passed ? 'Passed' : 'Failed'})
+                              </span>
+                            </p>
+                            
+                            {app.has_proctoring_violation && (
+                              <div className="flex items-center gap-2">
+                                <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1 ${app.is_proctoring_forgiven ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
+                                  <AlertTriangle className="w-2.5 h-2.5" /> {app.is_proctoring_forgiven ? 'Forgiven' : 'Proctoring Violation'}
+                                </span>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); setSelectedAppForProctoring(app); }}
+                                  className="ml-2 px-2 py-1 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded shadow-sm hover:scale-105 transition-all"
+                                >
+                                  {app.is_proctoring_forgiven ? 'View Report' : 'View Proctoring Report'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -512,6 +529,14 @@ export default function JobApplicantsModal({ job, onClose }) {
             handleStatusChange(appId, newStatus);
             setSelectedForComparison(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
           }}
+        />
+      )}
+
+      {/* PROCTORING REPORT MODAL */}
+      {selectedAppForProctoring && (
+        <ProctoringReportModal 
+          application={selectedAppForProctoring}
+          onClose={() => setSelectedAppForProctoring(null)}
         />
       )}
 
