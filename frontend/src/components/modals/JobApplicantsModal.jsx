@@ -286,7 +286,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                 className="w-full pl-9 pr-4 h-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 outline-none transition-all shadow-sm dark:shadow-none"
               />
             </div>
-            
+
             <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1 xl:pb-0 w-full xl:w-auto">
               <select
                 value={applicantStatusFilter}
@@ -299,7 +299,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                 <option value="rejected">Rejected</option>
                 <option value="hired">Hired</option>
               </select>
-              
+
               <select
                 value={applicantProctoringFilter}
                 onChange={(e) => setApplicantProctoringFilter(e.target.value)}
@@ -323,7 +323,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                 <option value="oldest">Oldest First</option>
               </select>
 
-              <button 
+              <button
                 onClick={() => {
                   setApplicantSearchTerm("");
                   setApplicantStatusFilter("all");
@@ -400,14 +400,14 @@ export default function JobApplicantsModal({ job, onClose }) {
                                 {app.mcq_score}% ({app.mcq_passed ? 'Passed' : 'Failed'})
                               </span>
                             </p>
-                            
+
                             {app.has_proctoring_violation && (
                               <div className="flex items-center gap-2">
                                 <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1 ${app.is_proctoring_forgiven ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
-                                  {app.is_proctoring_forgiven ? <ShieldCheck className="w-2.5 h-2.5" /> : <AlertTriangle className="w-2.5 h-2.5" />} 
+                                  {app.is_proctoring_forgiven ? <ShieldCheck className="w-2.5 h-2.5" /> : <AlertTriangle className="w-2.5 h-2.5" />}
                                   {app.is_proctoring_forgiven ? 'Forgiven' : 'Proctoring Violation'}
                                 </span>
-                                <button 
+                                <button
                                   onClick={(e) => { e.stopPropagation(); setSelectedAppForProctoring(app); }}
                                   className="text-[10px] font-bold text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline decoration-dashed underline-offset-4"
                                 >
@@ -594,7 +594,7 @@ export default function JobApplicantsModal({ job, onClose }) {
 
       {/* PROCTORING REPORT MODAL */}
       {selectedAppForProctoring && (
-        <ProctoringReportModal 
+        <ProctoringReportModal
           application={selectedAppForProctoring}
           onClose={() => setSelectedAppForProctoring(null)}
         />
