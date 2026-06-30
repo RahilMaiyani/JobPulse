@@ -144,11 +144,11 @@ export default function JobApplicantsModal({ job, onClose }) {
     // Proctoring Filter
     if (applicantProctoringFilter !== 'all') {
       if (applicantProctoringFilter === 'violators') {
-        result = result.filter(app => app.has_proctoring_violation && !app.is_proctoring_forgiven);
+        result = result.filter(app => parseInt(app.proctoring_violation_count || 0, 10) > 0 && !app.is_proctoring_forgiven);
       } else if (applicantProctoringFilter === 'forgiven') {
         result = result.filter(app => app.is_proctoring_forgiven);
       } else if (applicantProctoringFilter === 'clean') {
-        result = result.filter(app => !app.has_proctoring_violation);
+        result = result.filter(app => parseInt(app.proctoring_violation_count || 0, 10) === 0);
       }
     }
 
@@ -401,11 +401,17 @@ export default function JobApplicantsModal({ job, onClose }) {
                               </span>
                             </p>
 
-                            {app.has_proctoring_violation && (
+                            {parseInt(app.proctoring_violation_count || 0, 10) > 0 && (
                               <div className="flex items-center gap-2">
-                                <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1 ${app.is_proctoring_forgiven ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
+                                <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1 ${
+                                  app.is_proctoring_forgiven ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' 
+                                  : app.has_proctoring_violation ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'
+                                  : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400'
+                                }`}>
                                   {app.is_proctoring_forgiven ? <ShieldCheck className="w-2.5 h-2.5" /> : <AlertTriangle className="w-2.5 h-2.5" />}
-                                  {app.is_proctoring_forgiven ? 'Forgiven' : 'Proctoring Violation'}
+                                  {app.is_proctoring_forgiven 
+                                    ? 'Forgiven' 
+                                    : `${app.proctoring_violation_count} Violation${app.proctoring_violation_count !== '1' ? 's' : ''}${app.has_proctoring_violation ? ' (Failed)' : ''}`}
                                 </span>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setSelectedAppForProctoring(app); }}

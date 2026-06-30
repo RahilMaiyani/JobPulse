@@ -47,7 +47,7 @@ export default function ProctoringReportModal({ application, onClose }) {
       />
 
       {/* Standard Modal Content */}
-      <div className="relative w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 border border-zinc-200 dark:border-zinc-800">
+      <div className="relative w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200 border border-zinc-200 dark:border-zinc-800">
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 md:p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
@@ -82,14 +82,24 @@ export default function ProctoringReportModal({ application, onClose }) {
           ) : (
             <div className="space-y-6">
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-5">
+              <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border rounded-xl p-5 ${
+                application.has_proctoring_violation 
+                  ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' 
+                  : 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20'
+              }`}>
                 <div>
-                  <p className="text-base font-black text-rose-700 dark:text-rose-400 flex items-center gap-2">
+                  <p className={`text-base font-black flex items-center gap-2 ${
+                    application.has_proctoring_violation ? 'text-rose-700 dark:text-rose-400' : 'text-amber-700 dark:text-amber-400'
+                  }`}>
                     <AlertTriangle className="w-5 h-5" />
-                    {events.length} violations logged
+                    {events.length} violation{events.length !== 1 ? 's' : ''} logged
                   </p>
-                  <p className="text-sm text-rose-600/80 dark:text-rose-400/80 font-medium mt-1">
-                    The system automatically terminated the test.
+                  <p className={`text-sm font-medium mt-1 ${
+                    application.has_proctoring_violation ? 'text-rose-600/80 dark:text-rose-400/80' : 'text-amber-600/80 dark:text-amber-400/80'
+                  }`}>
+                    {application.has_proctoring_violation 
+                      ? 'The system automatically terminated the test.'
+                      : 'Minor infractions recorded. The test was not terminated.'}
                   </p>
                 </div>
                 {isFailedDueToProctoring && (
@@ -125,13 +135,13 @@ export default function ProctoringReportModal({ application, onClose }) {
                       </div>
                       {event.file_path && event.file_path !== 'no-image' ? (
                         <div
-                          className="mt-2 w-full sm:w-80 aspect-video rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden cursor-pointer hover:ring-2 ring-indigo-500 transition-all bg-zinc-100 dark:bg-zinc-950"
+                          className="mt-2 w-full sm:w-[480px] aspect-video rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden cursor-pointer hover:ring-2 ring-indigo-500 transition-all bg-zinc-100 dark:bg-zinc-950"
                           onClick={() => setSelectedImage(event.file_path)}
                         >
                           <img src={event.file_path} alt="Violation snapshot" className="w-full h-full object-cover" loading="lazy" />
                         </div>
                       ) : (
-                        <div className="mt-2 w-full sm:w-80 aspect-video rounded-lg border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center text-zinc-400">
+                        <div className="mt-2 w-full sm:w-[480px] aspect-video rounded-lg border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center text-zinc-400">
                           <MonitorOff className="w-8 h-8 mb-2 opacity-30" />
                           <span className="text-sm font-medium">No screenshot captured</span>
                         </div>

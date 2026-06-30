@@ -91,19 +91,43 @@ const forgiveProctoringViolations = async (req, res) => {
         
         const mcqResult = resultQuery.rows[0];
         
+        // Fetch quiz passing score
         const quizQuery = await pool.query('SELECT passing_score FROM mcq_quizzes WHERE id = $1', [mcqResult.quiz_id]);
         if (quizQuery.rows.length === 0) {
              return res.status(404).json({ error: 'Quiz not found' });
         }
         const passingScore = quizQuery.rows[0].passing_score;
         
-        const newPassed = mcqResult.original_score >= passingScore;
+        // Dynamically calculate the score based on their saved candidate_answers JSON
+        const questionsQuery = await pool.query('SELECT id, correct_option_index FROM mcq_questions WHERE quiz_id = $1', [mcqResult.quiz_id]);
+        const questions = questionsQuery.rows;
+        
+        let answers = mcqResult.candidate_answers || {};
+        if (typeof answers === 'string') {
+            try {
+                answers = JSON.parse(answers);
+            } catch (e) {
+                answers = {};
+            }
+        }
+        
+        let correctCount = 0;
+        for (const q of questions) {
+            const selectedOption = answers[q.id];
+            if (selectedOption !== undefined && Number(selectedOption) === q.correct_option_index) {
+                correctCount++;
+            }
+        }
+        
+        const totalQ = questions.length;
+        const calculatedScore = totalQ > 0 ? Math.round((correctCount / totalQ) * 100) : 0;
+        const newPassed = calculatedScore >= passingScore;
         
         const updateQuery = await pool.query(
             `UPDATE mcq_results 
-             SET score = original_score, passed = $1, is_proctoring_forgiven = true 
-             WHERE id = $2 RETURNING *`,
-            [newPassed, mcqResult.id]
+             SET score = $1, original_score = $1, passed = $2, is_proctoring_forgiven = true 
+             WHERE id = $3 RETURNING *`,
+            [calculatedScore, newPassed, mcqResult.id]
         );
         
         res.json({ success: true, message: 'Violations forgiven and score restored', result: updateQuery.rows[0] });

@@ -52,7 +52,8 @@ const getJobApplications = async (jobId) => {
       m.original_score,
       m.is_proctoring_forgiven,
       m.candidate_answers,
-      m.has_proctoring_violation
+      m.has_proctoring_violation,
+      (SELECT COUNT(*) FROM proctoring_events pe WHERE pe.application_id = a.id) as proctoring_violation_count
     FROM applications a
     JOIN users u ON a.user_id = u.id
     LEFT JOIN resumes r ON a.resume_id = r.id
