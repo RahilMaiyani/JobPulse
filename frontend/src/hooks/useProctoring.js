@@ -87,7 +87,7 @@ export default function useProctoring(onEventTriggered) {
           audio: false
         });
       } catch (err) {
-        if (webcamStreamRef.current) webcamStreamRef.current.getTracks().forEach(t => t.stop());
+        if (wStream) wStream.getTracks().forEach(t => t.stop());
         throw new Error(err.name === 'NotAllowedError'
           ? 'Screen share was denied. You must share your entire screen to proceed. (Mac users: Check System Preferences -> Privacy -> Screen Recording)'
           : 'Could not access screen share. Note: Proctored tests must be taken on a Desktop or Laptop computer (Mobile devices are not supported).');
@@ -96,7 +96,6 @@ export default function useProctoring(onEventTriggered) {
       // Validate that they selected "Entire Screen" (monitor)
       const videoTrack = sStream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
-      // On some older browsers, displaySurface might be undefined. If it exists, enforce "monitor".
       if (settings.displaySurface && settings.displaySurface !== 'monitor') {
         wStream.getTracks().forEach(t => t.stop());
         sStream.getTracks().forEach(t => t.stop());
@@ -115,7 +114,7 @@ export default function useProctoring(onEventTriggered) {
     }
   }, []);
 
-  // loop (every 500ms)
+  // Buffer drawing loop (every 500ms) - merges screen and webcam
   useEffect(() => {
     if (isWebcamActive && webcamVideoElement && screenVideoElement && canvasElement) {
       drawIntervalRef.current = setInterval(() => {
@@ -134,7 +133,7 @@ export default function useProctoring(onEventTriggered) {
 
           ctx.drawImage(screenVideoElement, 0, 0, drawWidth, drawHeight);
 
-          // Draw Webcam as Picture-in-Picture (bottom right)
+          // Draw Webcam 
           const wWidth = webcamVideoElement.videoWidth;
           const wHeight = webcamVideoElement.videoHeight;
           if (wWidth > 0 && wHeight > 0) {
@@ -142,7 +141,7 @@ export default function useProctoring(onEventTriggered) {
             const pipHeight = (pipWidth / wWidth) * wHeight;
             const padding = 15;
 
-            // Draw a slight border for visibility
+            // Border for visibility
             ctx.fillStyle = "rgba(0,0,0,0.5)";
             ctx.fillRect(drawWidth - pipWidth - padding - 4, drawHeight - pipHeight - padding - 4, pipWidth + 8, pipHeight + 8);
 
@@ -158,6 +157,7 @@ export default function useProctoring(onEventTriggered) {
     };
   }, [isWebcamActive, webcamVideoElement, screenVideoElement, canvasElement]);
 
+  // Trigger snapshot logic
   const captureSnapshot = useCallback((eventType, isStrike = true, preCapturedImage = null) => {
     if (!isStrike) {
       onEventTriggered(eventType, null, false);
@@ -175,7 +175,7 @@ export default function useProctoring(onEventTriggered) {
 
     if (!imageData && canvasElement && canvasElement.width > 0) {
       try {
-        // Compress the image aggressively to save bandwidth (0.5 JPEG quality)
+        // Compress the image (0.5 JPEG quality)
         imageData = canvasElement.toDataURL('image/jpeg', 0.5);
       } catch (e) {
         console.error("Canvas capture error:", e);
@@ -203,12 +203,8 @@ export default function useProctoring(onEventTriggered) {
     const sTrack = screenStreamRef.current?.getVideoTracks()[0];
 
     const checkTracks = () => {
-      if (wTrack && wTrack.readyState === 'ended') {
-        handleDisconnect('camera');
-      }
-      if (sTrack && sTrack.readyState === 'ended') {
-        handleDisconnect('screen');
-      }
+      if (wTrack && wTrack.readyState === 'ended') handleDisconnect('camera');
+      if (sTrack && sTrack.readyState === 'ended') handleDisconnect('screen');
     };
 
     const onCameraEnd = () => handleDisconnect('camera');
