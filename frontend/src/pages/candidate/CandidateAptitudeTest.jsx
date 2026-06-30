@@ -280,42 +280,48 @@ export default function CandidateAptitudeTest() {
   if (!isWebcamActive && !submitted) {
     return (
       <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center p-4 font-sans">
-        <div className="bg-white dark:bg-zinc-950 max-w-md w-full rounded-3xl p-8 text-center shadow-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="w-20 h-20 mx-auto rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-6">
-            <Camera className="w-10 h-10" />
+        <div className="bg-white dark:bg-zinc-950 max-w-3xl w-full rounded-3xl p-6 sm:p-8 shadow-xl border border-zinc-200 dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-center">
+          <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+            <Camera className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Proctored Assessment</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-6">
+          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-1.5 text-center">Proctored Assessment</h1>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-4 text-center leading-relaxed max-w-md">
             This test requires both camera access and screen sharing to ensure a fair testing environment.
             When prompted, you <strong className="text-zinc-900 dark:text-zinc-100">must select "Entire Screen"</strong>.
             Tab switching and copy-pasting are strictly monitored.
           </p>
 
           {!testInfoLoading && testInfo?.quiz?.description && (
-            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-left">
-              <h3 className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest mb-2">Test Instructions</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">{testInfo.quiz.description}</p>
+            <div className="w-full mb-5 p-4 sm:p-5 bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl text-left">
+              <h3 className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                Test Instructions
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">{testInfo.quiz.description}</p>
             </div>
           )}
 
           {cameraError && (
-            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-bold text-left flex items-start gap-3">
+            <div className="w-full mb-4 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-bold text-left flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
               <p>{cameraError}</p>
             </div>
           )}
-          <button
-            onClick={startProctoring}
-            className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
-          >
-            <Camera className="w-5 h-5" /> Allow Camera & Share Screen
-          </button>
-          <button
-            onClick={() => navigate('/candidate/applications')}
-            className="w-full mt-3 h-12 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold rounded-xl transition-all"
-          >
-            Cancel & Return
-          </button>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+            <button
+              onClick={() => navigate('/candidate/applications')}
+              className="order-2 sm:order-1 w-full sm:w-auto h-11 px-6 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold rounded-xl transition-all text-sm"
+            >
+              Cancel & Return
+            </button>
+            <button
+              onClick={startProctoring}
+              className="order-1 sm:order-2 w-full sm:w-auto px-8 h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 text-sm"
+            >
+              <Camera className="w-4 h-4" /> Allow Camera & Share Screen
+            </button>
+          </div>
         </div>
       </div>
     );
