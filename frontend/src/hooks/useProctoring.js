@@ -115,7 +115,7 @@ export default function useProctoring(onEventTriggered) {
     }
   }, []);
 
-  // Buffer drawing loop (every 500ms) - merges screen and webcam
+  // loop (every 500ms)
   useEffect(() => {
     if (isWebcamActive && webcamVideoElement && screenVideoElement && canvasElement) {
       drawIntervalRef.current = setInterval(() => {
@@ -123,7 +123,6 @@ export default function useProctoring(onEventTriggered) {
         const sHeight = screenVideoElement.videoHeight;
 
         if (sWidth > 0 && sHeight > 0) {
-          // Cap the resolution to 1280 to prevent massive memory usage
           const maxCanvasWidth = 1280;
           const scale = sWidth > maxCanvasWidth ? maxCanvasWidth / sWidth : 1;
           const drawWidth = sWidth * scale;
@@ -159,7 +158,6 @@ export default function useProctoring(onEventTriggered) {
     };
   }, [isWebcamActive, webcamVideoElement, screenVideoElement, canvasElement]);
 
-  // Trigger snapshot logic
   const captureSnapshot = useCallback((eventType, isStrike = true, preCapturedImage = null) => {
     if (!isStrike) {
       onEventTriggered(eventType, null, false);
@@ -205,8 +203,12 @@ export default function useProctoring(onEventTriggered) {
     const sTrack = screenStreamRef.current?.getVideoTracks()[0];
 
     const checkTracks = () => {
-      if (wTrack && wTrack.readyState === 'ended') handleDisconnect('camera');
-      if (sTrack && sTrack.readyState === 'ended') handleDisconnect('screen');
+      if (wTrack && wTrack.readyState === 'ended') {
+        handleDisconnect('camera');
+      }
+      if (sTrack && sTrack.readyState === 'ended') {
+        handleDisconnect('screen');
+      }
     };
 
     const onCameraEnd = () => handleDisconnect('camera');

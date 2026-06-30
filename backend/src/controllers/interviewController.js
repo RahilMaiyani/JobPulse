@@ -109,6 +109,17 @@ exports.getInterviewsByJob = async (req, res, next) => {
 exports.getInterviewByApplication = async (req, res, next) => {
   const { applicationId } = req.params;
   try {
+    // IDOR check: Non-admin/HR users can only fetch their own interview slot
+    if (req.user.role === 'candidate') {
+      const appResult = await db.query('SELECT user_id FROM applications WHERE id = $1', [applicationId]);
+      if (appResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+      if (appResult.rows[0].user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Unauthorized: This application does not belong to you.' });
+      }
+    }
+
     const result = await db.query(
       `SELECT * FROM interview_slots WHERE application_id = $1`,
       [applicationId]
