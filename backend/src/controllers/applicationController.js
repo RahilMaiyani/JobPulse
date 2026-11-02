@@ -4,111 +4,88 @@ const jobModel = require('../models/jobModel');
 const userModel = require('../models/userModel');
 const emailService = require('../services/emailService');
 const { createNotification } = require('../utils/notificationHelper');
+const resumeQueue = require("../queues/resumeQueue");
 
 const analyzeApplication = async (req, res, next) => {
   try {
     const { jobId, resumeId } = req.body;
     const userId = req.user.id;
 
-    // Dynamically load GoogleGenAI to optimize cold starts
-    const { GoogleGenAI } = require('@google/genai');
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    if (!jobId || !resumeId) {
+      return res.status(400).json({ error: 'jobId and resumeId are required' });
+    }
 
-    // Fetch Job, Resume, and User Profile
-    const job = await jobModel.getJobById(jobId);
+    const [job, resume] = await Promise.all([
+      jobModel.getJobById(jobId),
+      resumeModel.getResumeById(resumeId, userId),
+    ]);
+
     if (!job) return res.status(404).json({ error: 'Job not found' });
-
-    const resume = await resumeModel.getResumeById(resumeId, userId);
     if (!resume) return res.status(404).json({ error: 'Resume not found' });
 
-    const userProfile = await userModel.getUserById(userId);
+    const queueJob = await resumeQueue.add('analyze-resume', {
+      jobId,
+      resumeId,
+      userId,
+    });
 
-    // Call Gemini
-    const prompt = `
-      You are an expert ATS (Applicant Tracking System). 
-      Analyze this candidate's resume against the job description and the candidate's profile data.
-      Also, verify if the resume likely belongs to this user based on their profile data (name, skills).
+    return res.status(202).json({
+      message: "Resume analysis queued successfully.",
+      jobId: queueJob.id,
+      status: 'queued',
+    });
 
-      Job Title: ${job.title}
-      Job Description: ${job.description}
-      Job Requirements: ${JSON.stringify(job.requirements || [])}
-
-      Candidate Profile (from DB):
-      Name: ${userProfile.full_name}
-      Experience: ${userProfile.experience_years} years
-      Skills: ${JSON.stringify(userProfile.skills || [])}
-
-      Candidate Resume Text:
-      ${resume.parsed_text}
-
-      Output EXACTLY a JSON object with this format (no markdown tags, just pure JSON).
-      Limit strengths and weaknesses to a MAXIMUM of 3 short bullet points each (1 sentence max per point).
-      Limit reasoning to 1-2 short sentences.
-      Format:
-      {
-        "ai_match_score": number (0 to 100),
-        "ai_match_details": {
-          "strengths": ["...", "..."],
-          "weaknesses": ["...", "..."],
-          "reasoning": "..."
-        },
-        "is_suspicious": boolean (true if the resume clearly belongs to someone else with a different name/background)
-      }
-    `;
-
-    const fallbackModels = ['gemini-3.1-flash-lite', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
-    let response = null;
-    let lastErr = null;
-
-    for (const model of fallbackModels) {
-      try {
-        console.log(`Trying Gemini model: ${model}...`);
-        response = await ai.models.generateContent({
-          model: model,
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-          }
-        });
-        break;
-      } catch (err) {
-        lastErr = err;
-        console.warn(`Model ${model} failed: ${err.message}`);
-      }
-    }
-
-    if (!response) {
-      console.error("All Gemini models failed. Last error:", lastErr);
-      throw new Error(`Failed to generate content with all fallback models. Last error: ${lastErr?.message}`);
-    }
-
-    let aiResult;
-    try {
-      let responseText = response.text.trim();
-      if (responseText.startsWith('```json')) {
-        responseText = responseText.replace(/^```json/, '').replace(/```$/, '').trim();
-      } else if (responseText.startsWith('```')) {
-        responseText = responseText.replace(/^```/, '').replace(/```$/, '').trim();
-      }
-      aiResult = JSON.parse(responseText);
-    } catch (parseErr) {
-      console.error("Gemini JSON Parse Error:", parseErr, "\nRAW TEXT:\n", response.text);
-      require('fs').writeFileSync('gemini_error_log.txt', response.text);
-      return res.status(500).json({ error: 'Failed to analyze resume', details: parseErr.message, rawText: response.text });
-    }
-
-    res.json({ analysis: aiResult });
   } catch (err) {
     next(err);
   }
 };
+
+const getAnalysisStatus = async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+    const job = await resumeQueue.getJob(jobId);
+
+    if (!job) {
+      return res.status(404).json({ error: "Analysis job not found or expired. " });
+    }
+
+    if (job.data.userId !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized to view this analysis" });
+    }
+
+    const state = await job.getState();
+    const progress = job.progress || 0;
+
+    if (state === 'completed') {
+      return res.json({
+        status: "completed",
+        progress: 100,
+        analysis: job.returnvalue,
+      });
+    }
+
+    if (state === 'failed') {
+      return res.json({
+        state: 'failed',
+        error: job.failedReason || "Resume analysis failed",
+      });
+    }
+
+    return res.json({
+      status: state,
+      progress,
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
 
 const submitApplication = async (req, res, next) => {
   try {
     const { jobId, resumeId, analysis } = req.body;
     const userId = req.user.id;
 
-    // Check if already applied
     const existing = await applicationModel.getApplicationByUserAndJob(userId, jobId);
     if (existing) {
       return res.status(400).json({ error: 'You have already applied for this job' });
@@ -125,7 +102,6 @@ const submitApplication = async (req, res, next) => {
 
     const newApp = await applicationModel.createApplication(applicationData);
 
-    // Send Email Notification
     try {
       const user = await userModel.getUserById(userId);
       const job = await jobModel.getJobById(jobId);
@@ -261,6 +237,7 @@ const bulkUpdateJobApplications = async (req, res, next) => {
 
 module.exports = {
   analyzeApplication,
+  getAnalysisStatus,
   submitApplication,
   getMyApplications,
   getJobApplications,

@@ -4,6 +4,7 @@ const applicationController = require('../controllers/applicationController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.post('/analyze', protect, authorize('candidate'), applicationController.analyzeApplication);
+router.get('/analyze/status/:jobId', protect, authorize('candidate'), applicationController.getAnalysisStatus);
 router.post('/submit', protect, authorize('candidate'), applicationController.submitApplication);
 router.get('/my-applications', protect, authorize('candidate'), applicationController.getMyApplications);
 router.get('/job/:jobId', protect, authorize('admin', 'hr'), applicationController.getJobApplications);

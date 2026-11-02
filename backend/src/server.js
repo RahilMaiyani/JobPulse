@@ -14,6 +14,8 @@ const contactRoutes = require('./routes/contactRoutes');
 const proctoringRoutes = require('./routes/proctoringRoutes');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const dns = require('node:dns');
+require('./workers/resumeWorker');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,18 +28,17 @@ const corsOrigins = [
   'http://127.0.0.1:5173',
 ].filter(Boolean);
 
+dns.setDefaultResultOrder('ipv4first');
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    // Check if origin matches allowed list, local network IPs, or any Vercel preview/production deployment
     const isAllowed = corsOrigins.includes(origin) ||
       /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin) ||
       (origin.startsWith('https://') && origin.endsWith('.vercel.app'));
 
     if (isAllowed || process.env.NODE_ENV !== 'production') {
-      return callback(null, origin); // Reflect the dynamic origin back
+      return callback(null, origin);
     }
 
     callback(new Error('Not allowed by CORS'));
@@ -49,7 +50,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// Rate Limiting Middleware (Applies to all API routes)
 const apiLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 150,

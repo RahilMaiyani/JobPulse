@@ -1,7 +1,6 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { X, FileText, UploadCloud, Sparkles, AlertTriangle, CheckCircle2 } from 'lucide-react';
@@ -14,11 +13,11 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
   const uploadResumeMutation = useUploadResume();
   const [selectedResumeId, setSelectedResumeId] = useState("");
   const [isUploadingResume, setIsUploadingResume] = useState(false);
-  const queryClient = useQueryClient();
   const [analysisState, setAnalysisState] = useState('idle'); // idle | analyzing | done | error
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const processFile = async (file) => {
     if (!file) return;
@@ -77,13 +76,44 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
     if (!selectedResumeId) return toast.error("Please select a resume first");
 
     setAnalysisState('analyzing');
+    setProgress(5);
+
     try {
       const res = await api.post('/applications/analyze', {
         jobId: job.id,
-        resumeId: selectedResumeId
+        resumeId: selectedResumeId,
       });
-      setAnalysisResult(res.data.analysis);
-      setAnalysisState('done');
+
+      const queueJobId = res.data.jobId;
+
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await api.get(`/applications/analyze/status/${queueJobId}`);
+          const { status, progress: currentProgress, analysis, error } = statusRes.data;
+
+          if (currentProgress) {
+            setProgress(currentProgress)
+          }
+
+          if (status === 'completed') {
+            clearInterval(pollInterval);
+            setAnalysisResult(analysis);
+            setAnalysisState('done');
+            toast.success("Analysis complete!");
+          } else if (status === 'failed') {
+            clearInterval(pollInterval);
+            setAnalysisState('error');
+            toast.error(error || "Analysis failed");
+          }
+
+        }
+        catch (pollErr) {
+          clearInterval(pollInterval);
+          setAnalysisState('error');
+          toast.error("Failed to check analysis status");
+        }
+      }, 1500);
+
     } catch (err) {
       console.error(err);
       setAnalysisState('error');

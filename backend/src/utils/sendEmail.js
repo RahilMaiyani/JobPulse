@@ -8,11 +8,20 @@ const getTransporter = () => {
   if (!transporter) {
     const nodemailer = require('nodemailer');
     transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      family: 4,
+      requireTLS: true,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: true,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
   }
   return transporter;
