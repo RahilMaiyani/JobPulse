@@ -1,10 +1,11 @@
 import useEscapeKey from '../../hooks/useEscapeKey';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { X, FileText, UploadCloud, Sparkles, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useResumes, useUploadResume } from '../../hooks/useProfile';
+import { getSocket } from '../../services/socket';
 
 export default function JobApplicationModal({ job, onClose, onSuccess }) {
   useEscapeKey(onClose);
@@ -18,6 +19,47 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState(0);
+  const activeJobIdRef = useRef(null);
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleProgress = (data) => {
+      console.log('[WebSocket] Progress:', data);
+      if (data.jobId === activeJobIdRef.current) {
+        setProgress(data.progress);
+      }
+    };
+
+    const handleCompleted = (data) => {
+      console.log('[WebSocket] Completed:', data);
+      if (data.jobId === activeJobIdRef.current) {
+        setProgress(100);
+        setAnalysisResult(data.analysis);
+        setAnalysisState('done');
+        toast.success("Analysis complete!");
+      }
+    };
+
+    const handleFailed = (data) => {
+      console.log('[WebSocket] Failed:', data);
+      if (data.jobId === activeJobIdRef.current) {
+        setAnalysisState('error');
+        toast.error(data.error || "Analysis failed");
+      }
+    };
+
+    socket.on('analysis:progress', handleProgress);
+    socket.on('analysis:completed', handleCompleted);
+    socket.on('analysis:failed', handleFailed);
+
+    // Clean up listeners when modal closes
+    return () => {
+      socket.off('analysis:progress', handleProgress);
+      socket.off('analysis:completed', handleCompleted);
+      socket.off('analysis:failed', handleFailed);
+    };
+  }, []);
 
   const processFile = async (file) => {
     if (!file) return;
@@ -84,40 +126,12 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
         resumeId: selectedResumeId,
       });
 
-      const queueJobId = res.data.jobId;
-
-      const pollInterval = setInterval(async () => {
-        try {
-          const statusRes = await api.get(`/applications/analyze/status/${queueJobId}`);
-          const { status, progress: currentProgress, analysis, error } = statusRes.data;
-
-          if (currentProgress) {
-            setProgress(currentProgress)
-          }
-
-          if (status === 'completed') {
-            clearInterval(pollInterval);
-            setAnalysisResult(analysis);
-            setAnalysisState('done');
-            toast.success("Analysis complete!");
-          } else if (status === 'failed') {
-            clearInterval(pollInterval);
-            setAnalysisState('error');
-            toast.error(error || "Analysis failed");
-          }
-
-        }
-        catch (pollErr) {
-          clearInterval(pollInterval);
-          setAnalysisState('error');
-          toast.error("Failed to check analysis status");
-        }
-      }, 1500);
+      activeJobIdRef.current = res.data.jobId;
 
     } catch (err) {
       console.error(err);
       setAnalysisState('error');
-      const errorMessage = err.response?.data?.message || err.response?.data?.error || "Analysis failed. Please try again.";
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || "Failed to start analysis";
       toast.error(errorMessage);
     }
   };

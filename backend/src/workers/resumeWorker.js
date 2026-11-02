@@ -4,6 +4,7 @@ const jobModel = require('../models/jobModel')
 const resumeModel = require('../models/resumeModel')
 const userModel = require('../models/userModel')
 const { GoogleGenAI } = require("@google/genai")
+const { getIO } = require('../config/socket')
 
 const resumeWorker = new Worker('resume-analysis',
     async (job) => {
@@ -11,6 +12,7 @@ const resumeWorker = new Worker('resume-analysis',
         console.log(`[Worker] Starting analysis for Job ID: ${job.id} (User: ${userId})`);
 
         await job.updateProgress(15);
+        emitToUser(userId, `analysis:progress`, { jobId: job.id, progress: 15 });
 
         const [jobDetails, resume, userProfile] = await Promise.all([
             jobModel.getJobById(jobId),
@@ -19,7 +21,9 @@ const resumeWorker = new Worker('resume-analysis',
         ]);
         if (!jobDetails) throw new Error('Job not found');
         if (!resume) throw new Error('Resume not found');
+
         await job.updateProgress(40);
+        emitToUser(userId, `analysis:progress`, { jobId: job.id, progress: 40 });
 
         const prompt = `
             You are an expert ATS (Applicant Tracking System). 
@@ -49,6 +53,7 @@ const resumeWorker = new Worker('resume-analysis',
             }
         `;
         await job.updateProgress(60);
+        emitToUser(userId, `analysis:progress`, { jobId: job.id, progress: 60 });
 
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const fallbackModels = ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash', 'gemini-2.5-flash-lite'];
@@ -69,9 +74,14 @@ const resumeWorker = new Worker('resume-analysis',
             }
         }
         if (!response) {
+            emitToUser(userId, 'analysis:failed', {
+                jobId: job.id,
+                error: `All AI models failed: ${lastErr?.message}`,
+            });
             throw new Error(`All Gemini models failed. Last error: ${lastErr?.message}`);
         }
         await job.updateProgress(85);
+        emitToUser(userId, `analysis:progress`, { jobId: job.id, progress: 85 });
 
         let responseText = response.text.trim();
         if (responseText.startsWith('```json')) {
@@ -80,7 +90,13 @@ const resumeWorker = new Worker('resume-analysis',
             responseText = responseText.replace(/^```/, '').replace(/```$/, '').trim();
         }
         const aiResult = JSON.parse(responseText);
+
         await job.updateProgress(100);
+        emitToUser(userId, "analysis:completed", {
+            jobId: job.id,
+            analysis: aiResult,
+        });
+
         console.log(`[Worker] Successfully completed analysis for Job ID: ${job.id}`);
 
         return aiResult;
@@ -98,5 +114,14 @@ resumeWorker.on('completed', (job) => {
 resumeWorker.on('failed', (job, err) => {
     console.error(`[BullMQ] Job ${job.id} failed with error: ${err.message}`);
 });
+
+const emitToUser = (userId, event, payload) => {
+    try {
+        getIO().to(`user:${userId}`).emit(event, payload);
+    }
+    catch (err) {
+        console.warn(`[Socket emit warning] ${err.message}`);
+    }
+}
 
 module.exports = resumeWorker;

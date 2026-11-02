@@ -16,6 +16,8 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 const dns = require('node:dns');
 require('./workers/resumeWorker');
+const http = require('http');
+const { initSocket } = require("./config/socket");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -160,8 +162,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error', message: err.message });
 });
 
+const server = http.createServer(app);
+initSocket(server);
+
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 }
