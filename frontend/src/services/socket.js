@@ -16,7 +16,7 @@ export const getSocket = () => {
         });
 
         socket.on('connect', () => {
-            console.log(`[Scoket.io] Connected to Server! Socket ID:`, socket.id);
+            console.log(`[Socket.io] Connected to Server! Socket ID:`, socket.id);
         });
 
         socket.on('connect_error', (err) => {

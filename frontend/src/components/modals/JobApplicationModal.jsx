@@ -53,7 +53,6 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
     socket.on('analysis:completed', handleCompleted);
     socket.on('analysis:failed', handleFailed);
 
-    // Clean up listeners when modal closes
     return () => {
       socket.off('analysis:progress', handleProgress);
       socket.off('analysis:completed', handleCompleted);
@@ -245,6 +244,7 @@ export default function JobApplicationModal({ job, onClose, onSuccess }) {
               </div>
               <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Gemini is analyzing your resume...</h3>
               <p className="text-zinc-500 dark:text-zinc-400 font-medium mt-2 max-w-sm">We are cross-referencing your experience and skills with the job requirements. This will just take a moment.</p>
+              <div className='text-xl font-black text-zinc-900 dark:text-zinc-100'>Progress: {progress}%</div>
             </div>
           )}
 

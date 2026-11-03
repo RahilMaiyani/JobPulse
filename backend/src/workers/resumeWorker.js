@@ -11,7 +11,7 @@ const resumeWorker = new Worker('resume-analysis',
         const { jobId, resumeId, userId } = job.data;
         console.log(`[Worker] Starting analysis for Job ID: ${job.id} (User: ${userId})`);
 
-        await job.updateProgress(15);
+        await job.updateProgress({ step: "Fetching Resume & Job Description", percent: 20 });
         emitToUser(userId, `analysis:progress`, { jobId: job.id, progress: 15 });
 
         const [jobDetails, resume, userProfile] = await Promise.all([
