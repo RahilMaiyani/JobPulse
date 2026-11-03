@@ -40,47 +40,6 @@ const analyzeApplication = async (req, res, next) => {
   }
 };
 
-const getAnalysisStatus = async (req, res, next) => {
-  try {
-    const { jobId } = req.params;
-    const job = await resumeQueue.getJob(jobId);
-
-    if (!job) {
-      return res.status(404).json({ error: "Analysis job not found or expired. " });
-    }
-
-    if (job.data.userId !== req.user.id) {
-      return res.status(403).json({ error: "Unauthorized to view this analysis" });
-    }
-
-    const state = await job.getState();
-    const progress = job.progress || 0;
-
-    if (state === 'completed') {
-      return res.json({
-        status: "completed",
-        progress: 100,
-        analysis: job.returnvalue,
-      });
-    }
-
-    if (state === 'failed') {
-      return res.json({
-        state: 'failed',
-        error: job.failedReason || "Resume analysis failed",
-      });
-    }
-
-    return res.json({
-      status: state,
-      progress,
-    });
-
-  } catch (err) {
-    next(err);
-  }
-}
-
 const submitApplication = async (req, res, next) => {
   try {
     const { jobId, resumeId, analysis } = req.body;
@@ -237,7 +196,6 @@ const bulkUpdateJobApplications = async (req, res, next) => {
 
 module.exports = {
   analyzeApplication,
-  getAnalysisStatus,
   submitApplication,
   getMyApplications,
   getJobApplications,
